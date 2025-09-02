@@ -25,17 +25,20 @@ class WebSocketOnlyClient {
     if (!app) return;
 
     app.innerHTML = `
-      <div style="
+      <div class="main-container" style="
         min-height: 100vh;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         padding: 20px;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
+        overflow-y: auto;
+        box-sizing: border-box;
       ">
-        <div style="
+        <div class="main-card" style="
           max-width: 600px;
           width: 100%;
           background: rgba(255, 255, 255, 0.1);
@@ -44,6 +47,8 @@ class WebSocketOnlyClient {
           backdrop-filter: blur(10px);
           border: 1px solid rgba(255, 255, 255, 0.2);
           text-align: center;
+          margin: 20px 0;
+          box-sizing: border-box;
         ">
           <div style="font-size: 4rem; margin-bottom: 20px;" id="status-icon">🔌</div>
           <h1 style="margin-bottom: 10px;">WebSocket Test Client</h1>
@@ -66,7 +71,7 @@ class WebSocketOnlyClient {
               <span id="status-text" style="font-size: 1.2rem; font-weight: bold;">Desconectado</span>
             </div>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
+            <div class="status-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
               <div style="text-align: left;">
                 <div style="opacity: 0.8; font-size: 0.9rem;">WebSocket URL:</div>
                 <div id="ws-url" style="font-family: monospace; font-size: 0.8rem; word-break: break-all;">-</div>
@@ -131,7 +136,7 @@ class WebSocketOnlyClient {
             </div>
           </div>
 
-          <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap;">
+          <div class="button-grid" style="display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap;">
             <button id="connect-btn" onclick="window.wsClient.connect()" style="
               padding: 12px 24px;
               border: none;
@@ -198,6 +203,22 @@ class WebSocketOnlyClient {
       </div>
 
       <style>
+        * {
+          box-sizing: border-box;
+        }
+        
+        body {
+          margin: 0;
+          padding: 0;
+          overflow-x: hidden;
+          overflow-y: auto;
+        }
+        
+        html, body {
+          height: auto;
+          min-height: 100%;
+        }
+        
         @keyframes pulse {
           0%, 100% { opacity: 1; transform: scale(1); }
           50% { opacity: 0.7; transform: scale(0.95); }
@@ -218,6 +239,35 @@ class WebSocketOnlyClient {
         }
         .scenario-loading {
           animation: bounce 2s infinite;
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+          .main-container {
+            padding: 10px !important;
+          }
+          .main-card {
+            padding: 20px !important;
+            margin: 10px 0 !important;
+          }
+          .button-grid {
+            flex-direction: column !important;
+            gap: 10px !important;
+          }
+          .status-grid {
+            grid-template-columns: 1fr 1fr !important;
+            gap: 10px !important;
+          }
+        }
+        
+        @media (max-height: 600px) {
+          .main-container {
+            justify-content: flex-start !important;
+            padding-top: 10px !important;
+          }
+          .main-card {
+            margin: 10px 0 !important;
+          }
         }
       </style>
     `;
