@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Experiencia VR 360° sincronizada de Ecopetrol - Explora la riqueza natural y energética de Colombia" />
+  <meta name="keywords" content="VR, realidad virtual, 360, Ecopetrol, Colombia, energía, petróleo, experiencia inmersiva" />
+  <meta name="author" content="Ecopetrol" />
+  <meta name="theme-color" content="#1976d2" />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="/" />
+  <meta property="og:title" content="VR Ecopetrol - Experiencia 360°" />
+  <meta property="og:description" content="Experiencia inmersiva de realidad virtual para conocer la riqueza energética de Colombia" />
+  <meta property="og:image" content="/og-image.jpg" />
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="/" />
+  <meta property="twitter:title" content="VR Ecopetrol - Experiencia 360°" />
+  <meta property="twitter:description" content="Experiencia inmersiva de realidad virtual para conocer la riqueza energética de Colombia" />
+  <meta property="twitter:image" content="/og-image.jpg" />
+  
+  <!-- PWA Tags -->
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-fullscreen" />
+  <meta name="apple-mobile-web-app-title" content="VR Ecopetrol" />
+  
+  <!-- Prevent zooming on mobile -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  
+  <!-- Preload critical resources -->
+  <link rel="preload" href="/asset-manifest.json" as="fetch" type="application/json" crossorigin />
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  
+  <title>VR Ecopetrol - Experiencia 360°</title>
+  
+  <style>
+    /* Critical CSS for loading state */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    #app {
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+    }
+    
+    /* Loading spinner */
+    .loading-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      z-index: 9999;
+    }
+    
+    .loading-logo {
+      font-size: 3rem;
+      margin-bottom: 2rem;
+      animation: pulse 2s infinite;
+    }
+    
+    .loading-text {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      opacity: 0.9;
+    }
+    
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    /* Hide scrollbars in VR mode */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    
+    /* Prevent text selection in VR */
+    .vr-mode {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    
+    /* A-Frame scene styling */
+    a-scene {
+      width: 100vw !important;
+      height: 100vh !important;
+    }
+    
+    /* Error message styling */
+    .error-container {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(220, 53, 69, 0.9);
+      color: white;
+      padding: 2rem;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 90%;
+      z-index: 10000;
+    }
+    
+    .error-title {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .error-message {
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    
+    .error-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    
+    .btn:hover {
+      opacity: 0.8;
+    }
+    
+    .btn-primary {
+      background: #007bff;
+      color: white;
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Initial loading state -->
+    <div class="loading-container" id="initial-loader">
+      <div class="loading-logo">🌟</div>
+      <div class="loading-text">VR Ecopetrol<br>Cargando experiencia...</div>
+      <div class="loading-spinner"></div>
+    </div>
+  </div>
+
+  <!-- Service Worker registration -->
+  <script>
+    // Register service worker for PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('SW registered: ', registration);
+          })
+          .catch(registrationError => {
+            console.log('SW registration failed: ', registrationError);
+          });
+      });
+    }
+    
+    // Basic error handling before app loads
+    window.addEventListener('error', (event) => {
+      console.error('Global error:', event.error);
+    });
+    
+    window.addEventListener('unhandledrejection', (event) => {
+      console.error('Unhandled promise rejection:', event.reason);
+    });
+    
+    // Prevent context menu on long press (mobile)
+    window.addEventListener('contextmenu', (e) => e.preventDefault());
+    
+    // Prevent zoom gestures on mobile
+    document.addEventListener('gesturestart', (e) => e.preventDefault());
+    document.addEventListener('gesturechange', (e) => e.preventDefault());
+    document.addEventListener('gestureend', (e) => e.preventDefault());
+    
+    // Lock orientation to landscape on mobile
+    if ('screen' in window && 'orientation' in window.screen) {
+      screen.orientation.lock('landscape-primary').catch(() => {
+        // Orientation lock failed, continue anyway
+      });
+    }
+  </script>
+  
+  <script type="module" src="/src/main-websocket-only.ts"></script>
+</body>
+</html>
+
+

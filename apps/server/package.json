@@ -1,0 +1,42 @@
+{
+  "name": "@vr-ecopetrol/server",
+  "version": "1.0.0",
+  "description": "Servidor WebSocket para sincronización VR y dashboard de control",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc && cp -r ../client/dist ./dist/static 2>/dev/null || true",
+    "start": "node dist/index.js",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.16.0",
+    "cors": "^2.8.5",
+    "zod": "^3.22.4",
+    "dotenv": "^16.4.1",
+    "compression": "^1.7.4",
+    "helmet": "^7.1.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/ws": "^8.5.10",
+    "@types/cors": "^2.8.17",
+    "@types/compression": "^1.7.5",
+    "@types/uuid": "^9.0.8",
+    "@types/node": "^20.11.19",
+    "tsx": "^4.7.1",
+    "typescript": "^5.3.3",
+    "nodemon": "^3.1.0"
+  },
+  "keywords": [
+    "websocket",
+    "express",
+    "dashboard",
+    "vr-sync"
+  ]
+}

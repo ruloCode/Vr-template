@@ -1,0 +1,36 @@
+{
+  "name": "@vr-ecopetrol/client",
+  "version": "1.0.0",
+  "description": "Cliente A-Frame PWA para experiencias VR 360 sincronizadas",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix"
+  },
+  "dependencies": {
+    "aframe": "^1.4.0",
+    "zustand": "^4.5.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/aframe": "^1.2.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.4",
+    "vite-plugin-pwa": "^0.17.5",
+    "workbox-window": "^7.0.0"
+  },
+  "keywords": [
+    "aframe",
+    "webxr",
+    "vr",
+    "pwa",
+    "360"
+  ]
+}
+
+

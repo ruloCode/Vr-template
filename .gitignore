@@ -1,0 +1,99 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build outputs
+dist/
+build/
+.turbo/
+
+# Cache directories
+.vite/
+.cache/
+.parcel-cache/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# TypeScript
+*.tsbuildinfo
+
+# Assets (add actual asset files to ignore)
+# Uncomment these when you add real assets:
+# apps/client/public/panos/*.jpg
+# apps/client/public/panos/*.png
+# apps/client/public/panos/*.webp
+# apps/client/public/audio/*.mp3
+# apps/client/public/audio/*.wav
+# apps/client/public/audio/*.ogg
+
+# PWA generated files
+apps/client/public/sw.js.map
+apps/client/public/workbox-*.js
+
+# Coverage reports
+coverage/
+*.lcov
+
+# Temporary files
+*.tmp
+*.temp
+
+# Production builds
+apps/server/dist/
+apps/client/dist/
+
+# Server static files copy
+apps/server/dist/static/
+
+# Debug files
+*.pid
+*.seed
+*.pid.lock
+
+# Runtime data
+pids/
+logs/
+*.log
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+

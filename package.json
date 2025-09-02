@@ -1,0 +1,45 @@
+{
+  "name": "vr-ecopetrol",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Sistema VR 360 sincronizado para Ecopetrol - Demo LAN offline",
+  "author": "Ecopetrol",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0",
+  "scripts": {
+    "postinstall": "pnpm install --filter=./apps/server --filter=./apps/client",
+    "dev": "pnpm run dev:server & pnpm run dev:client",
+    "dev:server": "pnpm --filter server dev",
+    "dev:client": "pnpm --filter client dev",
+    "build": "pnpm --filter client build && pnpm --filter server build",
+    "start": "pnpm --filter server start",
+    "start:production": "NODE_ENV=production pnpm --filter server start",
+    "lint": "pnpm --filter \"./apps/*\" lint",
+    "type-check": "pnpm --filter \"./apps/*\" type-check",
+    "clean": "rm -rf apps/*/dist apps/*/build apps/*/.turbo node_modules apps/*/node_modules"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.3.3"
+  },
+  "keywords": [
+    "vr",
+    "a-frame",
+    "webxr",
+    "360",
+    "ecopetrol",
+    "synchronized",
+    "offline",
+    "pwa"
+  ]
+}
+
+

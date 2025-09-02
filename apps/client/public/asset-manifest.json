@@ -1,0 +1,72 @@
+{
+  "version": "v1.0.0",
+  "created": "2024-01-15T00:00:00.000Z",
+  "scenes": [
+    {
+      "id": "escena-1",
+      "title": "Riqueza Natural",
+      "description": "Explora la biodiversidad y los recursos naturales de Colombia",
+      "image360": "panos/escena1_8k.jpg",
+      "audio": "audio/ambient-night.mp3",
+      "durationSec": 45
+    },
+    {
+      "id": "escena-2", 
+      "title": "Bosque Natural (Temporal)",
+      "description": "Escena temporal usando asset forest.jpg para pruebas",
+      "image360": "panos/forest.jpg",
+      "audio": "audio/ambient-wind.mp3",
+      "durationSec": 50
+    },
+    {
+      "id": "escena-3",
+      "title": "Pradera (Temporal)",
+      "description": "Escena temporal usando asset grass.jpg para pruebas",
+      "image360": "panos/grass.jpg", 
+      "audio": "audio/ambient-night.mp3",
+      "durationSec": 40
+    },
+    {
+      "id": "escena-4",
+      "title": "Reservado 4",
+      "description": "Escena reservada para futuro contenido",
+      "image360": "panos/placeholder.jpg",
+      "audio": "audio/placeholder.mp3",
+      "durationSec": 30
+    },
+    {
+      "id": "escena-5",
+      "title": "Reservado 5", 
+      "description": "Escena reservada para futuro contenido",
+      "image360": "panos/placeholder.jpg",
+      "audio": "audio/placeholder.mp3",
+      "durationSec": 30
+    },
+    {
+      "id": "escena-6",
+      "title": "Reservado 6",
+      "description": "Escena reservada para futuro contenido", 
+      "image360": "panos/placeholder.jpg",
+      "audio": "audio/placeholder.mp3",
+      "durationSec": 30
+    },
+    {
+      "id": "escena-7",
+      "title": "Reservado 7",
+      "description": "Escena reservada para futuro contenido",
+      "image360": "panos/placeholder.jpg", 
+      "audio": "audio/placeholder.mp3",
+      "durationSec": 30
+    },
+    {
+      "id": "escena-8",
+      "title": "Reservado 8",
+      "description": "Escena reservada para futuro contenido",
+      "image360": "panos/placeholder.jpg",
+      "audio": "audio/placeholder.mp3", 
+      "durationSec": 30
+    }
+  ]
+}
+
+
