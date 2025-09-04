@@ -1,18 +1,18 @@
-import { WebSocket, WebSocketServer } from 'ws';
-import { v4 as uuidv4 } from 'uuid';
-import { 
-  ClientMessage, 
-  ClientMessageSchema, 
-  ServerMessage, 
-  ClientStatus, 
+import { WebSocket, WebSocketServer } from "ws";
+import { v4 as uuidv4 } from "uuid";
+import {
+  ClientMessage,
+  ClientMessageSchema,
+  ServerMessage,
+  ClientStatus,
   RoomState,
   PROTOCOL_VERSION,
   HEARTBEAT_INTERVAL_MS,
   CLIENT_TIMEOUT_MS,
-  PING_INTERVAL_MS
-} from '../types/protocol.js';
-import { logger } from '../utils/logger.js';
-import { config } from '../utils/config.js';
+  PING_INTERVAL_MS,
+} from "../types/protocol.js";
+import { logger } from "../utils/logger.js";
+import { config } from "../utils/config.js";
 
 export class WebSocketManager {
   private wss: WebSocketServer;
@@ -21,37 +21,39 @@ export class WebSocketManager {
   private heartbeatInterval: NodeJS.Timeout | null = null;
 
   constructor() {
-    this.wss = new WebSocketServer({ 
+    this.wss = new WebSocketServer({
       port: config.port + 1, // WS en puerto +1
-      path: config.paths.websocket
+      path: config.paths.websocket,
     });
-    
+
     this.room = {
-      id: 'main',
+      id: "main",
       clients: [],
       isPlaying: false,
-      seekOffset: 0
+      seekOffset: 0,
     };
 
     this.setupWebSocketServer();
     this.startHeartbeat();
-    
+
     logger.info(`WebSocket server started on port ${config.port + 1}`);
   }
 
   private setupWebSocketServer(): void {
-    this.wss.on('connection', (ws: WebSocket, request) => {
+    this.wss.on("connection", (ws: WebSocket, request) => {
       const clientId = uuidv4();
       const connection = new ClientConnection(clientId, ws, this);
       this.clients.set(clientId, connection);
-      
-      logger.info(`Cliente conectado: ${clientId} desde ${request.socket.remoteAddress}`);
-      
-      ws.on('close', () => {
+
+      logger.info(
+        `Cliente conectado: ${clientId} desde ${request.socket.remoteAddress}`
+      );
+
+      ws.on("close", () => {
         this.handleClientDisconnect(clientId);
       });
 
-      ws.on('error', (error) => {
+      ws.on("error", (error) => {
         logger.error(`Error en WebSocket ${clientId}:`, error);
         this.handleClientDisconnect(clientId);
       });
@@ -61,14 +63,14 @@ export class WebSocketManager {
   private startHeartbeat(): void {
     this.heartbeatInterval = setInterval(() => {
       const now = Date.now();
-      
+
       for (const [clientId, connection] of this.clients) {
         if (now - connection.lastPing > CLIENT_TIMEOUT_MS) {
           logger.warn(`Cliente ${clientId} timeout, desconectando`);
           this.handleClientDisconnect(clientId);
         }
       }
-      
+
       this.updateRoomState();
     }, HEARTBEAT_INTERVAL_MS);
   }
@@ -84,12 +86,14 @@ export class WebSocketManager {
   }
 
   private updateRoomState(): void {
-    this.room.clients = Array.from(this.clients.values()).map(conn => conn.getStatus());
+    this.room.clients = Array.from(this.clients.values()).map((conn) =>
+      conn.getStatus()
+    );
   }
 
   public broadcastCommand(command: ServerMessage): void {
     logger.info(`Broadcasting command: ${command.type}`, command.payload);
-    
+
     for (const connection of this.clients.values()) {
       connection.send(command);
     }
@@ -105,21 +109,22 @@ export class WebSocketManager {
   }
 
   public getReadyClientCount(): number {
-    return Array.from(this.clients.values())
-      .filter(conn => conn.getStatus().status === 'ready').length;
+    return Array.from(this.clients.values()).filter(
+      (conn) => conn.getStatus().status === "ready"
+    ).length;
   }
 
   public close(): void {
     if (this.heartbeatInterval) {
       clearInterval(this.heartbeatInterval);
     }
-    
+
     for (const connection of this.clients.values()) {
       connection.close();
     }
-    
+
     this.wss.close();
-    logger.info('WebSocket server cerrado');
+    logger.info("WebSocket server cerrado");
   }
 }
 
@@ -134,23 +139,23 @@ class ClientConnection {
     this.clientId = clientId;
     this.ws = ws;
     this.manager = manager;
-    
+
     this.status = {
       id: clientId,
-      deviceId: '',
+      deviceId: "",
       lastPingMs: Date.now(),
       latencyMs: 0,
       offsetMs: 0,
-      status: 'connected',
+      status: "connected",
       connectedAt: Date.now(),
-      lastStateUpdate: Date.now()
+      lastStateUpdate: Date.now(),
     };
 
     this.setupMessageHandling();
   }
 
   private setupMessageHandling(): void {
-    this.ws.on('message', (data: Buffer) => {
+    this.ws.on("message", (data: Buffer) => {
       try {
         const message = JSON.parse(data.toString());
         const validatedMessage = ClientMessageSchema.parse(message);
@@ -158,8 +163,8 @@ class ClientConnection {
       } catch (error) {
         logger.error(`Error parsing message from ${this.clientId}:`, error);
         this.send({
-          type: 'ERROR' as any,
-          payload: { message: 'Invalid message format' }
+          type: "ERROR",
+          payload: { message: "Invalid message format" },
         });
       }
     });
@@ -167,18 +172,18 @@ class ClientConnection {
 
   private handleMessage(message: ClientMessage): void {
     this.lastPing = Date.now();
-    
+
     switch (message.type) {
-      case 'HELLO':
+      case "HELLO":
         this.handleHello(message);
         break;
-      case 'PING':
+      case "PING":
         this.handlePing(message);
         break;
-      case 'READY':
+      case "READY":
         this.handleReady(message);
         break;
-      case 'STATE':
+      case "STATE":
         this.handleState(message);
         break;
       default:
@@ -186,51 +191,55 @@ class ClientConnection {
     }
   }
 
-  private handleHello(message: ClientMessage & { type: 'HELLO' }): void {
+  private handleHello(message: ClientMessage & { type: "HELLO" }): void {
     this.status.deviceId = message.payload.deviceId;
     this.status.battery = message.payload.battery;
-    
+
     this.send({
-      type: 'WELCOME',
+      type: "WELCOME",
       payload: {
         serverEpochMs: Date.now(),
         clientId: this.clientId,
-        serverVersion: PROTOCOL_VERSION
-      }
+        serverVersion: PROTOCOL_VERSION,
+      },
     });
-    
-    logger.info(`Cliente ${this.clientId} (${message.payload.deviceId}) enviado WELCOME`);
+
+    logger.info(
+      `Cliente ${this.clientId} (${message.payload.deviceId}) enviado WELCOME`
+    );
   }
 
-  private handlePing(message: ClientMessage & { type: 'PING' }): void {
+  private handlePing(message: ClientMessage & { type: "PING" }): void {
     const tServer = Date.now();
     const tClient = message.payload.tClient;
     const latency = tServer - tClient;
-    
+
     this.status.latencyMs = latency;
     this.status.offsetMs = tServer - (tClient + latency / 2);
     this.status.lastPingMs = tServer;
-    
+
     this.send({
-      type: 'PONG',
+      type: "PONG",
       payload: {
         tServer,
-        tClient
-      }
+        tClient,
+      },
     });
   }
 
-  private handleReady(message: ClientMessage & { type: 'READY' }): void {
+  private handleReady(message: ClientMessage & { type: "READY" }): void {
     this.status.sceneId = message.payload.sceneId;
-    this.status.status = 'ready';
+    this.status.status = "ready";
     this.status.lastStateUpdate = Date.now();
-    
-    logger.info(`Cliente ${this.clientId} listo para escena ${message.payload.sceneId}`);
+
+    logger.info(
+      `Cliente ${this.clientId} listo para escena ${message.payload.sceneId}`
+    );
   }
 
-  private handleState(message: ClientMessage & { type: 'STATE' }): void {
+  private handleState(message: ClientMessage & { type: "STATE" }): void {
     this.status.sceneId = message.payload.sceneId;
-    this.status.status = message.payload.playing ? 'playing' : 'paused';
+    this.status.status = message.payload.playing ? "playing" : "paused";
     this.status.lastStateUpdate = Date.now();
   }
 
@@ -250,5 +259,3 @@ class ClientConnection {
     }
   }
 }
-
-

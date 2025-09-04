@@ -1,4 +1,4 @@
-import { logger } from './logger';
+import { logger } from "./logger";
 
 export class PWAManager {
   private registration: ServiceWorkerRegistration | null = null;
@@ -10,25 +10,28 @@ export class PWAManager {
   }
 
   private async setupServiceWorker(): Promise<void> {
-    if (!('serviceWorker' in navigator)) {
-      logger.warn('⚠️ Service Worker no soportado');
+    if (!("serviceWorker" in navigator)) {
+      logger.warn("⚠️ Service Worker no soportado");
       return;
     }
 
     try {
       // Register service worker
-      this.registration = await navigator.serviceWorker.register('/sw.js', {
-        scope: '/'
+      this.registration = await navigator.serviceWorker.register("/sw.js", {
+        scope: "/",
       });
 
-      logger.info('✅ Service Worker registrado');
+      logger.info("✅ Service Worker registrado");
 
       // Check for updates
-      this.registration.addEventListener('updatefound', () => {
+      this.registration.addEventListener("updatefound", () => {
         const newWorker = this.registration!.installing;
         if (newWorker) {
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          newWorker.addEventListener("statechange", () => {
+            if (
+              newWorker.state === "installed" &&
+              navigator.serviceWorker.controller
+            ) {
               this.updateAvailable = true;
               this.notifyUpdateAvailable();
             }
@@ -43,33 +46,33 @@ export class PWAManager {
       }
 
       // Listen for controlling service worker change
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        logger.info('🔄 Nueva versión del Service Worker activa');
-        window.location.reload();
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        logger.info("🔄 Nueva versión del Service Worker activa");
+        // Don't auto-reload, let user decide when to update
+        this.notifyUpdateAvailable();
       });
 
-      // Periodic update check
+      // Periodic update check (less frequent to avoid constant reloads)
       setInterval(() => {
         this.checkForUpdates();
-      }, 60000); // Check every minute
-
+      }, 300000); // Check every 5 minutes instead of every minute
     } catch (error) {
-      logger.error('❌ Error registrando Service Worker:', error);
+      logger.error("❌ Error registrando Service Worker:", error);
     }
   }
 
   private setupInstallPrompt(): void {
     let deferredPrompt: any = null;
 
-    window.addEventListener('beforeinstallprompt', (e) => {
+    window.addEventListener("beforeinstallprompt", (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      logger.info('📱 PWA installation prompt available');
+      logger.info("📱 PWA installation prompt available");
       this.showInstallBanner();
     });
 
-    window.addEventListener('appinstalled', () => {
-      logger.info('📱 PWA instalada exitosamente');
+    window.addEventListener("appinstalled", () => {
+      logger.info("📱 PWA instalada exitosamente");
       deferredPrompt = null;
       this.hideInstallBanner();
     });
@@ -79,10 +82,10 @@ export class PWAManager {
       if (deferredPrompt) {
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then((choiceResult: any) => {
-          if (choiceResult.outcome === 'accepted') {
-            logger.info('👍 Usuario aceptó instalar PWA');
+          if (choiceResult.outcome === "accepted") {
+            logger.info("👍 Usuario aceptó instalar PWA");
           } else {
-            logger.info('👎 Usuario rechazó instalar PWA');
+            logger.info("👎 Usuario rechazó instalar PWA");
           }
           deferredPrompt = null;
         });
@@ -91,21 +94,22 @@ export class PWAManager {
   }
 
   private async checkForUpdates(): Promise<void> {
-    if (this.registration) {
+    if (this.registration && !this.updateAvailable) {
       try {
         await this.registration.update();
+        logger.debug("🔄 Verificando actualizaciones...");
       } catch (error) {
-        logger.debug('🔄 No hay actualizaciones disponibles');
+        logger.debug("🔄 No hay actualizaciones disponibles");
       }
     }
   }
 
   private notifyUpdateAvailable(): void {
-    logger.info('🆕 Actualización disponible');
-    
+    logger.info("🆕 Actualización disponible");
+
     // Create update notification
-    const notification = document.createElement('div');
-    notification.id = 'pwa-update-notification';
+    const notification = document.createElement("div");
+    notification.id = "pwa-update-notification";
     notification.innerHTML = `
       <div style="
         position: fixed;
@@ -167,7 +171,7 @@ export class PWAManager {
 
     // Auto-dismiss after 30 seconds
     setTimeout(() => {
-      if (document.getElementById('pwa-update-notification')) {
+      if (document.getElementById("pwa-update-notification")) {
         notification.remove();
       }
     }, 30000);
@@ -175,12 +179,12 @@ export class PWAManager {
 
   private showInstallBanner(): void {
     // Check if already installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
+    if (window.matchMedia("(display-mode: standalone)").matches) {
       return;
     }
 
-    const banner = document.createElement('div');
-    banner.id = 'pwa-install-banner';
+    const banner = document.createElement("div");
+    banner.id = "pwa-install-banner";
     banner.innerHTML = `
       <div style="
         position: fixed;
@@ -237,25 +241,25 @@ export class PWAManager {
 
     (window as any).dismissInstallBanner = () => {
       banner.remove();
-      localStorage.setItem('pwa-install-dismissed', 'true');
+      localStorage.setItem("pwa-install-dismissed", "true");
     };
 
     // Don't show again if previously dismissed
-    if (localStorage.getItem('pwa-install-dismissed')) {
+    if (localStorage.getItem("pwa-install-dismissed")) {
       banner.remove();
       return;
     }
 
     // Auto-dismiss after 1 minute
     setTimeout(() => {
-      if (document.getElementById('pwa-install-banner')) {
+      if (document.getElementById("pwa-install-banner")) {
         banner.remove();
       }
     }, 60000);
   }
 
   private hideInstallBanner(): void {
-    const banner = document.getElementById('pwa-install-banner');
+    const banner = document.getElementById("pwa-install-banner");
     if (banner) {
       banner.remove();
     }
@@ -263,7 +267,7 @@ export class PWAManager {
 
   private applyUpdate(): void {
     if (this.registration && this.registration.waiting) {
-      this.registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+      this.registration.waiting.postMessage({ type: "SKIP_WAITING" });
     }
   }
 
@@ -274,17 +278,16 @@ export class PWAManager {
 
     return new Promise((resolve) => {
       const channel = new MessageChannel();
-      
+
       channel.port1.onmessage = (event) => {
-        if (event.data.type === 'CACHE_SIZE_RESULT') {
+        if (event.data.type === "CACHE_SIZE_RESULT") {
           resolve(event.data.cacheInfo);
         }
       };
 
-      this.registration!.active!.postMessage(
-        { type: 'GET_CACHE_SIZE' },
-        [channel.port2]
-      );
+      this.registration!.active!.postMessage({ type: "GET_CACHE_SIZE" }, [
+        channel.port2,
+      ]);
 
       // Timeout after 5 seconds
       setTimeout(() => resolve(null), 5000);
@@ -292,18 +295,20 @@ export class PWAManager {
   }
 
   public async clearCache(): Promise<void> {
-    if ('caches' in window) {
+    if ("caches" in window) {
       const cacheNames = await caches.keys();
       await Promise.all(
-        cacheNames.map(cacheName => caches.delete(cacheName))
+        cacheNames.map((cacheName) => caches.delete(cacheName))
       );
-      logger.info('🧹 Caché PWA limpiado');
+      logger.info("🧹 Caché PWA limpiado");
     }
   }
 
   public isInstalled(): boolean {
-    return window.matchMedia('(display-mode: standalone)').matches ||
-           (window.navigator as any).standalone === true;
+    return (
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as any).standalone === true
+    );
   }
 
   public isUpdateAvailable(): boolean {
@@ -313,5 +318,3 @@ export class PWAManager {
 
 // Initialize PWA manager
 export const pwaManager = new PWAManager();
-
-

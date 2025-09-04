@@ -1,80 +1,87 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 // Esquemas de mensajes del cliente al servidor
 export const ClientHelloSchema = z.object({
-  type: z.literal('HELLO'),
+  type: z.literal("HELLO"),
   payload: z.object({
     deviceId: z.string().min(1).max(50),
-    version: z.string().default('1.0.0'),
+    version: z.string().default("1.0.0"),
     userAgent: z.string().optional(),
-    battery: z.number().min(0).max(100).optional()
-  })
+    battery: z.number().min(0).max(100).optional(),
+  }),
 });
 
 export const ClientPingSchema = z.object({
-  type: z.literal('PING'),
+  type: z.literal("PING"),
   payload: z.object({
-    tClient: z.number().int().positive()
-  })
+    tClient: z.number().int().positive(),
+  }),
 });
 
 export const ClientReadySchema = z.object({
-  type: z.literal('READY'),
+  type: z.literal("READY"),
   payload: z.object({
-    sceneId: z.string().min(1).max(50)
-  })
+    sceneId: z.string().min(1).max(50),
+  }),
 });
 
 export const ClientStateSchema = z.object({
-  type: z.literal('STATE'),
+  type: z.literal("STATE"),
   payload: z.object({
     sceneId: z.string().min(1).max(50),
     currentTime: z.number().min(0),
     playing: z.boolean(),
-    buffered: z.number().min(0).max(100).optional()
-  })
+    buffered: z.number().min(0).max(100).optional(),
+  }),
 });
 
 // Esquemas de mensajes del servidor al cliente
 export const ServerWelcomeSchema = z.object({
-  type: z.literal('WELCOME'),
+  type: z.literal("WELCOME"),
   payload: z.object({
     serverEpochMs: z.number().int().positive(),
     clientId: z.string(),
-    serverVersion: z.string()
-  })
+    serverVersion: z.string(),
+  }),
 });
 
 export const ServerPongSchema = z.object({
-  type: z.literal('PONG'),
+  type: z.literal("PONG"),
   payload: z.object({
     tServer: z.number().int().positive(),
-    tClient: z.number().int().positive()
-  })
+    tClient: z.number().int().positive(),
+  }),
 });
 
 export const ServerCommandSchema = z.object({
-  type: z.literal('COMMAND'),
-  payload: z.discriminatedUnion('commandType', [
+  type: z.literal("COMMAND"),
+  payload: z.discriminatedUnion("commandType", [
     z.object({
-      commandType: z.literal('LOAD'),
-      sceneId: z.string().min(1).max(50)
+      commandType: z.literal("LOAD"),
+      sceneId: z.string().min(1).max(50),
     }),
     z.object({
-      commandType: z.literal('START_AT'),
-      epochMs: z.number().int().positive()
+      commandType: z.literal("START_AT"),
+      epochMs: z.number().int().positive(),
     }),
     z.object({
-      commandType: z.literal('PAUSE')
+      commandType: z.literal("PAUSE"),
     }),
     z.object({
-      commandType: z.literal('RESUME')
+      commandType: z.literal("RESUME"),
     }),
     z.object({
-      commandType: z.literal('SEEK'),
-      deltaMs: z.number().int()
-    })
-  ])
+      commandType: z.literal("SEEK"),
+      deltaMs: z.number().int(),
+    }),
+  ]),
+});
+
+export const ServerErrorSchema = z.object({
+  type: z.literal("ERROR"),
+  payload: z.object({
+    message: z.string(),
+  }),
 });
 
 // Esquemas de estado del cliente
@@ -85,11 +92,11 @@ export const ClientStatusSchema = z.object({
   latencyMs: z.number().min(0),
   offsetMs: z.number(),
   sceneId: z.string().optional(),
-  status: z.enum(['connected', 'ready', 'playing', 'paused', 'disconnected']),
+  status: z.enum(["connected", "ready", "playing", "paused", "disconnected"]),
   battery: z.number().min(0).max(100).optional(),
   userAgent: z.string().optional(),
   connectedAt: z.number().int().positive(),
-  lastStateUpdate: z.number().int().positive()
+  lastStateUpdate: z.number().int().positive(),
 });
 
 // Room state
@@ -100,7 +107,7 @@ export const RoomStateSchema = z.object({
   isPlaying: z.boolean(),
   startedAt: z.number().int().optional(),
   pausedAt: z.number().int().optional(),
-  seekOffset: z.number().default(0)
+  seekOffset: z.number().default(0),
 });
 
 // Tipos derivados
@@ -117,28 +124,27 @@ export type ClientStatus = z.infer<typeof ClientStatusSchema>;
 export type RoomState = z.infer<typeof RoomStateSchema>;
 
 // Union types para todos los mensajes
-export const ClientMessageSchema = z.discriminatedUnion('type', [
+export const ClientMessageSchema = z.discriminatedUnion("type", [
   ClientHelloSchema,
   ClientPingSchema,
   ClientReadySchema,
-  ClientStateSchema
+  ClientStateSchema,
 ]);
 
-export const ServerMessageSchema = z.discriminatedUnion('type', [
+export const ServerMessageSchema = z.discriminatedUnion("type", [
   ServerWelcomeSchema,
   ServerPongSchema,
-  ServerCommandSchema
+  ServerCommandSchema,
+  ServerErrorSchema,
 ]);
 
 export type ClientMessage = z.infer<typeof ClientMessageSchema>;
 export type ServerMessage = z.infer<typeof ServerMessageSchema>;
 
 // Constantes del protocolo
-export const PROTOCOL_VERSION = '1.0.0';
+export const PROTOCOL_VERSION = "1.0.0";
 export const MAX_LATENCY_MS = 5000;
 export const HEARTBEAT_INTERVAL_MS = 30000;
 export const CLIENT_TIMEOUT_MS = 60000;
 export const SYNC_TOLERANCE_MS = 120; // Máximo desvío antes de corrección
 export const PING_INTERVAL_MS = 5000;
-
-

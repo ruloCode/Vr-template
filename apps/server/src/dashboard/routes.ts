@@ -1,91 +1,98 @@
-import { Router, Request, Response } from 'express';
-import { WebSocketManager } from '../websocket/manager.js';
-import { logger } from '../utils/logger.js';
+import { Router, Request, Response } from "express";
+import { WebSocketManager } from "../websocket/manager.js";
+import { logger } from "../utils/logger.js";
 
 export function createDashboardRoutes(wsManager: WebSocketManager): Router {
   const router = Router();
 
   // Servir la interfaz del dashboard
-  router.get('/', (req: Request, res: Response) => {
+  router.get("/", (req: Request, res: Response) => {
     res.send(generateDashboardHTML());
   });
 
   // API para obtener estado del room
-  router.get('/api/room', (req: Request, res: Response) => {
+  router.get("/api/room", (req: Request, res: Response) => {
     try {
       const room = wsManager.getRoom();
       res.json(room);
     } catch (error) {
-      logger.error('Error getting room state:', error);
-      res.status(500).json({ error: 'Error obteniendo estado del room' });
+      logger.error("Error getting room state:", error);
+      res.status(500).json({ error: "Error obteniendo estado del room" });
     }
   });
 
   // API para enviar comandos
-  router.post('/api/command', (req: Request, res: Response) => {
+  router.post("/api/command", (req: Request, res: Response) => {
     try {
       const { commandType, ...payload } = req.body;
-      
+
       if (!commandType) {
-        return res.status(400).json({ error: 'commandType es requerido' });
+        return res.status(400).json({ error: "commandType es requerido" });
       }
 
       let command;
-      
+
       switch (commandType) {
-        case 'LOAD':
+        case "LOAD":
           if (!payload.sceneId) {
-            return res.status(400).json({ error: 'sceneId es requerido para LOAD' });
+            return res
+              .status(400)
+              .json({ error: "sceneId es requerido para LOAD" });
           }
           command = {
-            type: 'COMMAND' as const,
-            payload: { commandType: 'LOAD' as const, sceneId: payload.sceneId }
+            type: "COMMAND" as const,
+            payload: { commandType: "LOAD" as const, sceneId: payload.sceneId },
           };
           break;
-          
-        case 'START_AT':
-          const epochMs = payload.epochMs || Date.now() + (payload.delayMs || 3000);
+
+        case "START_AT":
+          const epochMs =
+            payload.epochMs || Date.now() + (payload.delayMs || 3000);
           command = {
-            type: 'COMMAND' as const,
-            payload: { commandType: 'START_AT' as const, epochMs }
+            type: "COMMAND" as const,
+            payload: { commandType: "START_AT" as const, epochMs },
           };
           break;
-          
-        case 'PAUSE':
+
+        case "PAUSE":
           command = {
-            type: 'COMMAND' as const,
-            payload: { commandType: 'PAUSE' as const }
+            type: "COMMAND" as const,
+            payload: { commandType: "PAUSE" as const },
           };
           break;
-          
-        case 'RESUME':
+
+        case "RESUME":
           command = {
-            type: 'COMMAND' as const,
-            payload: { commandType: 'RESUME' as const }
+            type: "COMMAND" as const,
+            payload: { commandType: "RESUME" as const },
           };
           break;
-          
-        case 'SEEK':
-          if (typeof payload.deltaMs !== 'number') {
-            return res.status(400).json({ error: 'deltaMs es requerido para SEEK' });
+
+        case "SEEK":
+          if (typeof payload.deltaMs !== "number") {
+            return res
+              .status(400)
+              .json({ error: "deltaMs es requerido para SEEK" });
           }
           command = {
-            type: 'COMMAND' as const,
-            payload: { commandType: 'SEEK' as const, deltaMs: payload.deltaMs }
+            type: "COMMAND" as const,
+            payload: { commandType: "SEEK" as const, deltaMs: payload.deltaMs },
           };
           break;
-          
+
         default:
-          return res.status(400).json({ error: `Comando ${commandType} no reconocido` });
+          return res
+            .status(400)
+            .json({ error: `Comando ${commandType} no reconocido` });
       }
 
       wsManager.broadcastCommand(command);
       logger.info(`Comando ${commandType} enviado desde dashboard`);
-      
-      res.json({ success: true, command: commandType });
+
+      return res.json({ success: true, command: commandType });
     } catch (error) {
-      logger.error('Error sending command:', error);
-      res.status(500).json({ error: 'Error enviando comando' });
+      logger.error("Error sending command:", error);
+      return res.status(500).json({ error: "Error enviando comando" });
     }
   });
 
@@ -512,5 +519,3 @@ function generateDashboardHTML(): string {
 </html>
   `;
 }
-
-

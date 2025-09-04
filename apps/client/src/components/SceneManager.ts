@@ -1,8 +1,8 @@
-import { logger, perf, captureError } from '@/utils/logger';
-import { config } from '@/utils/config';
-import { VRScene } from '@/types/protocol';
-import { AudioManager } from './AudioManager';
-import { useAppStore } from '@/store/appStore';
+import { logger, perf, captureError } from "@/utils/logger";
+import { config } from "@/utils/config";
+import { VRScene } from "@/types/protocol";
+import { AudioManager } from "./AudioManager";
+import { useAppStore } from "@/store/appStore";
 
 export class SceneManager {
   private aframeScene: any = null;
@@ -14,23 +14,26 @@ export class SceneManager {
   private currentScene: VRScene | null = null;
   private isTransitioning = false;
 
-  constructor(imageCache: Map<string, HTMLImageElement>, audioManager: AudioManager) {
+  constructor(
+    imageCache: Map<string, HTMLImageElement>,
+    audioManager: AudioManager
+  ) {
     this.imageCache = imageCache;
     this.audioManager = audioManager;
-    logger.info('🎬 SceneManager inicializado');
+    logger.info("🎬 SceneManager inicializado");
   }
 
   public async initialize(): Promise<void> {
     try {
-      logger.info('🏗️ Creando escena A-Frame...');
-      
+      logger.info("🏗️ Creando escena A-Frame...");
+
       await this.createAFrameScene();
       this.setupVRControls();
-      
-      logger.info('✅ SceneManager inicializado completamente');
+
+      logger.info("✅ SceneManager inicializado completamente");
     } catch (error) {
-      logger.error('❌ Error inicializando SceneManager:', error);
-      captureError(error as Error, 'scene-manager-init');
+      logger.error("❌ Error inicializando SceneManager:", error);
+      captureError(error as Error, "scene-manager-init");
       throw error;
     }
   }
@@ -38,8 +41,8 @@ export class SceneManager {
   private async createAFrameScene(): Promise<void> {
     return new Promise((resolve) => {
       // Wait for A-Frame to be ready
-      if (typeof AFRAME === 'undefined') {
-        document.addEventListener('DOMContentLoaded', () => {
+      if (typeof AFRAME === "undefined") {
+        document.addEventListener("DOMContentLoaded", () => {
           this.buildScene();
           resolve();
         });
@@ -51,9 +54,9 @@ export class SceneManager {
   }
 
   private buildScene(): void {
-    const app = document.getElementById('app');
+    const app = document.getElementById("app");
     if (!app) {
-      throw new Error('App container not found');
+      throw new Error("App container not found");
     }
 
     // Create A-Frame scene
@@ -100,7 +103,7 @@ export class SceneManager {
           phi-length="360"
           theta-start="0"
           theta-length="180"
-          material="transparent: false; side: back"
+          material="src: /panos/forest.jpg; transparent: false; side: back"
         ></a-sky>
         
         <!-- Secondary sky for transitions -->
@@ -137,101 +140,117 @@ export class SceneManager {
     `;
 
     app.innerHTML = sceneHTML;
-    
+
     // Get references to elements
-    this.aframeScene = document.querySelector('#vr-scene');
-    this.skyElement = document.querySelector('#main-sky');
+    this.aframeScene = document.querySelector("#vr-scene");
+    this.skyElement = document.querySelector("#main-sky");
     this.currentSky = this.skyElement;
-    this.nextSky = document.querySelector('#transition-sky');
+    this.nextSky = document.querySelector("#transition-sky");
 
     // Setup scene event listeners
     this.setupSceneEvents();
+
+    // Set default background image
+    this.setDefaultBackground();
   }
 
   private setupSceneEvents(): void {
     if (!this.aframeScene) return;
 
-    this.aframeScene.addEventListener('loaded', () => {
-      logger.info('🎬 A-Frame scene loaded');
+    this.aframeScene.addEventListener("loaded", () => {
+      logger.info("🎬 A-Frame scene loaded");
     });
 
-    this.aframeScene.addEventListener('enter-vr', () => {
-      logger.info('🥽 Entrando en modo VR');
+    this.aframeScene.addEventListener("enter-vr", () => {
+      logger.info("🥽 Entrando en modo VR");
       useAppStore.getState().setFullscreen(true);
     });
 
-    this.aframeScene.addEventListener('exit-vr', () => {
-      logger.info('👀 Saliendo de modo VR');
+    this.aframeScene.addEventListener("exit-vr", () => {
+      logger.info("👀 Saliendo de modo VR");
       useAppStore.getState().setFullscreen(false);
     });
 
     // Listen for controller events if available
-    this.aframeScene.addEventListener('controllerconnected', (event: any) => {
-      logger.info('🎮 Controller conectado:', event.detail);
+    this.aframeScene.addEventListener("controllerconnected", (event: any) => {
+      logger.info("🎮 Controller conectado:", event.detail);
     });
+  }
+
+  private setDefaultBackground(): void {
+    if (this.currentSky) {
+      this.currentSky.setAttribute(
+        "material",
+        "src: /panos/forest.jpg; transparent: false; side: back"
+      );
+      logger.info("🌲 Fondo por defecto establecido: forest.jpg");
+    }
   }
 
   private setupVRControls(): void {
     // Add custom components for enhanced controls
-    if (typeof AFRAME !== 'undefined') {
+    if (typeof AFRAME !== "undefined") {
       // Custom look controls with constraints
-      AFRAME.registerComponent('constrained-look-controls', {
+      AFRAME.registerComponent("constrained-look-controls", {
         init() {
-          this.el.addEventListener('componentchanged', (evt: any) => {
-            if (evt.detail.name === 'rotation') {
-              const rotation = this.el.getAttribute('rotation');
+          this.el.addEventListener("componentchanged", (evt: any) => {
+            if (evt.detail.name === "rotation") {
+              const rotation = this.el.getAttribute("rotation");
               // Prevent camera from flipping upside down
               if (rotation.x > 90) rotation.x = 90;
               if (rotation.x < -90) rotation.x = -90;
-              this.el.setAttribute('rotation', rotation);
+              this.el.setAttribute("rotation", rotation);
             }
           });
-        }
+        },
       });
 
       // Apply to camera
-      const camera = document.querySelector('#main-camera');
+      const camera = document.querySelector("#main-camera");
       if (camera) {
-        camera.setAttribute('constrained-look-controls', '');
+        camera.setAttribute("constrained-look-controls", "");
       }
     }
   }
 
   public async loadScene(scene: VRScene): Promise<void> {
     if (this.isTransitioning) {
-      logger.warn('⚠️ Ya hay una transición en curso');
+      logger.warn("⚠️ Ya hay una transición en curso");
       return;
     }
 
     try {
       this.isTransitioning = true;
       perf.mark(`scene-load-start-${scene.id}`);
-      
-      logger.info('🎬 Cargando escena:', scene.id, '-', scene.title);
-      
+
+      logger.info("🎬 Cargando escena:", scene.id, "-", scene.title);
+
       // Show loading indicator
       this.showLoading(true);
-      
+
       // Load audio first
       await this.audioManager.loadAudio(scene.audio);
-      
+
       // Load 360 image
       await this.load360Image(scene);
-      
+
       // Update current scene
       this.currentScene = scene;
       useAppStore.getState().setCurrentScene(scene);
-      
+
       // Hide loading indicator
       this.showLoading(false);
-      
+
       perf.mark(`scene-load-end-${scene.id}`);
-      perf.measure(`Scene load: ${scene.id}`, `scene-load-start-${scene.id}`, `scene-load-end-${scene.id}`);
-      
-      logger.info('✅ Escena cargada:', scene.id);
-      
+      perf.measure(
+        `Scene load: ${scene.id}`,
+        `scene-load-start-${scene.id}`,
+        `scene-load-end-${scene.id}`
+      );
+
+      logger.info("✅ Escena cargada:", scene.id);
     } catch (error) {
-      logger.error('❌ Error cargando escena:', error);
+      logger.error("❌ Error cargando escena:", error);
       this.showLoading(false);
       throw error;
     } finally {
@@ -247,23 +266,12 @@ export class SceneManager {
 
     return new Promise((resolve, reject) => {
       try {
-        // Create canvas texture from cached image
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-          throw new Error('Could not get canvas context');
-        }
+        // Use the original image URL instead of converting to data URL
+        const imageUrl = `/${scene.image360}`;
 
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-        ctx.drawImage(img, 0, 0);
-        
-        // Convert to data URL
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
-        
         // Apply to sky with crossfade
-        this.applySkyTexture(dataUrl, config.aframe.fadeTransitionSpeed);
-        
+        this.applySkyTexture(imageUrl, config.aframe.fadeTransitionSpeed);
+
         resolve();
       } catch (error) {
         reject(error);
@@ -271,16 +279,22 @@ export class SceneManager {
     });
   }
 
-  private applySkyTexture(textureUrl: string, fadeDuration: number = 1.0): void {
+  private applySkyTexture(
+    textureUrl: string,
+    fadeDuration: number = 1.0
+  ): void {
     if (!this.currentSky || !this.nextSky) {
-      logger.error('❌ Sky elements no encontrados');
+      logger.error("❌ Sky elements no encontrados");
       return;
     }
 
     // Set texture on next sky
-    this.nextSky.setAttribute('material', `src: ${textureUrl}; transparent: true; opacity: 0`);
-    this.nextSky.setAttribute('visible', 'true');
-    
+    this.nextSky.setAttribute(
+      "material",
+      `src: ${textureUrl}; transparent: true; opacity: 0`
+    );
+    this.nextSky.setAttribute("visible", "true");
+
     // Animate crossfade
     this.animateCrossfade(fadeDuration * 1000);
   }
@@ -289,57 +303,57 @@ export class SceneManager {
     if (!this.currentSky || !this.nextSky) return;
 
     const startTime = performance.now();
-    
+
     const animate = (currentTime: number) => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / durationMs, 1);
-      
+
       // Smooth easing function
       const eased = progress * progress * (3 - 2 * progress);
-      
+
       // Fade out current, fade in next
-      this.currentSky.setAttribute('material', `opacity: ${1 - eased}`);
-      this.nextSky.setAttribute('material', `opacity: ${eased}`);
-      
+      this.currentSky.setAttribute("material", `opacity: ${1 - eased}`);
+      this.nextSky.setAttribute("material", `opacity: ${eased}`);
+
       if (progress < 1) {
         requestAnimationFrame(animate);
       } else {
         // Swap sky references
-        this.currentSky.setAttribute('visible', 'false');
+        this.currentSky.setAttribute("visible", "false");
         [this.currentSky, this.nextSky] = [this.nextSky, this.currentSky];
-        
-        logger.debug('🔄 Crossfade completado');
+
+        logger.debug("🔄 Crossfade completado");
       }
     };
-    
+
     requestAnimationFrame(animate);
   }
 
   private showLoading(show: boolean): void {
-    const loadingText = document.querySelector('#loading-text');
+    const loadingText = document.querySelector("#loading-text");
     if (loadingText) {
-      loadingText.setAttribute('visible', show.toString());
+      loadingText.setAttribute("visible", show.toString());
     }
   }
 
   public updateDebugInfo(info: any): void {
-    const debugElement = document.querySelector('#debug-info');
+    const debugElement = document.querySelector("#debug-info");
     const store = useAppStore.getState();
-    
+
     if (debugElement && store.showDebug) {
       const debugText = `
-Scene: ${this.currentScene?.id || 'None'}
-Audio: ${this.audioManager.getPlaybackState().isPlaying ? 'Playing' : 'Stopped'}
+Scene: ${this.currentScene?.id || "None"}
+Audio: ${this.audioManager.getPlaybackState().isPlaying ? "Playing" : "Stopped"}
 Time: ${this.audioManager.getCurrentTime().toFixed(2)}s
 Connection: ${store.connectionStatus}
 Latency: ${store.latency}ms
-FPS: ${info.fps || 'N/A'}
+FPS: ${info.fps || "N/A"}
       `.trim();
-      
-      debugElement.setAttribute('value', debugText);
-      debugElement.setAttribute('visible', 'true');
+
+      debugElement.setAttribute("value", debugText);
+      debugElement.setAttribute("visible", "true");
     } else if (debugElement) {
-      debugElement.setAttribute('visible', 'false');
+      debugElement.setAttribute("visible", "false");
     }
   }
 
@@ -352,7 +366,7 @@ FPS: ${info.fps || 'N/A'}
       if (this.aframeScene) {
         this.aframeScene.enterVR().then(resolve).catch(reject);
       } else {
-        reject(new Error('A-Frame scene not initialized'));
+        reject(new Error("A-Frame scene not initialized"));
       }
     });
   }
@@ -362,45 +376,45 @@ FPS: ${info.fps || 'N/A'}
       if (this.aframeScene) {
         this.aframeScene.exitVR().then(resolve).catch(reject);
       } else {
-        reject(new Error('A-Frame scene not initialized'));
+        reject(new Error("A-Frame scene not initialized"));
       }
     });
   }
 
   public isVRAvailable(): boolean {
-    return this.aframeScene?.is('vr-mode-ui') || false;
+    return this.aframeScene?.is("vr-mode-ui") || false;
   }
 
   public takeScreenshot(): string | null {
     if (!this.aframeScene) return null;
-    
+
     try {
       const canvas = this.aframeScene.canvas;
-      return canvas.toDataURL('image/png');
+      return canvas.toDataURL("image/png");
     } catch (error) {
-      logger.error('❌ Error tomando screenshot:', error);
+      logger.error("❌ Error tomando screenshot:", error);
       return null;
     }
   }
 
   public resetCamera(): void {
-    const camera = document.querySelector('#main-camera');
+    const camera = document.querySelector("#main-camera");
     if (camera) {
-      camera.setAttribute('rotation', '0 0 0');
-      camera.setAttribute('position', '0 1.6 0');
-      logger.info('📹 Cámara reseteada');
+      camera.setAttribute("rotation", "0 0 0");
+      camera.setAttribute("position", "0 1.6 0");
+      logger.info("📹 Cámara reseteada");
     }
   }
 
   public destroy(): void {
-    logger.info('🧹 Destruyendo SceneManager');
-    
+    logger.info("🧹 Destruyendo SceneManager");
+
     // Remove A-Frame scene
-    const app = document.getElementById('app');
+    const app = document.getElementById("app");
     if (app) {
-      app.innerHTML = '';
+      app.innerHTML = "";
     }
-    
+
     this.aframeScene = null;
     this.skyElement = null;
     this.currentSky = null;
@@ -408,5 +422,3 @@ FPS: ${info.fps || 'N/A'}
     this.currentScene = null;
   }
 }
-
-

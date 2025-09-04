@@ -1,12 +1,12 @@
-import { logger, perf, captureError } from '@/utils/logger';
-import { initializeWebSocket, VRWebSocketClient } from '@/utils/websocket';
-import { assetPreloader, PreloadedAssets } from '@/utils/preloader';
-import { AudioManager } from './AudioManager';
-import { SceneManager } from './SceneManager';
-import { UIManager } from './UIManager';
-import { SyncManager } from './SyncManager';
-import { useAppStore } from '@/store/appStore';
-import { ServerMessage, VRScene } from '@/types/protocol';
+import { logger, perf, captureError } from "@/utils/logger";
+import { initializeWebSocket, VRWebSocketClient } from "@/utils/websocket";
+import { assetPreloader, PreloadedAssets } from "@/utils/preloader";
+import { AudioManager } from "./AudioManager";
+import { SceneManager } from "./SceneManager";
+import { UIManager } from "./UIManager";
+import { SyncManager } from "./SyncManager";
+import { useAppStore } from "@/store/appStore";
+import { ServerMessage, VRScene } from "@/types/protocol";
 
 export class VRApp {
   private wsClient: VRWebSocketClient | null = null;
@@ -18,37 +18,51 @@ export class VRApp {
   private isInitialized = false;
 
   constructor() {
-    logger.info('🎭 VRApp constructor');
+    logger.info("🎭 VRApp constructor");
   }
 
   public async initialize(): Promise<void> {
     if (this.isInitialized) {
-      logger.warn('⚠️ VRApp ya está inicializada');
+      logger.warn("⚠️ VRApp ya está inicializada");
       return;
     }
 
     try {
-      perf.mark('app-init-start');
-      
+      perf.mark("app-init-start");
+
       // Step 1: Initialize UI Manager first (for progress display)
-      logger.info('1️⃣ Inicializando UI Manager...');
+      logger.info("1️⃣ Inicializando UI Manager...");
       this.uiManager = new UIManager();
       await this.uiManager.initialize();
 
       // Step 2: Preload all assets
-      logger.info('2️⃣ Precargando assets...');
+      logger.info("2️⃣ Precargando assets...");
       this.preloadedAssets = await assetPreloader.preloadAll();
-      
+
       if (this.preloadedAssets.errors.length > 0) {
-        logger.warn('⚠️ Algunos assets fallaron al cargar:', this.preloadedAssets.errors);
+        logger.warn(
+          "⚠️ Algunos assets fallaron al cargar:",
+          this.preloadedAssets.errors
+        );
       }
 
-      // Step 3: Initialize Audio Manager (requires user interaction)
-      logger.info('3️⃣ Inicializando Audio Manager...');
+      // Step 3: Initialize Audio Manager and unlock automatically
+      logger.info("3️⃣ Inicializando Audio Manager...");
       this.audioManager = new AudioManager(this.preloadedAssets.audioCache);
-      
+
+      // Auto-unlock audio context
+      try {
+        logger.info("🔊 Desbloqueando AudioContext automáticamente...");
+        await this.audioManager.unlock();
+        useAppStore.getState().setAudioUnlocked(true);
+        logger.info("✅ AudioContext desbloqueado automáticamente");
+      } catch (error) {
+        logger.warn("⚠️ No se pudo desbloquear audio automáticamente:", error);
+        // Continue without audio - user can unlock manually later
+      }
+
       // Step 4: Initialize Scene Manager
-      logger.info('4️⃣ Inicializando Scene Manager...');
+      logger.info("4️⃣ Inicializando Scene Manager...");
       this.sceneManager = new SceneManager(
         this.preloadedAssets.imageCache,
         this.audioManager
@@ -56,15 +70,15 @@ export class VRApp {
       await this.sceneManager.initialize();
 
       // Step 5: Initialize WebSocket connection
-      logger.info('5️⃣ Inicializando conexión WebSocket...');
+      logger.info("5️⃣ Inicializando conexión WebSocket...");
       this.wsClient = initializeWebSocket();
       this.setupWebSocketHandlers();
-      
+
       // Try to connect (non-blocking)
       this.connectWebSocket();
 
       // Step 6: Initialize Sync Manager
-      logger.info('6️⃣ Inicializando Sync Manager...');
+      logger.info("6️⃣ Inicializando Sync Manager...");
       this.syncManager = new SyncManager(
         this.audioManager,
         this.sceneManager,
@@ -75,15 +89,18 @@ export class VRApp {
       this.setupAppState();
       this.uiManager.showMainInterface();
 
-      perf.mark('app-init-end');
-      perf.measure('Total app initialization', 'app-init-start', 'app-init-end');
+      perf.mark("app-init-end");
+      perf.measure(
+        "Total app initialization",
+        "app-init-start",
+        "app-init-end"
+      );
 
       this.isInitialized = true;
-      logger.info('✅ VRApp inicializada completamente');
-
+      logger.info("✅ VRApp inicializada completamente");
     } catch (error) {
-      logger.error('❌ Error inicializando VRApp:', error);
-      captureError(error as Error, 'vrapp-initialization');
+      logger.error("❌ Error inicializando VRApp:", error);
+      captureError(error as Error, "vrapp-initialization");
       throw error;
     }
   }
@@ -92,10 +109,13 @@ export class VRApp {
     try {
       if (this.wsClient) {
         await this.wsClient.connect();
-        logger.info('🔗 WebSocket conectado exitosamente');
+        logger.info("🔗 WebSocket conectado exitosamente");
       }
     } catch (error) {
-      logger.warn('⚠️ No se pudo conectar al WebSocket (modo offline disponible):', error);
+      logger.warn(
+        "⚠️ No se pudo conectar al WebSocket (modo offline disponible):",
+        error
+      );
       // Continue in offline mode
     }
   }
@@ -103,112 +123,131 @@ export class VRApp {
   private setupWebSocketHandlers(): void {
     if (!this.wsClient) return;
 
-    this.wsClient.onMessageReceived((message: ServerMessage) => {
-      this.handleServerMessage(message);
+    this.wsClient.onMessageReceived(async (message: ServerMessage) => {
+      await this.handleServerMessage(message);
     });
 
     this.wsClient.onConnectionStateChange((state) => {
-      logger.info('🔄 Estado de conexión WebSocket:', state);
+      logger.info("🔄 Estado de conexión WebSocket:", state);
       useAppStore.getState().setConnectionStatus(state);
     });
   }
 
-  private handleServerMessage(message: ServerMessage): void {
-    logger.debug('📥 Mensaje del servidor:', message);
+  private async handleServerMessage(message: ServerMessage): Promise<void> {
+    logger.debug("📥 Mensaje del servidor:", message);
 
     switch (message.type) {
-      case 'COMMAND':
-        this.handleServerCommand(message);
+      case "COMMAND":
+        await this.handleServerCommand(message);
         break;
-      case 'WELCOME':
-        logger.info('👋 Bienvenida del servidor');
+      case "WELCOME":
+        logger.info("👋 Bienvenida del servidor");
         break;
-      case 'PONG':
+      case "PONG":
         // Handled by WebSocket client automatically
         break;
       default:
-        logger.warn('⚠️ Mensaje del servidor no reconocido:', message);
+        logger.warn("⚠️ Mensaje del servidor no reconocido:", message);
     }
   }
 
-  private handleServerCommand(message: ServerMessage & { type: 'COMMAND' }): void {
+  private async handleServerCommand(
+    message: ServerMessage & { type: "COMMAND" }
+  ): Promise<void> {
     const { payload } = message;
 
     switch (payload.commandType) {
-      case 'LOAD':
-        this.handleLoadCommand(payload.sceneId);
+      case "LOAD":
+        await this.handleLoadCommand(payload.sceneId);
         break;
-      case 'START_AT':
-        this.handleStartAtCommand(payload.epochMs);
+      case "START_AT":
+        await this.handleStartAtCommand(payload.epochMs);
         break;
-      case 'PAUSE':
+      case "PAUSE":
         this.handlePauseCommand();
         break;
-      case 'RESUME':
+      case "RESUME":
         this.handleResumeCommand();
         break;
-      case 'SEEK':
+      case "SEEK":
         this.handleSeekCommand(payload.deltaMs);
         break;
       default:
-        logger.warn('⚠️ Comando no reconocido:', payload);
+        logger.warn("⚠️ Comando no reconocido:", payload);
     }
   }
 
-  private handleLoadCommand(sceneId: string): void {
-    logger.info('🎬 Cargando escena:', sceneId);
-    
+  private async handleLoadCommand(sceneId: string): Promise<void> {
+    logger.info("🎬 Cargando escena:", sceneId);
+
     if (!this.sceneManager || !this.preloadedAssets) {
-      logger.error('❌ Managers no inicializados para cargar escena');
+      logger.error("❌ Managers no inicializados para cargar escena");
       return;
     }
 
-    const scene = this.preloadedAssets.manifest.scenes.find(s => s.id === sceneId);
+    const scene = this.preloadedAssets.manifest.scenes.find(
+      (s) => s.id === sceneId
+    );
     if (!scene) {
-      logger.error('❌ Escena no encontrada:', sceneId);
+      logger.error("❌ Escena no encontrada:", sceneId);
       return;
     }
 
-    this.sceneManager.loadScene(scene).then(() => {
+    // Ensure audio is unlocked before loading scene
+    if (this.audioManager && !useAppStore.getState().audioUnlocked) {
+      try {
+        logger.info("🔊 Desbloqueando audio antes de cargar escena...");
+        await this.enableAudio();
+      } catch (error) {
+        logger.error("❌ Error desbloqueando audio:", error);
+        // Continue without audio
+      }
+    }
+
+    try {
+      await this.sceneManager.loadScene(scene);
       // Notify server that we're ready
       if (this.wsClient) {
         this.wsClient.send({
-          type: 'READY',
-          payload: { sceneId }
+          type: "READY",
+          payload: { sceneId },
         });
       }
-    }).catch(error => {
-      logger.error('❌ Error cargando escena:', error);
-    });
+    } catch (error) {
+      logger.error("❌ Error cargando escena:", error);
+    }
   }
 
-  private handleStartAtCommand(epochMs: number): void {
-    logger.info('▶️ Iniciando reproducción en:', new Date(epochMs).toISOString());
-    
+  private async handleStartAtCommand(epochMs: number): Promise<void> {
+    logger.info(
+      "▶️ Iniciando reproducción en:",
+      new Date(epochMs).toISOString()
+    );
+
     if (this.syncManager) {
-      this.syncManager.startSyncedPlayback(epochMs);
+      await this.syncManager.startSyncedPlayback(epochMs);
     }
   }
 
   private handlePauseCommand(): void {
-    logger.info('⏸️ Pausando reproducción');
-    
+    logger.info("⏸️ Pausando reproducción");
+
     if (this.audioManager) {
       this.audioManager.pause();
     }
   }
 
   private handleResumeCommand(): void {
-    logger.info('▶️ Reanudando reproducción');
-    
+    logger.info("▶️ Reanudando reproducción");
+
     if (this.audioManager) {
       this.audioManager.resume();
     }
   }
 
   private handleSeekCommand(deltaMs: number): void {
-    logger.info('⏩ Seeking:', deltaMs + 'ms');
-    
+    logger.info("⏩ Seeking:", deltaMs + "ms");
+
     if (this.syncManager) {
       this.syncManager.seek(deltaMs);
     }
@@ -216,7 +255,7 @@ export class VRApp {
 
   private setupAppState(): void {
     const store = useAppStore.getState();
-    
+
     // Set available scenes from manifest
     if (this.preloadedAssets) {
       store.setAvailableScenes(this.preloadedAssets.manifest.scenes);
@@ -228,11 +267,22 @@ export class VRApp {
         this.toggleDebugMode(state.showDebug);
       }
     });
+
+    // Setup audio unlock event listener
+    window.addEventListener("audio-unlock-requested", async () => {
+      try {
+        logger.info("🔊 Usuario solicitando desbloqueo de audio...");
+        await this.enableAudio();
+        logger.info("✅ Audio desbloqueado exitosamente");
+      } catch (error) {
+        logger.error("❌ Error desbloqueando audio:", error);
+      }
+    });
   }
 
   private toggleDebugMode(enabled: boolean): void {
-    logger.info('🔧 Debug mode:', enabled ? 'enabled' : 'disabled');
-    
+    logger.info("🔧 Debug mode:", enabled ? "enabled" : "disabled");
+
     if (this.uiManager) {
       this.uiManager.setDebugMode(enabled);
     }
@@ -241,31 +291,33 @@ export class VRApp {
   // Public methods for manual control (debug/offline mode)
   public async enableAudio(): Promise<void> {
     if (!this.audioManager) {
-      throw new Error('AudioManager not initialized');
+      throw new Error("AudioManager not initialized");
     }
-    
+
     await this.audioManager.unlock();
     useAppStore.getState().setAudioUnlocked(true);
   }
 
   public loadScene(sceneId: string): Promise<void> {
     if (!this.preloadedAssets) {
-      throw new Error('Assets not preloaded');
+      throw new Error("Assets not preloaded");
     }
 
-    const scene = this.preloadedAssets.manifest.scenes.find(s => s.id === sceneId);
+    const scene = this.preloadedAssets.manifest.scenes.find(
+      (s) => s.id === sceneId
+    );
     if (!scene) {
       throw new Error(`Scene ${sceneId} not found`);
     }
 
-    return this.handleLoadCommand(sceneId), Promise.resolve();
+    return (this.handleLoadCommand(sceneId), Promise.resolve());
   }
 
-  public startManualPlayback(): void {
-    logger.info('🎮 Iniciando reproducción manual');
-    
+  public async startManualPlayback(): Promise<void> {
+    logger.info("🎮 Iniciando reproducción manual");
+
     if (this.audioManager) {
-      this.audioManager.play();
+      await this.audioManager.play();
     }
   }
 
@@ -274,31 +326,29 @@ export class VRApp {
   }
 
   public getConnectionStatus(): string {
-    return this.wsClient?.getConnectionState() || 'disconnected';
+    return this.wsClient?.getConnectionState() || "disconnected";
   }
 
   // Cleanup
   public destroy(): void {
-    logger.info('🧹 Destruyendo VRApp');
-    
+    logger.info("🧹 Destruyendo VRApp");
+
     if (this.wsClient) {
       this.wsClient.destroy();
     }
-    
+
     if (this.audioManager) {
       this.audioManager.destroy();
     }
-    
+
     if (this.sceneManager) {
       this.sceneManager.destroy();
     }
-    
+
     if (this.uiManager) {
       this.uiManager.destroy();
     }
-    
+
     this.isInitialized = false;
   }
 }
-
-
