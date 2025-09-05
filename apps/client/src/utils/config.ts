@@ -5,7 +5,7 @@ export const config = {
     import.meta.env.VITE_WS_URL ||
     (() => {
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-      const host = window.location.hostname;
+      const host = "localhost"; // Usar localhost para desarrollo
       const port = 8080;
       return `${protocol}//${host}:${port + 1}/ws`;
     })(),
@@ -15,8 +15,8 @@ export const config = {
     import.meta.env.VITE_SERVER_URL ||
     (() => {
       const protocol = window.location.protocol;
-      const host = window.location.hostname;
-      const port = parseInt(window.location.port) || 8080;
+      const host = "localhost"; // Usar localhost para desarrollo
+      const port = 8080;
       return `${protocol}//${host}:${port}`;
     })(),
 
