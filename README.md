@@ -42,13 +42,45 @@ vr-ecopetrol/
 
 ## 🛠️ Instalación y Configuración
 
-### Prerrequisitos
+### Opción 1: Desarrollo con Docker (Recomendado)
 
-- **Node.js** 18+ 
+**Prerrequisitos:**
+
+- **Docker Desktop** instalado y ejecutándose
+- **Navegador moderno** con soporte WebGL/WebXR
+
+**Instalación rápida:**
+
+```bash
+git clone <repository>
+cd vr-ecopetrol
+
+# Opción A: Script automático (Linux/macOS)
+./docker-dev.sh
+
+# Opción B: Script automático (Windows)
+docker-dev.bat
+
+# Opción C: Comando manual
+pnpm docker:dev
+```
+
+**Acceso inmediato:**
+
+- Cliente VR: http://localhost:8080/
+- Dashboard: http://localhost:8080/dashboard
+
+📖 **Ver [DOCKER.md](./DOCKER.md) para guía completa de Docker**
+
+### Opción 2: Instalación Local
+
+**Prerrequisitos:**
+
+- **Node.js** 18+
 - **pnpm** 8+
 - **Navegador moderno** con soporte WebGL/WebXR
 
-### 1. Instalación
+**Instalación:**
 
 ```bash
 git clone <repository>
@@ -61,15 +93,17 @@ pnpm install
 Coloque los archivos multimedia en las siguientes ubicaciones:
 
 #### Imágenes 360°:
+
 ```
 apps/client/public/panos/
 ├── escena1_8k.jpg    # Riqueza Natural (4096x2048)
-├── escena2_8k.jpg    # Dinámica del País (4096x2048)  
+├── escena2_8k.jpg    # Dinámica del País (4096x2048)
 ├── escena3_8k.jpg    # Exploración On/Offshore (4096x2048)
 └── placeholder.jpg   # Para escenas futuras
 ```
 
 #### Audio Narrativo:
+
 ```
 apps/client/public/audio/
 ├── escena1.mp3       # ~45 segundos, 128kbps
@@ -81,6 +115,18 @@ apps/client/public/audio/
 ## 🚀 Desarrollo
 
 ### Scripts Principales
+
+#### Con Docker (Recomendado)
+
+```bash
+# Desarrollo con Docker
+pnpm docker:dev       # Iniciar desarrollo con hot reload
+pnpm docker:stop      # Detener contenedores
+pnpm docker:logs      # Ver logs en tiempo real
+pnpm docker:clean     # Limpiar contenedores e imágenes
+```
+
+#### Desarrollo Local
 
 ```bash
 # Desarrollo (ambos servicios)
@@ -100,7 +146,7 @@ pnpm start
 ### Acceso Local
 
 - **Cliente VR**: http://localhost:8080/
-- **Dashboard**: http://localhost:8080/dashboard  
+- **Dashboard**: http://localhost:8080/dashboard
 - **API**: http://localhost:8080/api/health
 - **WebSocket**: ws://localhost:8081/ws
 
@@ -109,6 +155,7 @@ pnpm start
 ### Configuración del Servidor
 
 1. **Editar configuración de red**:
+
    ```bash
    # En apps/server/.env
    HOST=0.0.0.0
@@ -116,16 +163,18 @@ pnpm start
    ```
 
 2. **Iniciar servidor**:
+
    ```bash
    pnpm build
    pnpm start:production
    ```
 
 3. **Obtener IP local**:
+
    ```bash
    # Linux/Mac
    ifconfig | grep "inet " | grep -v 127.0.0.1
-   
+
    # Windows
    ipconfig | findstr "IPv4"
    ```
@@ -135,7 +184,7 @@ pnpm start
 1. **Conectar dispositivos** a la misma red WiFi
 2. **Abrir navegador** en cada dispositivo
 3. **Navegar a**: `http://[IP_SERVIDOR]:8080`
-   
+
    Ejemplo: `http://192.168.1.100:8080`
 
 4. **Dashboard**: `http://[IP_SERVIDOR]:8080/dashboard`
@@ -148,7 +197,7 @@ El dashboard permite orquestar la experiencia desde un dispositivo central:
 
 1. **Estadísticas en tiempo real**:
    - Dispositivos conectados
-   - Latencia promedio  
+   - Latencia promedio
    - Escena actual
 
 2. **Control de escenas**:
@@ -216,20 +265,24 @@ El dashboard permite orquestar la experiencia desde un dispositivo central:
 ### Problemas Comunes
 
 **Audio no se reproduce**:
+
 - Verificar que el usuario haya activado audio (botón requerido)
 - Revisar que los archivos MP3 estén en /public/audio/
 
 **Imágenes 360° no cargan**:
+
 - Confirmar que las imágenes estén en formato JPEG
 - Verificar resolución mínima 2048x1024
 - Revisar nombres de archivo en asset-manifest.json
 
 **Dispositivos no se conectan**:
+
 - Verificar que estén en la misma red
 - Revisar firewall del servidor
 - Confirmar IP y puerto correctos
 
 **Desincronización**:
+
 - Revisar latencia en dashboard (debe ser <200ms)
 - Verificar estabilidad de red WiFi
 - Considerar reiniciar experiencia si drift es muy alto
@@ -237,15 +290,16 @@ El dashboard permite orquestar la experiencia desde un dispositivo central:
 ### Debug
 
 Usar `window.VR_DEBUG` en consola del navegador:
+
 ```javascript
 // Ver estado de la aplicación
-VR_DEBUG.store.getState()
+VR_DEBUG.store.getState();
 
 // Información de conexión
-VR_DEBUG.store.getState().connectionStatus
+VR_DEBUG.store.getState().connectionStatus;
 
 // Estado de audio
-VR_DEBUG.store.getState().audioState
+VR_DEBUG.store.getState().audioState;
 ```
 
 ## 🔒 Consideraciones de Seguridad
@@ -260,17 +314,20 @@ VR_DEBUG.store.getState().audioState
 ### Recomendaciones de Hardware
 
 **Servidor** (Mini PC):
+
 - CPU: Intel i5/AMD Ryzen 5 o superior
 - RAM: 8GB mínimo
 - Almacenamiento: SSD 256GB
 - Red: Gigabit Ethernet
 
 **Dispositivos Cliente** (Tablets/Móviles):
+
 - RAM: 4GB mínimo
 - GPU: Soporte WebGL 2.0
 - Navegador: Chrome/Edge/Safari actualizado
 
 **Red WiFi**:
+
 - Estándar: 802.11ac (WiFi 5) o superior
 - Ancho de banda: 100Mbps mínimo
 - Latencia: <50ms entre dispositivos
@@ -320,5 +377,3 @@ Para soporte técnico durante eventos:
 4. **Modo manual** - Usar controles offline si falla sync
 
 **Contacto técnico**: [Insertar información de contacto]
-
-

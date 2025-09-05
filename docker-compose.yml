@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  vr-app:
+    build: .
+    container_name: vr-ecopetrol-dev
+    ports:
+      - "8080:8080" # Servidor principal
+      - "8081:8081" # WebSocket
+      - "5173:5173" # Cliente Vite (desarrollo)
+    volumes:
+      # Montar código fuente para hot reload
+      - ./apps:/app/apps
+      - ./package.json:/app/package.json
+      - ./pnpm-workspace.yaml:/app/pnpm-workspace.yaml
+      - ./pnpm-lock.yaml:/app/pnpm-lock.yaml
+      # Excluir node_modules para evitar conflictos
+      - /app/node_modules
+      - /app/apps/server/node_modules
+      - /app/apps/client/node_modules
+    environment:
+      - NODE_ENV=development
+      - HOST=0.0.0.0
+      - PORT=8080
+    stdin_open: true
+    tty: true
+    networks:
+      - vr-network
+
+networks:
+  vr-network:
+    driver: bridge

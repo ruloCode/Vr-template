@@ -20,7 +20,12 @@
     "start:production": "NODE_ENV=production pnpm --filter server start",
     "lint": "pnpm --filter \"./apps/*\" lint",
     "type-check": "pnpm --filter \"./apps/*\" type-check",
-    "clean": "rm -rf apps/*/dist apps/*/build apps/*/.turbo node_modules apps/*/node_modules"
+    "clean": "rm -rf apps/*/dist apps/*/build apps/*/.turbo node_modules apps/*/node_modules",
+    "docker:build": "docker build -t vr-ecopetrol-dev .",
+    "docker:dev": "docker-compose up --build",
+    "docker:stop": "docker-compose down",
+    "docker:clean": "docker-compose down -v && docker rmi vr-ecopetrol-dev",
+    "docker:logs": "docker-compose logs -f"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
@@ -41,5 +46,3 @@
     "pwa"
   ]
 }
-
-
