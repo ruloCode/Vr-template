@@ -39,7 +39,7 @@ Una vez que el contenedor esté ejecutándose, podrás acceder a:
 
 - **Cliente VR**: http://localhost:8080/
 - **Dashboard**: http://localhost:8080/dashboard
-- **Cliente Dev (Vite)**: http://localhost:5173/
+- **Cliente Dev (Vite)**: http://localhost:3000/
 - **API**: http://localhost:8080/api/health
 - **WebSocket**: ws://localhost:8081/ws
 
@@ -98,7 +98,7 @@ Para que otros dispositivos en tu red puedan conectarse:
 
 ### Puerto ya en uso
 
-Si los puertos 8080, 8081 o 5173 están ocupados:
+Si los puertos 8080, 8081 o 3000 están ocupados:
 
 ```bash
 # Verificar qué proceso usa el puerto

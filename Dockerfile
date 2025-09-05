@@ -8,19 +8,20 @@ RUN corepack enable && corepack prepare pnpm@8.15.0 --activate
 WORKDIR /app
 
 # Copiar archivos de configuración del workspace
-COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY package.json pnpm-workspace.yaml ./
+COPY pnpm-lock.yaml* ./
 
 # Instalar dependencias raíz
-RUN pnpm install --frozen-lockfile
+RUN pnpm install
 
 # Copiar código fuente
 COPY apps/ ./apps/
 
-# Instalar dependencias de las apps
-RUN pnpm install --frozen-lockfile
+# Instalar dependencias de las apps específicamente
+RUN pnpm install --filter=server --filter=client
 
 # Exponer puertos
-EXPOSE 8080 8081 5173
+EXPOSE 8080 8081 3000
 
 # Script de desarrollo por defecto
 CMD ["pnpm", "dev"]

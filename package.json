@@ -11,7 +11,6 @@
   },
   "packageManager": "pnpm@8.15.0",
   "scripts": {
-    "postinstall": "pnpm install --filter=./apps/server --filter=./apps/client",
     "dev": "pnpm run dev:server & pnpm run dev:client",
     "dev:server": "pnpm --filter server dev",
     "dev:client": "pnpm --filter client dev",
@@ -22,10 +21,10 @@
     "type-check": "pnpm --filter \"./apps/*\" type-check",
     "clean": "rm -rf apps/*/dist apps/*/build apps/*/.turbo node_modules apps/*/node_modules",
     "docker:build": "docker build -t vr-ecopetrol-dev .",
-    "docker:dev": "docker-compose up --build",
-    "docker:stop": "docker-compose down",
-    "docker:clean": "docker-compose down -v && docker rmi vr-ecopetrol-dev",
-    "docker:logs": "docker-compose logs -f"
+    "docker:dev": "docker compose up --build",
+    "docker:stop": "docker compose down",
+    "docker:clean": "docker compose down -v && docker rmi vr-ecopetrol-dev",
+    "docker:logs": "docker compose logs -f"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",

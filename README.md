@@ -69,6 +69,7 @@ pnpm docker:dev
 
 - Cliente VR: http://localhost:8080/
 - Dashboard: http://localhost:8080/dashboard
+- Cliente Dev: http://localhost:3000/
 
 📖 **Ver [DOCKER.md](./DOCKER.md) para guía completa de Docker**
 
@@ -134,7 +135,7 @@ pnpm dev
 
 # Desarrollo individual
 pnpm -F server dev    # Servidor en :8080
-pnpm -F client dev    # Cliente en :5173
+pnpm -F client dev    # Cliente en :3000
 
 # Build de producción
 pnpm build
@@ -147,6 +148,7 @@ pnpm start
 
 - **Cliente VR**: http://localhost:8080/
 - **Dashboard**: http://localhost:8080/dashboard
+- **Cliente Dev**: http://localhost:3000/
 - **API**: http://localhost:8080/api/health
 - **WebSocket**: ws://localhost:8081/ws
 
