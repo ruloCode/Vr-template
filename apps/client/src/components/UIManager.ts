@@ -1,5 +1,5 @@
-import { logger } from '@/utils/logger';
-import { useAppStore } from '@/store/appStore';
+import { logger } from "@/utils/logger";
+import { useAppStore } from "@/store/appStore";
 
 export class UIManager {
   private overlayElement: HTMLElement | null = null;
@@ -9,21 +9,21 @@ export class UIManager {
   private debugUpdateInterval: number | null = null;
 
   constructor() {
-    logger.info('🎨 UIManager inicializado');
+    logger.info("🎨 UIManager inicializado");
   }
 
   public async initialize(): Promise<void> {
     this.createOverlayStructure();
     this.setupEventListeners();
     this.setupStoreSubscriptions();
-    
-    logger.info('✅ UIManager inicializado completamente');
+
+    logger.info("✅ UIManager inicializado completamente");
   }
 
   private createOverlayStructure(): void {
-    const app = document.getElementById('app');
+    const app = document.getElementById("app");
     if (!app) {
-      throw new Error('App container not found');
+      throw new Error("App container not found");
     }
 
     const overlayHTML = `
@@ -101,6 +101,9 @@ export class UIManager {
                 <button id="manual-start" class="btn btn-secondary" disabled>
                   ▶️ Iniciar Manual
                 </button>
+                <button id="return-model" class="btn btn-primary">
+                  🎭 Volver al Modelo
+                </button>
               </div>
             </div>
           </div>
@@ -134,20 +137,20 @@ export class UIManager {
     `;
 
     // Add overlay to app
-    app.insertAdjacentHTML('beforeend', overlayHTML);
-    
+    app.insertAdjacentHTML("beforeend", overlayHTML);
+
     // Get references
-    this.overlayElement = document.getElementById('vr-overlay');
-    this.progressContainer = document.getElementById('preload-container');
-    this.debugPanel = document.getElementById('debug-panel');
-    this.controlsPanel = document.getElementById('controls-panel');
+    this.overlayElement = document.getElementById("vr-overlay");
+    this.progressContainer = document.getElementById("preload-container");
+    this.debugPanel = document.getElementById("debug-panel");
+    this.controlsPanel = document.getElementById("controls-panel");
 
     // Add CSS
     this.injectStyles();
   }
 
   private injectStyles(): void {
-    const style = document.createElement('style');
+    const style = document.createElement("style");
     style.textContent = `
       .vr-overlay {
         position: fixed;
@@ -503,32 +506,32 @@ export class UIManager {
         }
       }
     `;
-    
+
     document.head.appendChild(style);
   }
 
   private setupEventListeners(): void {
     // Audio unlock button
-    const unlockBtn = document.getElementById('unlock-audio-btn');
-    unlockBtn?.addEventListener('click', async () => {
+    const unlockBtn = document.getElementById("unlock-audio-btn");
+    unlockBtn?.addEventListener("click", async () => {
       try {
-        logger.info('🔊 Usuario activando audio...');
-        const event = new CustomEvent('audio-unlock-requested');
+        logger.info("🔊 Usuario activando audio...");
+        const event = new CustomEvent("audio-unlock-requested");
         window.dispatchEvent(event);
       } catch (error) {
-        logger.error('❌ Error activando audio:', error);
+        logger.error("❌ Error activando audio:", error);
       }
     });
 
     // Debug panel controls
-    const debugClose = document.getElementById('debug-close');
-    debugClose?.addEventListener('click', () => {
+    const debugClose = document.getElementById("debug-close");
+    debugClose?.addEventListener("click", () => {
       useAppStore.getState().setDebugMode(false);
     });
 
     // Controls panel
-    const controlsClose = document.getElementById('controls-close');
-    controlsClose?.addEventListener('click', () => {
+    const controlsClose = document.getElementById("controls-close");
+    controlsClose?.addEventListener("click", () => {
       useAppStore.getState().setControlsVisible(false);
     });
 
@@ -543,27 +546,27 @@ export class UIManager {
   }
 
   private setupControlButtons(): void {
-    const vrToggle = document.getElementById('vr-toggle');
-    const resetCamera = document.getElementById('reset-camera');
-    const debugToggle = document.getElementById('debug-toggle');
-    const fullscreenToggle = document.getElementById('fullscreen-toggle');
+    const vrToggle = document.getElementById("vr-toggle");
+    const resetCamera = document.getElementById("reset-camera");
+    const debugToggle = document.getElementById("debug-toggle");
+    const fullscreenToggle = document.getElementById("fullscreen-toggle");
 
-    vrToggle?.addEventListener('click', () => {
-      const event = new CustomEvent('vr-toggle');
+    vrToggle?.addEventListener("click", () => {
+      const event = new CustomEvent("vr-toggle");
       window.dispatchEvent(event);
     });
 
-    resetCamera?.addEventListener('click', () => {
-      const event = new CustomEvent('camera-reset');
+    resetCamera?.addEventListener("click", () => {
+      const event = new CustomEvent("camera-reset");
       window.dispatchEvent(event);
     });
 
-    debugToggle?.addEventListener('click', () => {
+    debugToggle?.addEventListener("click", () => {
       const store = useAppStore.getState();
       store.setDebugMode(!store.showDebug);
     });
 
-    fullscreenToggle?.addEventListener('click', () => {
+    fullscreenToggle?.addEventListener("click", () => {
       if (document.fullscreenElement) {
         document.exitFullscreen();
       } else {
@@ -573,39 +576,49 @@ export class UIManager {
   }
 
   private setupManualControls(): void {
-    const sceneSelector = document.getElementById('scene-selector') as HTMLSelectElement;
-    const manualStart = document.getElementById('manual-start');
+    const sceneSelector = document.getElementById(
+      "scene-selector"
+    ) as HTMLSelectElement;
+    const manualStart = document.getElementById("manual-start");
+    const returnModel = document.getElementById("return-model");
 
-    sceneSelector?.addEventListener('change', () => {
+    sceneSelector?.addEventListener("change", () => {
       const startBtn = manualStart as HTMLButtonElement;
       startBtn.disabled = !sceneSelector.value;
     });
 
-    manualStart?.addEventListener('click', () => {
+    manualStart?.addEventListener("click", () => {
       const sceneId = sceneSelector?.value;
       if (sceneId) {
-        const event = new CustomEvent('manual-scene-start', { detail: { sceneId } });
+        const event = new CustomEvent("manual-scene-start", {
+          detail: { sceneId },
+        });
         window.dispatchEvent(event);
       }
+    });
+
+    returnModel?.addEventListener("click", () => {
+      const event = new CustomEvent("return-to-model");
+      window.dispatchEvent(event);
     });
   }
 
   private setupKeyboardShortcuts(): void {
-    document.addEventListener('keydown', (e) => {
+    document.addEventListener("keydown", (e) => {
       if (e.ctrlKey || e.metaKey) return;
 
       switch (e.key) {
-        case 'F12':
+        case "F12":
           e.preventDefault();
           const store = useAppStore.getState();
           store.setDebugMode(!store.showDebug);
           break;
-        case 'c':
-        case 'C':
+        case "c":
+        case "C":
           e.preventDefault();
           useAppStore.getState().setControlsVisible(true);
           break;
-        case 'Escape':
+        case "Escape":
           e.preventDefault();
           useAppStore.getState().setControlsVisible(false);
           useAppStore.getState().setDebugMode(false);
@@ -642,11 +655,11 @@ export class UIManager {
   }
 
   private updatePreloadProgress(progress: any): void {
-    const fillElement = document.getElementById('progress-fill');
-    const textElement = document.getElementById('progress-text');
-    const detailElement = document.getElementById('progress-detail');
-    const errorsContainer = document.getElementById('preload-errors');
-    const errorsList = document.getElementById('error-list');
+    const fillElement = document.getElementById("progress-fill");
+    const textElement = document.getElementById("progress-text");
+    const detailElement = document.getElementById("progress-detail");
+    const errorsContainer = document.getElementById("preload-errors");
+    const errorsList = document.getElementById("error-list");
 
     if (fillElement) {
       fillElement.style.width = `${progress.percentage}%`;
@@ -657,41 +670,49 @@ export class UIManager {
     }
 
     if (detailElement) {
-      detailElement.textContent = progress.currentAsset || 'Procesando...';
+      detailElement.textContent = progress.currentAsset || "Procesando...";
     }
 
     // Show errors if any
-    if (progress.errors && progress.errors.length > 0 && errorsContainer && errorsList) {
-      errorsContainer.style.display = 'block';
-      errorsList.innerHTML = progress.errors.map((error: string) => `<li>${error}</li>`).join('');
+    if (
+      progress.errors &&
+      progress.errors.length > 0 &&
+      errorsContainer &&
+      errorsList
+    ) {
+      errorsContainer.style.display = "block";
+      errorsList.innerHTML = progress.errors
+        .map((error: string) => `<li>${error}</li>`)
+        .join("");
     }
   }
 
   private updateConnectionStatus(status: string, _isConnected: boolean): void {
-    const statusElement = document.getElementById('connection-status');
-    const dotElement = document.getElementById('status-dot');
-    const textElement = document.getElementById('status-text');
+    const statusElement = document.getElementById("connection-status");
+    const dotElement = document.getElementById("status-dot");
+    const textElement = document.getElementById("status-text");
 
     if (!statusElement || !dotElement || !textElement) return;
 
     const statusMap = {
-      'disconnected': { text: 'Desconectado', class: 'disconnected' },
-      'connecting': { text: 'Conectando...', class: 'connecting' },
-      'connected': { text: 'Conectado', class: 'connected' },
-      'error': { text: 'Error', class: 'error' }
+      disconnected: { text: "Desconectado", class: "disconnected" },
+      connecting: { text: "Conectando...", class: "connecting" },
+      connected: { text: "Conectado", class: "connected" },
+      error: { text: "Error", class: "error" },
     };
 
-    const statusInfo = statusMap[status as keyof typeof statusMap] || statusMap.disconnected;
-    
+    const statusInfo =
+      statusMap[status as keyof typeof statusMap] || statusMap.disconnected;
+
     dotElement.className = `status-dot ${statusInfo.class}`;
     textElement.textContent = statusInfo.text;
-    statusElement.style.display = 'block';
+    statusElement.style.display = "block";
   }
 
   private toggleDebugPanel(show: boolean): void {
     if (this.debugPanel) {
-      this.debugPanel.style.display = show ? 'block' : 'none';
-      
+      this.debugPanel.style.display = show ? "block" : "none";
+
       if (show && !this.debugUpdateInterval) {
         this.startDebugUpdates();
       } else if (!show && this.debugUpdateInterval) {
@@ -702,19 +723,21 @@ export class UIManager {
 
   private toggleControlsPanel(show: boolean): void {
     if (this.controlsPanel) {
-      this.controlsPanel.style.display = show ? 'block' : 'none';
+      this.controlsPanel.style.display = show ? "block" : "none";
     }
   }
 
   private updateSceneSelector(scenes: any[]): void {
-    const selector = document.getElementById('scene-selector') as HTMLSelectElement;
+    const selector = document.getElementById(
+      "scene-selector"
+    ) as HTMLSelectElement;
     if (!selector) return;
 
     // Clear existing options except first
     selector.innerHTML = '<option value="">Seleccionar escena...</option>';
-    
-    scenes.forEach(scene => {
-      const option = document.createElement('option');
+
+    scenes.forEach((scene) => {
+      const option = document.createElement("option");
       option.value = scene.id;
       option.textContent = `${scene.title} (${scene.durationSec}s)`;
       selector.appendChild(option);
@@ -735,94 +758,97 @@ export class UIManager {
   }
 
   private updateDebugInfo(): void {
-    const debugContent = document.getElementById('debug-content');
+    const debugContent = document.getElementById("debug-content");
     if (!debugContent) return;
 
     const store = useAppStore.getState();
     const now = new Date();
-    
+
     const debugData = {
-      'Timestamp': now.toLocaleTimeString(),
-      'Connection': store.connectionStatus,
-      'Latency': store.latency + 'ms',
-      'Client Offset': store.clientOffset + 'ms',
-      'Device ID': store.deviceId.substring(0, 12) + '...',
-      'Audio Unlocked': store.audioUnlocked ? 'Yes' : 'No',
-      'Current Scene': store.currentScene?.id || 'None',
-      'Preload Complete': store.preloadComplete ? 'Yes' : 'No',
-      'Battery': store.battery ? store.battery + '%' : 'N/A'
+      Timestamp: now.toLocaleTimeString(),
+      Connection: store.connectionStatus,
+      Latency: store.latency + "ms",
+      "Client Offset": store.clientOffset + "ms",
+      "Device ID": store.deviceId.substring(0, 12) + "...",
+      "Audio Unlocked": store.audioUnlocked ? "Yes" : "No",
+      "Current Scene": store.currentScene?.id || "None",
+      "Preload Complete": store.preloadComplete ? "Yes" : "No",
+      Battery: store.battery ? store.battery + "%" : "N/A",
     };
 
     debugContent.innerHTML = Object.entries(debugData)
       .map(([key, value]) => `<div><strong>${key}:</strong> ${value}</div>`)
-      .join('');
+      .join("");
   }
 
   // Public methods
   public showPreloader(): void {
     if (this.progressContainer) {
-      this.progressContainer.style.display = 'flex';
+      this.progressContainer.style.display = "flex";
     }
   }
 
   public hidePreloader(): void {
     if (this.progressContainer) {
-      this.progressContainer.style.display = 'none';
+      this.progressContainer.style.display = "none";
     }
   }
 
   public showAudioUnlock(): void {
-    const audioUnlock = document.getElementById('audio-unlock');
+    const audioUnlock = document.getElementById("audio-unlock");
     if (audioUnlock) {
-      audioUnlock.style.display = 'flex';
+      audioUnlock.style.display = "flex";
     }
   }
 
   public hideAudioUnlock(): void {
-    const audioUnlock = document.getElementById('audio-unlock');
+    const audioUnlock = document.getElementById("audio-unlock");
     if (audioUnlock) {
-      audioUnlock.style.display = 'none';
+      audioUnlock.style.display = "none";
     }
   }
 
   public showMainInterface(): void {
-    const readyState = document.getElementById('ready-state');
+    const readyState = document.getElementById("ready-state");
     const store = useAppStore.getState();
-    
+
     if (readyState) {
       // Update device info
       this.updateDeviceInfo();
-      
+
       // Show manual controls if offline
-      const manualControls = readyState.querySelector('.manual-controls') as HTMLElement;
+      const manualControls = readyState.querySelector(
+        ".manual-controls"
+      ) as HTMLElement;
       if (manualControls) {
-        manualControls.style.display = store.connectionStatus === 'connected' ? 'none' : 'block';
+        manualControls.style.display =
+          store.connectionStatus === "connected" ? "none" : "block";
       }
-      
-      readyState.style.display = 'flex';
+
+      readyState.style.display = "flex";
     }
-    
+
     this.hidePreloader();
     this.hideAudioUnlock();
   }
 
   public hideMainInterface(): void {
-    const readyState = document.getElementById('ready-state');
+    const readyState = document.getElementById("ready-state");
     if (readyState) {
-      readyState.style.display = 'none';
+      readyState.style.display = "none";
     }
   }
 
   private updateDeviceInfo(): void {
     const store = useAppStore.getState();
-    
-    const deviceIdElement = document.getElementById('device-id');
-    const connectionElement = document.getElementById('connection-state');
-    const batteryInfo = document.getElementById('battery-info');
-    const batteryLevel = document.getElementById('battery-level');
+
+    const deviceIdElement = document.getElementById("device-id");
+    const connectionElement = document.getElementById("connection-state");
+    const batteryInfo = document.getElementById("battery-info");
+    const batteryLevel = document.getElementById("battery-level");
 
     if (deviceIdElement) {
-      deviceIdElement.textContent = store.deviceId.substring(0, 12) + '...';
+      deviceIdElement.textContent = store.deviceId.substring(0, 12) + "...";
     }
 
     if (connectionElement) {
@@ -830,8 +856,8 @@ export class UIManager {
     }
 
     if (store.battery && batteryInfo && batteryLevel) {
-      batteryInfo.style.display = 'flex';
-      batteryLevel.textContent = store.battery + '%';
+      batteryInfo.style.display = "flex";
+      batteryLevel.textContent = store.battery + "%";
     }
   }
 
@@ -840,14 +866,12 @@ export class UIManager {
   }
 
   public destroy(): void {
-    logger.info('🧹 Destruyendo UIManager');
-    
+    logger.info("🧹 Destruyendo UIManager");
+
     this.stopDebugUpdates();
-    
+
     if (this.overlayElement) {
       this.overlayElement.remove();
     }
   }
 }
-
-

@@ -36,7 +36,7 @@ export class VRApp {
       await this.uiManager.initialize();
 
       // Step 2: Preload all assets
-      logger.info("2️⃣ Precargando assets...");
+      logger.info("2️⃣ Pre-cargando assets...");
       this.preloadedAssets = await assetPreloader.preloadAll();
 
       if (this.preloadedAssets.errors.length > 0) {
@@ -64,7 +64,7 @@ export class VRApp {
       // Step 4: Initialize Scene Manager
       logger.info("4️⃣ Inicializando Scene Manager...");
       this.sceneManager = new SceneManager(
-        this.preloadedAssets.imageCache,
+        //  this.preloadedAssets.imageCache,
         this.audioManager
       );
       await this.sceneManager.initialize();
@@ -278,6 +278,17 @@ export class VRApp {
         logger.error("❌ Error desbloqueando audio:", error);
       }
     });
+
+    // Setup return to model event listener
+    window.addEventListener("return-to-model", () => {
+      try {
+        logger.info("🎭 Usuario solicitando volver al modelo por defecto...");
+        this.returnToDefaultModel();
+        logger.info("✅ Volviendo al modelo por defecto");
+      } catch (error) {
+        logger.error("❌ Error volviendo al modelo:", error);
+      }
+    });
   }
 
   private toggleDebugMode(enabled: boolean): void {
@@ -327,6 +338,12 @@ export class VRApp {
 
   public getConnectionStatus(): string {
     return this.wsClient?.getConnectionState() || "disconnected";
+  }
+
+  public returnToDefaultModel(): void {
+    if (this.sceneManager) {
+      this.sceneManager.returnToDefaultModel();
+    }
   }
 
   // Cleanup

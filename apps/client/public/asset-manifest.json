@@ -4,65 +4,65 @@
   "scenes": [
     {
       "id": "escena-1",
-      "title": "Riqueza Natural",
-      "description": "Explora la biodiversidad y los recursos naturales de Colombia",
-      "image360": "panos/escena1_8k.jpg",
+      "title": "Escena 1",
+      "description": "Primera escena de video para pruebas",
+      "image360": "videos/escena-1.mp4",
       "audio": "audio/ambient-night.mp3",
       "durationSec": 45
     },
     {
-      "id": "escena-2",
-      "title": "Bosque Natural (Temporal)",
-      "description": "Escena temporal usando asset forest.jpg para pruebas",
-      "image360": "panos/forest.jpg",
+      "id": "2",
+      "title": "Escena 2 (Reservado)",
+      "description": "Escena reservada para futuro contenido de video",
+      "image360": "videos/placeholder.mp4",
       "audio": "audio/ambient-wind.mp3",
       "durationSec": 50
     },
     {
-      "id": "escena-3",
-      "title": "Pradera (Temporal)",
-      "description": "Escena temporal usando asset grass.jpg para pruebas",
-      "image360": "panos/grass.jpg",
+      "id": "3",
+      "title": "Escena 3 (Reservado)",
+      "description": "Escena reservada para futuro contenido de video",
+      "image360": "videos/placeholder.mp4",
       "audio": "audio/ambient-night.mp3",
       "durationSec": 40
     },
     {
-      "id": "escena-4",
-      "title": "Reservado 4",
-      "description": "Escena reservada para futuro contenido",
-      "image360": "panos/placeholder.jpg",
+      "id": "4",
+      "title": "Escena 4 (Reservado)",
+      "description": "Escena reservada para futuro contenido de video",
+      "image360": "videos/placeholder.mp4",
       "audio": "audio/placeholder.mp3",
       "durationSec": 30
     },
     {
-      "id": "escena-5",
-      "title": "Reservado 5",
-      "description": "Escena reservada para futuro contenido",
-      "image360": "panos/placeholder.jpg",
+      "id": "5",
+      "title": "Escena 5 (Reservado)",
+      "description": "Escena reservada para futuro contenido de video",
+      "image360": "videos/placeholder.mp4",
       "audio": "audio/placeholder.mp3",
       "durationSec": 30
     },
     {
-      "id": "escena-6",
-      "title": "Reservado 6",
-      "description": "Escena reservada para futuro contenido",
-      "image360": "panos/placeholder.jpg",
+      "id": "6",
+      "title": "Escena 6 (Reservado)",
+      "description": "Escena reservada para futuro contenido de video",
+      "image360": "videos/placeholder.mp4",
       "audio": "audio/placeholder.mp3",
       "durationSec": 30
     },
     {
-      "id": "escena-7",
-      "title": "Reservado 7",
-      "description": "Escena reservada para futuro contenido",
-      "image360": "panos/placeholder.jpg",
+      "id": "7",
+      "title": "Escena 7 (Reservado)",
+      "description": "Escena reservada para futuro contenido de video",
+      "image360": "videos/placeholder.mp4",
       "audio": "audio/placeholder.mp3",
       "durationSec": 30
     },
     {
-      "id": "escena-8",
-      "title": "Reservado 8",
-      "description": "Escena reservada para futuro contenido",
-      "image360": "panos/placeholder.jpg",
+      "id": "8",
+      "title": "Escena 8 (Reservado)",
+      "description": "Escena reservada para futuro contenido de video",
+      "image360": "videos/placeholder.mp4",
       "audio": "audio/placeholder.mp3",
       "durationSec": 30
     }
