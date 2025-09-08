@@ -3,6 +3,8 @@ import { logger } from "./logger";
 export class PWAManager {
   private registration: ServiceWorkerRegistration | null = null;
   private updateAvailable = false;
+  private updateNotificationShown = false;
+  private lastUpdateCheck = 0;
 
   constructor() {
     this.setupServiceWorker();
@@ -52,6 +54,13 @@ export class PWAManager {
         this.notifyUpdateAvailable();
       });
 
+      // Listen for messages from service worker
+      navigator.serviceWorker.addEventListener("message", (event) => {
+        if (event.data && event.data.type === "SW_ACTIVATED") {
+          logger.info("✅ Service Worker activado:", event.data.message);
+        }
+      });
+
       // Periodic update check (less frequent to avoid constant reloads)
       setInterval(() => {
         this.checkForUpdates();
@@ -94,7 +103,20 @@ export class PWAManager {
   }
 
   private async checkForUpdates(): Promise<void> {
-    if (this.registration && !this.updateAvailable) {
+    const now = Date.now();
+
+    // Evitar verificaciones demasiado frecuentes (mínimo 30 segundos entre verificaciones)
+    if (now - this.lastUpdateCheck < 30000) {
+      return;
+    }
+
+    this.lastUpdateCheck = now;
+
+    if (
+      this.registration &&
+      !this.updateAvailable &&
+      !this.updateNotificationShown
+    ) {
       try {
         await this.registration.update();
         logger.debug("🔄 Verificando actualizaciones...");
@@ -107,6 +129,17 @@ export class PWAManager {
   private notifyUpdateAvailable(): void {
     logger.info("🆕 Actualización disponible");
 
+    // No mostrar múltiples notificaciones
+    if (
+      document.getElementById("pwa-update-notification") ||
+      this.updateNotificationShown
+    ) {
+      return;
+    }
+
+    // Marcar que ya se mostró la notificación
+    this.updateNotificationShown = true;
+
     // Create update notification
     const notification = document.createElement("div");
     notification.id = "pwa-update-notification";
@@ -115,66 +148,95 @@ export class PWAManager {
         position: fixed;
         top: 20px;
         right: 20px;
-        background: #007bff;
+        background: linear-gradient(135deg, #28a745, #20c997);
         color: white;
-        padding: 1rem;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
         z-index: 10001;
-        max-width: 300px;
+        max-width: 350px;
         font-family: system-ui, sans-serif;
+        animation: slideIn 0.3s ease-out;
       ">
-        <div style="margin-bottom: 0.5rem; font-weight: bold;">
+        <div style="margin-bottom: 0.75rem; font-weight: bold; font-size: 1.1rem;">
           🆕 Actualización Disponible
         </div>
-        <div style="margin-bottom: 1rem; font-size: 0.9rem;">
-          Una nueva versión está lista. Reinicia para aplicar.
+        <div style="margin-bottom: 1.25rem; font-size: 0.95rem; line-height: 1.4;">
+          Una nueva versión está lista. Haz clic en "Actualizar" para aplicar los cambios.
         </div>
-        <div style="display: flex; gap: 0.5rem;">
-          <button onclick="window.applyPWAUpdate()" style="
+        <div style="display: flex; gap: 0.75rem;">
+          <button id="pwa-update-btn" style="
             background: white;
-            color: #007bff;
+            color: #28a745;
             border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: bold;
+            transition: all 0.2s ease;
+            flex: 1;
           ">
-            Actualizar
+            🔄 Actualizar
           </button>
-          <button onclick="window.dismissPWAUpdate()" style="
+          <button id="pwa-dismiss-btn" style="
             background: transparent;
             color: white;
-            border: 1px solid white;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
+            border: 2px solid white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
           ">
             Después
           </button>
         </div>
       </div>
+      <style>
+        @keyframes slideIn {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        #pwa-update-btn:hover {
+          background: #f8f9fa !important;
+          transform: translateY(-1px);
+        }
+        #pwa-dismiss-btn:hover {
+          background: rgba(255,255,255,0.1) !important;
+        }
+      </style>
     `;
 
     document.body.appendChild(notification);
 
-    // Expose update functions
-    (window as any).applyPWAUpdate = () => {
+    // Add event listeners
+    const updateBtn = document.getElementById("pwa-update-btn");
+    const dismissBtn = document.getElementById("pwa-dismiss-btn");
+
+    updateBtn?.addEventListener("click", () => {
+      logger.info("🔄 Usuario iniciando actualización PWA");
+      updateBtn.textContent = "🔄 Actualizando...";
+      updateBtn.disabled = true;
       this.applyUpdate();
-    };
+    });
 
-    (window as any).dismissPWAUpdate = () => {
+    dismissBtn?.addEventListener("click", () => {
+      logger.info("👋 Usuario posponiendo actualización PWA");
       notification.remove();
-    };
+      // Resetear el estado para permitir futuras notificaciones
+      this.updateNotificationShown = false;
+    });
 
-    // Auto-dismiss after 30 seconds
+    // Auto-dismiss after 60 seconds (más tiempo para que el usuario decida)
     setTimeout(() => {
       if (document.getElementById("pwa-update-notification")) {
+        logger.info("⏰ Notificación de actualización auto-dismissed");
         notification.remove();
+        // Resetear el estado para permitir futuras notificaciones
+        this.updateNotificationShown = false;
       }
-    }, 30000);
+    }, 60000);
   }
 
   private showInstallBanner(): void {
@@ -266,8 +328,26 @@ export class PWAManager {
   }
 
   private applyUpdate(): void {
+    logger.info("🔄 Aplicando actualización PWA...");
+
+    // Resetear el estado de notificación
+    this.updateNotificationShown = false;
+    this.updateAvailable = false;
+
     if (this.registration && this.registration.waiting) {
+      // Enviar mensaje al service worker para activar la nueva versión
       this.registration.waiting.postMessage({ type: "SKIP_WAITING" });
+
+      // Escuchar cuando el nuevo service worker tome control
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        logger.info("✅ Nueva versión activada, recargando página...");
+        // Recargar la página para aplicar la actualización
+        window.location.reload();
+      });
+    } else {
+      logger.warn("⚠️ No hay service worker esperando para actualizar");
+      // Si no hay service worker esperando, simplemente recargar
+      window.location.reload();
     }
   }
 

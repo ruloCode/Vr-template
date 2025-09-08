@@ -47,6 +47,20 @@ export class UIManager {
               <h4>⚠️ Advertencias:</h4>
               <ul id="error-list"></ul>
             </div>
+            
+            <div id="connection-error" class="connection-error" style="display: none;">
+              <h4>❌ Error de Conexión Crítica</h4>
+              <p>No se pudo conectar al servidor después de múltiples intentos.</p>
+              <p><strong>La aplicación requiere conexión al servidor para funcionar.</strong></p>
+              <div class="error-actions">
+                <button id="retry-connection-btn" class="btn btn-primary">
+                  🔄 Reintentar Conexión
+                </button>
+                <button id="refresh-page-btn" class="btn btn-secondary">
+                  🔄 Recargar Página
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -55,6 +69,9 @@ export class UIManager {
           <div class="status-indicator">
             <div id="status-dot" class="status-dot"></div>
             <span id="status-text">Desconectado</span>
+            <button id="reconnect-btn" class="btn-reconnect" style="display: none;" title="Reconectar">
+              🔄
+            </button>
           </div>
         </div>
 
@@ -244,6 +261,42 @@ export class UIManager {
         font-size: 0.9rem;
       }
 
+      .connection-error {
+        background: rgba(220, 53, 69, 0.1);
+        border: 1px solid rgba(220, 53, 69, 0.3);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-align: center;
+        margin-top: 1rem;
+      }
+
+      .connection-error h4 {
+        color: #dc3545;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+      }
+
+      .connection-error p {
+        margin-bottom: 0.5rem;
+        opacity: 0.9;
+      }
+
+      .connection-error p strong {
+        color: #dc3545;
+        font-weight: bold;
+      }
+
+      .error-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 1.5rem;
+      }
+
+      .error-actions .btn {
+        min-width: 150px;
+      }
+
       .connection-status {
         position: absolute;
         top: 20px;
@@ -258,6 +311,27 @@ export class UIManager {
         display: flex;
         align-items: center;
         gap: 0.5rem;
+      }
+
+      .btn-reconnect {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1rem;
+        cursor: pointer;
+        padding: 0.25rem;
+        border-radius: 50%;
+        width: 1.5rem;
+        height: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .btn-reconnect:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: rotate(180deg);
       }
 
       .status-dot {
@@ -535,11 +609,36 @@ export class UIManager {
       useAppStore.getState().setControlsVisible(false);
     });
 
+    // Reconnect button
+    const reconnectBtn = document.getElementById("reconnect-btn");
+    reconnectBtn?.addEventListener("click", async () => {
+      try {
+        logger.info("🔄 Usuario solicitando reconexión manual...");
+        const event = new CustomEvent("reconnect-websocket");
+        window.dispatchEvent(event);
+      } catch (error) {
+        logger.error("❌ Error en reconexión manual:", error);
+      }
+    });
+
     // Control buttons
     this.setupControlButtons();
 
     // Manual controls
     this.setupManualControls();
+
+    // Connection error buttons
+    const retryConnectionBtn = document.getElementById("retry-connection-btn");
+    const refreshPageBtn = document.getElementById("refresh-page-btn");
+
+    retryConnectionBtn?.addEventListener("click", () => {
+      const event = new CustomEvent("retry-connection");
+      window.dispatchEvent(event);
+    });
+
+    refreshPageBtn?.addEventListener("click", () => {
+      window.location.reload();
+    });
 
     // Keyboard shortcuts
     this.setupKeyboardShortcuts();
@@ -671,6 +770,16 @@ export class UIManager {
 
     if (detailElement) {
       detailElement.textContent = progress.currentAsset || "Procesando...";
+
+      // Cambiar color del texto si está conectando
+      if (
+        progress.currentAsset &&
+        progress.currentAsset.includes("Conectando")
+      ) {
+        detailElement.style.color = "#ffc107"; // Amarillo para conexión
+      } else {
+        detailElement.style.color = ""; // Color por defecto
+      }
     }
 
     // Show errors if any
@@ -691,6 +800,7 @@ export class UIManager {
     const statusElement = document.getElementById("connection-status");
     const dotElement = document.getElementById("status-dot");
     const textElement = document.getElementById("status-text");
+    const reconnectBtn = document.getElementById("reconnect-btn");
 
     if (!statusElement || !dotElement || !textElement) return;
 
@@ -707,6 +817,11 @@ export class UIManager {
     dotElement.className = `status-dot ${statusInfo.class}`;
     textElement.textContent = statusInfo.text;
     statusElement.style.display = "block";
+
+    // Mostrar botón de reconexión solo cuando no esté conectado
+    if (reconnectBtn) {
+      reconnectBtn.style.display = status === "connected" ? "none" : "flex";
+    }
   }
 
   private toggleDebugPanel(show: boolean): void {
@@ -816,13 +931,21 @@ export class UIManager {
       // Update device info
       this.updateDeviceInfo();
 
-      // Show manual controls if offline
+      // Update ready message - solo mostrar si está conectado
+      const readyMessage = readyState.querySelector(
+        "#ready-message"
+      ) as HTMLElement;
+      if (readyMessage) {
+        readyMessage.textContent =
+          "Conectado al servidor - Esperando comandos del dashboard...";
+      }
+
+      // Ocultar controles manuales ya que no están disponibles sin servidor
       const manualControls = readyState.querySelector(
         ".manual-controls"
       ) as HTMLElement;
       if (manualControls) {
-        manualControls.style.display =
-          store.connectionStatus === "connected" ? "none" : "block";
+        manualControls.style.display = "none";
       }
 
       readyState.style.display = "flex";
@@ -863,6 +986,20 @@ export class UIManager {
 
   public setDebugMode(enabled: boolean): void {
     this.toggleDebugPanel(enabled);
+  }
+
+  public showConnectionError(): void {
+    const connectionError = document.getElementById("connection-error");
+    if (connectionError) {
+      connectionError.style.display = "block";
+    }
+  }
+
+  public hideConnectionError(): void {
+    const connectionError = document.getElementById("connection-error");
+    if (connectionError) {
+      connectionError.style.display = "none";
+    }
   }
 
   public destroy(): void {

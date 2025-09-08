@@ -24,6 +24,11 @@ async function initializeApp() {
     const app = new VRApp();
     await app.initialize();
 
+    // Expose app globally for debugging
+    if (import.meta.env.DEV) {
+      (window as any).VR_APP = app;
+    }
+
     // Hide initial loader
     const loader = document.getElementById("initial-loader");
     if (loader) {
@@ -184,6 +189,15 @@ if (import.meta.env.DEV) {
     store: useAppStore,
     version: __VR_VERSION__,
     buildTime: __BUILD_TIME__,
+    reconnectSocket: () => {
+      // Función global para reconectar manualmente
+      const app = (window as any).VR_APP;
+      if (app && app.reconnectWebSocket) {
+        app.reconnectWebSocket().catch(console.error);
+      } else {
+        console.warn("VR App no está disponible para reconexión");
+      }
+    },
   };
 
   logger.info(

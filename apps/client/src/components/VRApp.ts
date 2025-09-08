@@ -69,13 +69,13 @@ export class VRApp {
       );
       await this.sceneManager.initialize();
 
-      // Step 5: Initialize WebSocket connection
+      // Step 5: Initialize WebSocket connection (blocking until connected or timeout)
       logger.info("5️⃣ Inicializando conexión WebSocket...");
       this.wsClient = initializeWebSocket();
       this.setupWebSocketHandlers();
 
-      // Try to connect (non-blocking)
-      this.connectWebSocket();
+      // Wait for WebSocket connection before proceeding
+      await this.connectWebSocketWithRetry();
 
       // Step 6: Initialize Sync Manager
       logger.info("6️⃣ Inicializando Sync Manager...");
@@ -87,6 +87,15 @@ export class VRApp {
 
       // Step 7: Setup app state and UI
       this.setupAppState();
+
+      // Complete loading progress
+      const store = useAppStore.getState();
+      store.setPreloadProgress({
+        percentage: 100,
+        currentAsset: "Inicialización completa",
+        errors: [],
+      });
+
       this.uiManager.showMainInterface();
 
       perf.mark("app-init-end");
@@ -105,19 +114,57 @@ export class VRApp {
     }
   }
 
-  private async connectWebSocket(): Promise<void> {
-    try {
-      if (this.wsClient) {
-        await this.wsClient.connect();
-        logger.info("🔗 WebSocket conectado exitosamente");
-      }
-    } catch (error) {
-      logger.warn(
-        "⚠️ No se pudo conectar al WebSocket (modo offline disponible):",
-        error
-      );
-      // Continue in offline mode
+  private async connectWebSocketWithRetry(): Promise<void> {
+    if (!this.wsClient) {
+      throw new Error("WebSocket client not initialized");
     }
+
+    const maxAttempts = 10; // Más intentos ya que la conexión es obligatoria
+    const attemptDelay = 2000; // 2 segundos entre intentos
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        logger.info(`🔌 Intento de conexión ${attempt}/${maxAttempts}...`);
+
+        // Actualizar progreso en la UI
+        this.updateConnectionProgress(attempt, maxAttempts);
+
+        await this.wsClient.connect();
+        logger.info("✅ WebSocket conectado exitosamente");
+        return; // Conexión exitosa, salir del loop
+      } catch (error) {
+        logger.warn(`⚠️ Intento ${attempt} falló:`, error);
+
+        if (attempt === maxAttempts) {
+          logger.error(
+            "❌ No se pudo conectar al servidor después de todos los intentos"
+          );
+          // Mostrar error de conexión crítica
+          if (this.uiManager) {
+            this.uiManager.showConnectionError();
+          }
+          // Lanzar error para detener la inicialización
+          throw new Error(
+            "No se pudo conectar al servidor. La aplicación requiere conexión al servidor para funcionar."
+          );
+        }
+
+        // Esperar antes del siguiente intento
+        await new Promise((resolve) => setTimeout(resolve, attemptDelay));
+      }
+    }
+  }
+
+  private updateConnectionProgress(current: number, total: number): void {
+    const progress = Math.round((current / total) * 100);
+    const store = useAppStore.getState();
+
+    // Actualizar el progreso de carga para mostrar el estado de conexión
+    store.setPreloadProgress({
+      percentage: Math.min(95, 80 + progress * 0.15), // 80-95% para conexión
+      currentAsset: `Conectando al servidor... (${current}/${total})`,
+      errors: [],
+    });
   }
 
   private setupWebSocketHandlers(): void {
@@ -289,6 +336,33 @@ export class VRApp {
         logger.error("❌ Error volviendo al modelo:", error);
       }
     });
+
+    // Setup reconnect WebSocket event listener
+    window.addEventListener("reconnect-websocket", async () => {
+      try {
+        logger.info("🔄 Usuario solicitando reconexión de WebSocket...");
+        await this.reconnectWebSocket();
+        logger.info("✅ WebSocket reconectado exitosamente");
+      } catch (error) {
+        logger.error("❌ Error reconectando WebSocket:", error);
+      }
+    });
+
+    // Setup retry connection event listener
+    window.addEventListener("retry-connection", async () => {
+      try {
+        logger.info("🔄 Usuario solicitando reintento de conexión...");
+        if (this.uiManager) {
+          this.uiManager.hideConnectionError();
+        }
+        await this.connectWebSocketWithRetry();
+        logger.info("✅ Conexión establecida exitosamente");
+        // Si llegamos aquí, la conexión fue exitosa, continuar con la inicialización
+        this.uiManager?.showMainInterface();
+      } catch (error) {
+        logger.error("❌ Error en reintento de conexión:", error);
+      }
+    });
   }
 
   private toggleDebugMode(enabled: boolean): void {
@@ -338,6 +412,21 @@ export class VRApp {
 
   public getConnectionStatus(): string {
     return this.wsClient?.getConnectionState() || "disconnected";
+  }
+
+  public async reconnectWebSocket(): Promise<void> {
+    logger.info("🔄 Reconectando WebSocket manualmente...");
+    if (this.wsClient) {
+      try {
+        // Resetear intentos de reconexión para empezar fresco
+        this.wsClient.resetReconnectAttempts();
+        await this.wsClient.connect();
+        logger.info("✅ WebSocket reconectado exitosamente");
+      } catch (error) {
+        logger.error("❌ Error reconectando WebSocket:", error);
+        throw error;
+      }
+    }
   }
 
   public returnToDefaultModel(): void {

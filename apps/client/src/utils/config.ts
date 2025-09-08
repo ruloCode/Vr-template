@@ -25,10 +25,11 @@ export const config = {
 
   // WebSocket settings
   websocket: {
-    reconnectInterval: 3000,
-    maxReconnectAttempts: 10,
+    reconnectInterval: 1000, // Reducido de 3000 a 1000ms para reconexión más rápida
+    maxReconnectAttempts: 15, // Aumentado para más intentos
     pingInterval: 5000,
-    connectionTimeout: 10000,
+    connectionTimeout: 3000, // Reducido de 10000 a 3000ms para detección más rápida
+    initialRetryDelay: 500, // Delay inicial más corto
   },
 
   // Audio settings

@@ -1,15 +1,15 @@
-import { 
-  ClientMessage, 
-  ServerMessage, 
+import {
+  ClientMessage,
+  ServerMessage,
   ClientMessageSchema,
   ServerMessageSchema,
   WSConnectionOptions,
   ConnectionState,
-  PING_INTERVAL_MS
-} from '@/types/protocol';
-import { logger, captureError } from './logger';
-import { config } from './config';
-import { useAppStore } from '@/store/appStore';
+  PING_INTERVAL_MS,
+} from "@/types/protocol";
+import { logger, captureError } from "./logger";
+import { config } from "./config";
+import { useAppStore } from "@/store/appStore";
 
 export class VRWebSocketClient {
   private ws: WebSocket | null = null;
@@ -17,9 +17,9 @@ export class VRWebSocketClient {
   private pingTimer: number | null = null;
   private reconnectAttempts = 0;
   private isIntentionalClose = false;
-  
+
   private readonly options: Required<WSConnectionOptions>;
-  
+
   // Event handlers
   private onMessage: ((message: ServerMessage) => void) | null = null;
   private onConnectionChange: ((state: ConnectionState) => void) | null = null;
@@ -30,7 +30,7 @@ export class VRWebSocketClient {
       autoReconnect: true,
       reconnectInterval: config.websocket.reconnectInterval,
       maxReconnectAttempts: config.websocket.maxReconnectAttempts,
-      ...options
+      ...options,
     };
   }
 
@@ -38,25 +38,25 @@ export class VRWebSocketClient {
     return new Promise((resolve, reject) => {
       try {
         this.isIntentionalClose = false;
-        this.updateConnectionState('connecting');
-        
-        logger.info('🔌 Conectando a WebSocket:', this.options.url);
-        
+        this.updateConnectionState("connecting");
+
+        logger.info("🔌 Conectando a WebSocket:", this.options.url);
+
         this.ws = new WebSocket(this.options.url);
-        
+
         const connectionTimeout = setTimeout(() => {
           if (this.ws?.readyState === WebSocket.CONNECTING) {
-            logger.error('❌ Timeout conectando a WebSocket');
+            logger.error("❌ Timeout conectando a WebSocket");
             this.ws?.close();
-            reject(new Error('Connection timeout'));
+            reject(new Error("Connection timeout"));
           }
         }, config.websocket.connectionTimeout);
 
         this.ws.onopen = () => {
           clearTimeout(connectionTimeout);
-          logger.info('✅ WebSocket conectado');
+          logger.info("✅ WebSocket conectado");
           this.reconnectAttempts = 0;
-          this.updateConnectionState('connected');
+          this.updateConnectionState("connected");
           this.startPingInterval();
           this.sendHello();
           resolve();
@@ -65,32 +65,38 @@ export class VRWebSocketClient {
         this.ws.onclose = (event) => {
           clearTimeout(connectionTimeout);
           this.cleanup();
-          
+
           if (event.wasClean) {
-            logger.info('🔌 WebSocket cerrado limpiamente');
-            this.updateConnectionState('disconnected');
+            logger.info("🔌 WebSocket cerrado limpiamente");
+            this.updateConnectionState("disconnected");
           } else {
-            logger.warn('⚠️ WebSocket cerrado inesperadamente:', event.code, event.reason);
-            this.updateConnectionState('disconnected');
-            this.handleReconnect();
+            logger.warn(
+              "⚠️ WebSocket cerrado inesperadamente:",
+              event.code,
+              event.reason
+            );
+            this.updateConnectionState("disconnected");
+            // Solo hacer reconexión automática si no es un cierre intencional
+            if (!this.isIntentionalClose) {
+              this.handleReconnect();
+            }
           }
         };
 
         this.ws.onerror = (error) => {
           clearTimeout(connectionTimeout);
-          logger.error('❌ Error en WebSocket:', error);
-          this.updateConnectionState('error');
-          captureError(new Error('WebSocket error'), 'websocket-connection');
-          reject(error);
+          logger.error("❌ Error en WebSocket:", error);
+          this.updateConnectionState("error");
+          captureError(new Error("WebSocket error"), "websocket-connection");
+          // No rechazar inmediatamente, dejar que onclose maneje la reconexión
         };
 
         this.ws.onmessage = (event) => {
           this.handleMessage(event.data);
         };
-
       } catch (error) {
-        logger.error('❌ Error creando WebSocket:', error);
-        this.updateConnectionState('error');
+        logger.error("❌ Error creando WebSocket:", error);
+        this.updateConnectionState("error");
         reject(error);
       }
     });
@@ -99,14 +105,19 @@ export class VRWebSocketClient {
   public disconnect(): void {
     this.isIntentionalClose = true;
     this.cleanup();
-    
+
     if (this.ws) {
-      this.ws.close(1000, 'Disconnected by client');
+      this.ws.close(1000, "Disconnected by client");
       this.ws = null;
     }
-    
-    this.updateConnectionState('disconnected');
-    logger.info('🔌 WebSocket desconectado por el cliente');
+
+    this.updateConnectionState("disconnected");
+    logger.info("🔌 WebSocket desconectado por el cliente");
+  }
+
+  public resetReconnectAttempts(): void {
+    this.reconnectAttempts = 0;
+    logger.info("🔄 Intentos de reconexión reseteados");
   }
 
   public send(message: ClientMessage): void {
@@ -114,16 +125,20 @@ export class VRWebSocketClient {
       try {
         const validatedMessage = ClientMessageSchema.parse(message);
         this.ws.send(JSON.stringify(validatedMessage));
-        
-        if (message.type !== 'PING') { // Don't log pings to reduce noise
-          logger.debug('📤 Enviado:', message.type, message.payload);
+
+        if (message.type !== "PING") {
+          // Don't log pings to reduce noise
+          logger.debug("📤 Enviado:", message.type, message.payload);
         }
       } catch (error) {
-        logger.error('❌ Error validando mensaje:', error);
-        captureError(error as Error, 'message-validation');
+        logger.error("❌ Error validando mensaje:", error);
+        captureError(error as Error, "message-validation");
       }
     } else {
-      logger.warn('⚠️ WebSocket no está conectado, no se puede enviar:', message.type);
+      logger.warn(
+        "⚠️ WebSocket no está conectado, no se puede enviar:",
+        message.type
+      );
     }
   }
 
@@ -131,7 +146,9 @@ export class VRWebSocketClient {
     this.onMessage = handler;
   }
 
-  public onConnectionStateChange(handler: (state: ConnectionState) => void): void {
+  public onConnectionStateChange(
+    handler: (state: ConnectionState) => void
+  ): void {
     this.onConnectionChange = handler;
   }
 
@@ -139,74 +156,87 @@ export class VRWebSocketClient {
     try {
       const parsed = JSON.parse(data);
       const message = ServerMessageSchema.parse(parsed);
-      
-      if (message.type !== 'PONG') { // Don't log pongs to reduce noise
-        logger.debug('📥 Recibido:', message.type, message.payload);
+
+      if (message.type !== "PONG") {
+        // Don't log pongs to reduce noise
+        logger.debug("📥 Recibido:", message.type, message.payload);
       }
-      
+
       // Handle internal messages
       switch (message.type) {
-        case 'WELCOME':
+        case "WELCOME":
           this.handleWelcome(message);
           break;
-        case 'PONG':
+        case "PONG":
           this.handlePong(message);
           break;
       }
-      
+
       // Forward to external handler
       this.onMessage?.(message);
-      
     } catch (error) {
-      logger.error('❌ Error parseando mensaje del servidor:', error);
-      captureError(error as Error, 'message-parsing');
+      logger.error("❌ Error parseando mensaje del servidor:", error);
+      captureError(error as Error, "message-parsing");
     }
   }
 
-  private handleWelcome(message: ServerMessage & { type: 'WELCOME' }): void {
+  private handleWelcome(message: ServerMessage & { type: "WELCOME" }): void {
     const { serverEpochMs } = message.payload;
     const clientTime = Date.now();
     const roundTripTime = 0; // We'll calculate this with pings
-    
+
     // Initial rough sync
-    useAppStore.getState().updateServerTime(serverEpochMs, clientTime - serverEpochMs, roundTripTime);
-    
-    logger.info('👋 Recibido WELCOME del servidor');
+    useAppStore
+      .getState()
+      .updateServerTime(
+        serverEpochMs,
+        clientTime - serverEpochMs,
+        roundTripTime
+      );
+
+    logger.info("👋 Recibido WELCOME del servidor");
   }
 
-  private handlePong(message: ServerMessage & { type: 'PONG' }): void {
+  private handlePong(message: ServerMessage & { type: "PONG" }): void {
     const { tServer, tClient } = message.payload;
     const now = Date.now();
-    
+
     // Calculate round-trip time and server offset
     const roundTripTime = now - tClient;
     const serverOffset = tServer - (tClient + roundTripTime / 2);
-    
-    useAppStore.getState().updateServerTime(tServer, serverOffset, roundTripTime);
-    
-    logger.debug('🏓 Ping/Pong - RTT:', roundTripTime + 'ms', 'Offset:', serverOffset + 'ms');
+
+    useAppStore
+      .getState()
+      .updateServerTime(tServer, serverOffset, roundTripTime);
+
+    logger.debug(
+      "🏓 Ping/Pong - RTT:",
+      roundTripTime + "ms",
+      "Offset:",
+      serverOffset + "ms"
+    );
   }
 
   private sendHello(): void {
     const store = useAppStore.getState();
-    
+
     this.send({
-      type: 'HELLO',
+      type: "HELLO",
       payload: {
         deviceId: store.deviceId,
         version: __VR_VERSION__,
         userAgent: navigator.userAgent,
-        battery: store.battery || undefined
-      }
+        battery: store.battery || undefined,
+      },
     });
   }
 
   private sendPing(): void {
     this.send({
-      type: 'PING',
+      type: "PING",
       payload: {
-        tClient: Date.now()
-      }
+        tClient: Date.now(),
+      },
     });
   }
 
@@ -227,19 +257,30 @@ export class VRWebSocketClient {
     }
 
     if (this.reconnectAttempts >= this.options.maxReconnectAttempts) {
-      logger.error('❌ Máximo número de intentos de reconexión alcanzado');
-      this.updateConnectionState('error');
+      logger.error("❌ Máximo número de intentos de reconexión alcanzado");
+      this.updateConnectionState("error");
       return;
     }
 
     this.reconnectAttempts++;
-    const delay = this.options.reconnectInterval * Math.pow(1.5, this.reconnectAttempts - 1);
-    
-    logger.info(`🔄 Reintentando conexión en ${delay}ms (intento ${this.reconnectAttempts}/${this.options.maxReconnectAttempts})`);
-    
+
+    // Usar delay inicial más corto para los primeros intentos
+    let delay: number;
+    if (this.reconnectAttempts <= 3) {
+      delay = config.websocket.initialRetryDelay; // 500ms para primeros intentos
+    } else {
+      delay =
+        this.options.reconnectInterval *
+        Math.pow(1.2, this.reconnectAttempts - 4); // Backoff más suave
+    }
+
+    logger.info(
+      `🔄 Reintentando conexión en ${delay}ms (intento ${this.reconnectAttempts}/${this.options.maxReconnectAttempts})`
+    );
+
     this.reconnectTimer = window.setTimeout(() => {
-      this.connect().catch(error => {
-        logger.error('❌ Error en reconexión:', error);
+      this.connect().catch((error) => {
+        logger.error("❌ Error en reconexión:", error);
       });
     }, delay);
   }
@@ -249,7 +290,7 @@ export class VRWebSocketClient {
       clearInterval(this.pingTimer);
       this.pingTimer = null;
     }
-    
+
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
@@ -257,14 +298,18 @@ export class VRWebSocketClient {
   }
 
   public getConnectionState(): ConnectionState {
-    if (!this.ws) return 'disconnected';
-    
+    if (!this.ws) return "disconnected";
+
     switch (this.ws.readyState) {
-      case WebSocket.CONNECTING: return 'connecting';
-      case WebSocket.OPEN: return 'connected';
+      case WebSocket.CONNECTING:
+        return "connecting";
+      case WebSocket.OPEN:
+        return "connected";
       case WebSocket.CLOSING:
-      case WebSocket.CLOSED: return 'disconnected';
-      default: return 'error';
+      case WebSocket.CLOSED:
+        return "disconnected";
+      default:
+        return "error";
     }
   }
 
@@ -282,7 +327,7 @@ export const initializeWebSocket = (): VRWebSocketClient => {
   if (wsClient) {
     wsClient.destroy();
   }
-  
+
   wsClient = new VRWebSocketClient();
   return wsClient;
 };
@@ -290,5 +335,3 @@ export const initializeWebSocket = (): VRWebSocketClient => {
 export const getWebSocketClient = (): VRWebSocketClient | null => {
   return wsClient;
 };
-
-
