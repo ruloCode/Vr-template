@@ -343,8 +343,8 @@ function generateDashboardHTML(): string {
                 <h3>🎬 Control de Escenas</h3>
                 <div class="input-group">
                     <select id="scene-select">
-                        <option value="escena-1">Escena 1: Riqueza Natural</option>
-                        <option value="escena-2">Escena 2: Dinámica del País</option>
+                        <option value="escena-1">Escena 1: Transición Energética (Solar y Eólica)</option>
+                        <option value="escena-2">Escena 2: Transición Energética (Geotermia e hidrógeno)</option>
                         <option value="escena-3">Escena 3: Exploración On/Offshore</option>
                     </select>
                     <button class="btn btn-primary" onclick="loadScene()">Cargar Escena</button>

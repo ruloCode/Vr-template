@@ -4,17 +4,17 @@
   "scenes": [
     {
       "id": "escena-1",
-      "title": "Escena 1",
-      "description": "Primera escena de video para pruebas",
-      "image360": "videos/escena-1.mp4",
-      "audio": "audio/ambient-night.mp3",
+      "title": "Transición Energética",
+      "description": "Primera escena con imagen estática y audio ambiental",
+      "image360": "photos/escena_1.png",
+      "audio": "audio/ambient-wind.mp3",
       "durationSec": 45
     },
     {
-      "id": "2",
-      "title": "Escena 2 (Reservado)",
-      "description": "Escena reservada para futuro contenido de video",
-      "image360": "videos/placeholder.mp4",
+      "id": "escena-2",
+      "title": "Transición Energética 2",
+      "description": "Segunda escena de transición energética con imagen 360°",
+      "image360": "photos/escena_2.png",
       "audio": "audio/ambient-wind.mp3",
       "durationSec": 50
     },
