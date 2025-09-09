@@ -17,10 +17,22 @@ export class PWAManager {
       return;
     }
 
+    // Verificar si estamos en HTTPS o localhost
+    const isSecureContext =
+      window.isSecureContext ||
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1";
+
+    if (!isSecureContext) {
+      logger.warn("⚠️ Service Worker requiere HTTPS o localhost");
+      return;
+    }
+
     try {
-      // Register service worker
+      // Register service worker con configuración mejorada
       this.registration = await navigator.serviceWorker.register("/sw.js", {
         scope: "/",
+        updateViaCache: "none", // Siempre verificar actualizaciones
       });
 
       logger.info("✅ Service Worker registrado");
@@ -217,7 +229,7 @@ export class PWAManager {
     updateBtn?.addEventListener("click", () => {
       logger.info("🔄 Usuario iniciando actualización PWA");
       updateBtn.textContent = "🔄 Actualizando...";
-      updateBtn.disabled = true;
+      (updateBtn as HTMLButtonElement).disabled = true;
       this.applyUpdate();
     });
 

@@ -49,11 +49,11 @@ export class AudioManager {
           logger.info("🔓 AudioContext resumido exitosamente");
         } catch (resumeError) {
           logger.warn(
-            "⚠️ No se pudo resumir AudioContext automáticamente:",
+            "⚠️ AudioContext requiere interacción del usuario:",
             resumeError
           );
-          // This is normal - user interaction might be required
-          // We'll still mark it as unlocked since the context is created
+          // This is normal - user interaction is required
+          // The context is created but needs user gesture to resume
         }
       }
 

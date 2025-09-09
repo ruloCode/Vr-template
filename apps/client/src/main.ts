@@ -95,7 +95,9 @@ function checkBrowserSupport(): boolean {
   }
 
   if (!checks.deviceOrientationSupport) {
-    logger.warn("⚠️ Device Orientation no disponible");
+    logger.info(
+      "ℹ️ Device Orientation no disponible - usando controles alternativos"
+    );
   }
 
   if (!checks.fullscreenSupport) {
@@ -196,6 +198,16 @@ if (import.meta.env.DEV) {
         app.reconnectWebSocket().catch(console.error);
       } else {
         console.warn("VR App no está disponible para reconexión");
+      }
+    },
+    resetSceneTransition: () => {
+      // Función global para resetear el estado de transición de escenas
+      const app = (window as any).VR_APP;
+      if (app && app.sceneManager && app.sceneManager.resetTransitionState) {
+        app.sceneManager.resetTransitionState();
+        console.log("✅ Estado de transición de escena reseteado");
+      } else {
+        console.warn("SceneManager no está disponible");
       }
     },
   };

@@ -50,16 +50,11 @@ export class VRApp {
       logger.info("3️⃣ Inicializando Audio Manager...");
       this.audioManager = new AudioManager(this.preloadedAssets.audioCache);
 
-      // Auto-unlock audio context
-      try {
-        logger.info("🔊 Desbloqueando AudioContext automáticamente...");
-        await this.audioManager.unlock();
-        useAppStore.getState().setAudioUnlocked(true);
-        logger.info("✅ AudioContext desbloqueado automáticamente");
-      } catch (error) {
-        logger.warn("⚠️ No se pudo desbloquear audio automáticamente:", error);
-        // Continue without audio - user can unlock manually later
-      }
+      // Initialize audio context but don't unlock automatically
+      // User will need to interact to unlock audio
+      logger.info(
+        "🔊 AudioManager inicializado - requiere interacción del usuario para activar"
+      );
 
       // Step 4: Initialize Scene Manager
       logger.info("4️⃣ Inicializando Scene Manager...");
@@ -69,7 +64,7 @@ export class VRApp {
       );
       await this.sceneManager.initialize();
 
-      // Step 5: Initialize WebSocket connection (blocking until connected or timeout)
+      // Step 5: Initialize WebSocket connection (obligatory)
       logger.info("5️⃣ Inicializando conexión WebSocket...");
       this.wsClient = initializeWebSocket();
       this.setupWebSocketHandlers();

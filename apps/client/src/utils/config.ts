@@ -5,9 +5,11 @@ export const config = {
     import.meta.env.VITE_WS_URL ||
     (() => {
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-      const host = "localhost"; // Usar localhost para desarrollo
-      const port = 8080;
-      return `${protocol}//${host}:${port + 1}/ws`;
+      const host = window.location.hostname;
+      const port = 8081;
+
+      // Usar la misma IP/hostname para el WebSocket
+      return `${protocol}//${host}:${port}/ws`;
     })(),
 
   // Server URL for API calls
@@ -15,7 +17,7 @@ export const config = {
     import.meta.env.VITE_SERVER_URL ||
     (() => {
       const protocol = window.location.protocol;
-      const host = "localhost"; // Usar localhost para desarrollo
+      const host = window.location.hostname; // Usar el hostname actual (permite acceso móvil)
       const port = 8080;
       return `${protocol}//${host}:${port}`;
     })(),

@@ -26,7 +26,7 @@ export class VRWebSocketClient {
 
   constructor(options: Partial<WSConnectionOptions> = {}) {
     this.options = {
-      url: config.wsUrl,
+      url: config.wsUrl, // Puede ser null para modo standalone
       autoReconnect: true,
       reconnectInterval: config.websocket.reconnectInterval,
       maxReconnectAttempts: config.websocket.maxReconnectAttempts,

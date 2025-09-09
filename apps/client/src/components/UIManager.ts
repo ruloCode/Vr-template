@@ -926,6 +926,7 @@ export class UIManager {
   public showMainInterface(): void {
     const readyState = document.getElementById("ready-state");
     const store = useAppStore.getState();
+    console.log(store);
 
     if (readyState) {
       // Update device info

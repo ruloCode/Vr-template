@@ -293,10 +293,21 @@ export class SceneManager {
     }
   }
 
+  /**
+   * Resetea el estado de transición en caso de que se haya quedado colgado
+   */
+  public resetTransitionState(): void {
+    logger.info("🔄 Reseteando estado de transición");
+    this.isTransitioning = false;
+    this.showLoading(false);
+  }
+
   public async loadScene(scene: VRScene): Promise<void> {
     if (this.isTransitioning) {
-      logger.warn("⚠️ Ya hay una transición en curso");
-      return;
+      logger.warn(
+        "⚠️ Ya hay una transición en curso, forzando reset del estado"
+      );
+      this.resetTransitionState();
     }
 
     try {
@@ -307,17 +318,23 @@ export class SceneManager {
 
       // Stop current scene if any
       if (this.currentScene) {
+        logger.debug("⏹️ Deteniendo escena actual:", this.currentScene.id);
         this.stopCurrentScene();
       }
 
       // Show loading indicator
+      logger.debug("⏳ Mostrando indicador de carga");
       this.showLoading(true);
 
       // Load audio first
+      logger.debug("🎵 Cargando audio:", scene.audio);
       await this.audioManager.loadAudio(scene.audio);
+      logger.debug("✅ Audio cargado exitosamente");
 
       // Load scene content (video or image)
+      logger.debug("🖼️ Cargando contenido de escena...");
       await this.loadSceneContent(scene);
+      logger.debug("✅ Contenido de escena cargado exitosamente");
 
       // Start ambient audio for scenes that use ambient-wind.mp3
       if (scene.audio === "audio/ambient-wind.mp3") {

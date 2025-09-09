@@ -48,6 +48,7 @@ export default defineConfig({
         ],
       },
       includeAssets: ["favicon.ico", "apple-touch-icon.png", "masked-icon.svg"],
+      filename: "manifest.webmanifest",
       manifest: {
         name: "VR Ecopetrol - Experiencia 360°",
         short_name: "VR Ecopetrol",
@@ -59,24 +60,7 @@ export default defineConfig({
         orientation: "landscape",
         start_url: "/",
         scope: "/",
-        icons: [
-          {
-            src: "icon-192.png",
-            sizes: "192x192",
-            type: "image/png",
-          },
-          {
-            src: "icon-512.png",
-            sizes: "512x512",
-            type: "image/png",
-          },
-          {
-            src: "icon-512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "any maskable",
-          },
-        ],
+        icons: [],
       },
       devOptions: {
         enabled: true,
@@ -109,11 +93,12 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    host: true, // Para acceso desde LAN
+    host: "0.0.0.0", // Permite acceso desde cualquier IP de la red
     cors: true,
+    strictPort: false, // Permite usar otro puerto si 3000 está ocupado
   },
   preview: {
     port: 3001,
-    host: true,
+    host: "0.0.0.0",
   },
 });
