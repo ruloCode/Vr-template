@@ -214,6 +214,21 @@ export class VRApp {
       case "SEEK":
         this.handleSeekCommand(payload.deltaMs);
         break;
+      case "SHOW_SCREEN":
+        this.handleShowScreenCommand(payload.screenType);
+        break;
+      case "HIDE_SCREEN":
+        this.handleHideScreenCommand(payload.screenType);
+        break;
+      case "HIDE_ALL_SCREENS":
+        this.handleHideAllScreensCommand();
+        break;
+      case "SHOW_ALL_SCREENS":
+        this.handleShowAllScreensCommand();
+        break;
+      case "TOGGLE_SCREEN":
+        this.handleToggleScreenCommand(payload.screenType);
+        break;
       default:
         logger.warn("⚠️ Comando no reconocido:", payload);
     }
@@ -292,6 +307,152 @@ export class VRApp {
 
     if (this.syncManager) {
       this.syncManager.seek(deltaMs);
+    }
+  }
+
+  private handleShowScreenCommand(screenType: string): void {
+    logger.info("📺 Mostrando pantalla:", screenType);
+
+    if (!this.sceneManager) {
+      logger.warn("⚠️ SceneManager no disponible");
+      return;
+    }
+
+    switch (screenType) {
+      case "solar":
+        this.sceneManager.showParkScreen();
+        break;
+      case "petroleo":
+        this.sceneManager.showPetroleoScreen();
+        break;
+      case "plataforma":
+        this.sceneManager.showPlataformaScreen();
+        break;
+      case "cpf":
+        this.sceneManager.showCpfScreen();
+        break;
+      default:
+        logger.warn("⚠️ Tipo de pantalla no reconocido:", screenType);
+    }
+  }
+
+  private handleHideScreenCommand(screenType: string): void {
+    logger.info("📺 Ocultando pantalla:", screenType);
+
+    if (!this.sceneManager) {
+      logger.warn("⚠️ SceneManager no disponible");
+      return;
+    }
+
+    switch (screenType) {
+      case "solar":
+        this.sceneManager.hideParkScreen();
+        break;
+      case "petroleo":
+        this.sceneManager.hidePetroleoScreen();
+        break;
+      case "plataforma":
+        this.sceneManager.hidePlataformaScreen();
+        break;
+      case "cpf":
+        this.sceneManager.hideCpfScreen();
+        break;
+      default:
+        logger.warn("⚠️ Tipo de pantalla no reconocido:", screenType);
+    }
+  }
+
+  private handleHideAllScreensCommand(): void {
+    logger.info("📺 Ocultando todas las pantallas");
+
+    if (!this.sceneManager) {
+      logger.warn("⚠️ SceneManager no disponible");
+      return;
+    }
+
+    this.sceneManager.hideParkScreen();
+    this.sceneManager.hidePetroleoScreen();
+    this.sceneManager.hidePlataformaScreen();
+    this.sceneManager.hideCpfScreen();
+  }
+
+  private handleShowAllScreensCommand(): void {
+    logger.info("📺 Mostrando pantallas de la escena actual");
+
+    if (!this.sceneManager) {
+      logger.warn("⚠️ SceneManager no disponible");
+      return;
+    }
+
+    // Obtener la escena actual
+    const currentScene = this.sceneManager.getCurrentScene();
+
+    if (!currentScene) {
+      logger.warn("⚠️ No hay escena actual cargada");
+      return;
+    }
+
+    // Mostrar solo las pantallas correspondientes a la escena actual
+    switch (currentScene.id) {
+      case "escena-1":
+        this.sceneManager.showParkScreen();
+        logger.info("☀️ Mostrando pantalla solar para escena 1");
+        break;
+      case "escena-2":
+        this.sceneManager.showPetroleoScreen();
+        logger.info("🛢️ Mostrando pantalla de petróleo para escena 2");
+        break;
+      case "escena-3":
+        this.sceneManager.showPlataformaScreen();
+        this.sceneManager.showCpfScreen();
+        logger.info(
+          "🏗️ Mostrando pantallas de plataformas y CPF para escena 3"
+        );
+        break;
+      default:
+        logger.info("📺 No hay pantallas flotantes para esta escena");
+    }
+  }
+
+  private handleToggleScreenCommand(screenType: string): void {
+    logger.info("📺 Toggle pantalla:", screenType);
+
+    if (!this.sceneManager) {
+      logger.warn("⚠️ SceneManager no disponible");
+      return;
+    }
+
+    switch (screenType) {
+      case "solar":
+        if (this.sceneManager.isParkScreenVisible()) {
+          this.sceneManager.hideParkScreen();
+        } else {
+          this.sceneManager.showParkScreen();
+        }
+        break;
+      case "petroleo":
+        if (this.sceneManager.isPetroleoScreenVisible()) {
+          this.sceneManager.hidePetroleoScreen();
+        } else {
+          this.sceneManager.showPetroleoScreen();
+        }
+        break;
+      case "plataforma":
+        if (this.sceneManager.isPlataformaScreenVisible()) {
+          this.sceneManager.hidePlataformaScreen();
+        } else {
+          this.sceneManager.showPlataformaScreen();
+        }
+        break;
+      case "cpf":
+        if (this.sceneManager.isCpfScreenVisible()) {
+          this.sceneManager.hideCpfScreen();
+        } else {
+          this.sceneManager.showCpfScreen();
+        }
+        break;
+      default:
+        logger.warn("⚠️ Tipo de pantalla no reconocido:", screenType);
     }
   }
 

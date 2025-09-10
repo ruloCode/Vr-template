@@ -13,6 +13,8 @@ export class SceneManager {
   private floatingScreen: any = null;
   private parkScreen: any = null;
   private petroleoScreen: any = null;
+  private plataformaScreen: any = null;
+  private cpfScreen: any = null;
   private ambientAudio: any = null;
   private lights: {
     ambient: any;
@@ -80,6 +82,7 @@ export class SceneManager {
           <!-- Panorama 360° assets -->
           <img id="escena-1-image" src="/photos/escena_1.png" crossorigin="anonymous"></img>
           <img id="escena-2-image" src="/photos/escena_2.png" crossorigin="anonymous"></img>
+          <img id="escena-3-image" src="/photos/escena_3.jpg" crossorigin="anonymous"></img>
           <!-- Solar videos for floating screen -->
           <video id="solar-1-video" src="/videos/solar_1.MP4" preload="auto" loop="false" crossorigin="anonymous"></video>
           <video id="solar-2-video" src="/videos/solar_2.MP4" preload="auto" loop="false" crossorigin="anonymous"></video>
@@ -88,6 +91,14 @@ export class SceneManager {
           <img id="petroleo-1-image" src="/panos/petroleo_1.jpg" crossorigin="anonymous"></img>
           <img id="petroleo-2-image" src="/panos/petroleo_2.jpg" crossorigin="anonymous"></img>
           <img id="petroleo-3-image" src="/panos/petroleo_3.jpg" crossorigin="anonymous"></img>
+          <!-- Plataforma images for floating screen -->
+          <img id="plataforma-1-image" src="/panos/plataforma_1.jpg" crossorigin="anonymous"></img>
+          <img id="plataforma-2-image" src="/panos/plataforma_2.jpg" crossorigin="anonymous"></img>
+          <img id="plataforma-3-image" src="/panos/plataforma_3.jpg" crossorigin="anonymous"></img>
+          <!-- CPF images for floating screen -->
+          <img id="cpf-cupiagua-image" src="/panos/cpf_cupiagua.jpg" crossorigin="anonymous"></img>
+          <img id="cpf-cusiana-image" src="/panos/cpf_cusiana.jpg" crossorigin="anonymous"></img>
+          <img id="cpf-florena-image" src="/panos/cpf_florena.jpg" crossorigin="anonymous"></img>
           <!-- Video assets -->
           <video id="escena-1-video" src="/videos/escena-1.mp4" preload="auto" loop="false" crossorigin="anonymous"></video>
           <!-- Audio assets -->
@@ -146,6 +157,32 @@ export class SceneManager {
            visible="false"
            petroleo-image-cycler
          ></a-plane>
+         
+          <!-- Single floating screen that cycles through plataforma images (Scene 3 only) -->
+          <a-plane 
+            id="plataforma-screen"
+            src="#plataforma-1-image"
+            position="-100 150 50"
+            width="180"
+            height="100"
+            rotation="-20 -50 0"
+            material="shader: flat; side: double"
+            visible="false"
+            plataforma-image-cycler
+          ></a-plane>
+          
+          <!-- Single floating screen that cycles through CPF images (Scene 3 only) -->
+          <a-plane 
+            id="cpf-screen"
+            src="#cpf-cupiagua-image"
+            position="100 150 50"
+            width="180"
+            height="100"
+            rotation="-20 50 0"
+            material="shader: flat; side: double"
+            visible="false"
+            cpf-image-cycler
+          ></a-plane>
         
         <!-- Main sky sphere for 360 images (hidden by default) -->
         <a-sky 
@@ -198,6 +235,8 @@ export class SceneManager {
     this.floatingScreen = document.querySelector("#floating-screen");
     this.parkScreen = document.querySelector("#park-screen");
     this.petroleoScreen = document.querySelector("#petroleo-screen");
+    this.plataformaScreen = document.querySelector("#plataforma-screen");
+    this.cpfScreen = document.querySelector("#cpf-screen");
     this.ambientAudio = document.querySelector("#ambient-wind");
 
     // Get references to lights
@@ -339,6 +378,118 @@ export class SceneManager {
           size: {
             width: this.petroleoScreen.getAttribute("width"),
             height: this.petroleoScreen.getAttribute("height"),
+          },
+          currentImage: cycler ? cycler.currentImageIndex + 1 : 0,
+          totalImages: cycler ? cycler.images.length : 0,
+          cycling: cycler ? !!cycler.intervalId : false,
+        };
+      },
+    };
+
+    // Expose plataforma screen controls globally for debugging
+    (window as any).plataformaScreen = {
+      show: () => this.showPlataformaScreen(),
+      hide: () => this.hidePlataformaScreen(),
+      move: (x: number, y: number, z: number) => {
+        if (this.plataformaScreen) {
+          this.plataformaScreen.setAttribute("position", `${x} ${y} ${z}`);
+          console.log(
+            `🏗️ Pantalla de plataformas movida a posición: ${x}, ${y}, ${z}`
+          );
+        }
+      },
+      rotate: (x: number, y: number, z: number) => {
+        if (this.plataformaScreen) {
+          this.plataformaScreen.setAttribute("rotation", `${x} ${y} ${z}`);
+          console.log(`🏗️ Pantalla de plataformas rotada a: ${x}, ${y}, ${z}`);
+        }
+      },
+      resize: (width: number, height: number) => {
+        if (this.plataformaScreen) {
+          this.plataformaScreen.setAttribute("width", width.toString());
+          this.plataformaScreen.setAttribute("height", height.toString());
+          console.log(
+            `🏗️ Pantalla de plataformas redimensionada a: ${width}x${height}`
+          );
+        }
+      },
+      nextImage: () => {
+        const cycler = (window as any).plataformaImageCycler;
+        if (cycler && cycler.nextImage) {
+          cycler.nextImage();
+        }
+      },
+      setImage: (index: number) => {
+        const cycler = (window as any).plataformaImageCycler;
+        if (cycler && cycler.setImage) {
+          cycler.setImage(index);
+        }
+      },
+      info: () => {
+        if (!this.plataformaScreen) return null;
+        const cycler = (window as any).plataformaImageCycler;
+        return {
+          visible: this.plataformaScreen.getAttribute("visible") === "true",
+          position: this.plataformaScreen.getAttribute("position"),
+          rotation: this.plataformaScreen.getAttribute("rotation"),
+          size: {
+            width: this.plataformaScreen.getAttribute("width"),
+            height: this.plataformaScreen.getAttribute("height"),
+          },
+          currentImage: cycler ? cycler.currentImageIndex + 1 : 0,
+          totalImages: cycler ? cycler.images.length : 0,
+          cycling: cycler ? !!cycler.intervalId : false,
+        };
+      },
+    };
+
+    // Expose CPF screen controls globally for debugging
+    (window as any).cpfScreen = {
+      show: () => this.showCpfScreen(),
+      hide: () => this.hideCpfScreen(),
+      move: (x: number, y: number, z: number) => {
+        if (this.cpfScreen) {
+          this.cpfScreen.setAttribute("position", `${x} ${y} ${z}`);
+          console.log(`🏭 Pantalla de CPF movida a posición: ${x}, ${y}, ${z}`);
+        }
+      },
+      rotate: (x: number, y: number, z: number) => {
+        if (this.cpfScreen) {
+          this.cpfScreen.setAttribute("rotation", `${x} ${y} ${z}`);
+          console.log(`🏭 Pantalla de CPF rotada a: ${x}, ${y}, ${z}`);
+        }
+      },
+      resize: (width: number, height: number) => {
+        if (this.cpfScreen) {
+          this.cpfScreen.setAttribute("width", width.toString());
+          this.cpfScreen.setAttribute("height", height.toString());
+          console.log(
+            `🏭 Pantalla de CPF redimensionada a: ${width}x${height}`
+          );
+        }
+      },
+      nextImage: () => {
+        const cycler = (window as any).cpfImageCycler;
+        if (cycler && cycler.nextImage) {
+          cycler.nextImage();
+        }
+      },
+      setImage: (index: number) => {
+        const cycler = (window as any).cpfImageCycler;
+        if (cycler && cycler.setImage) {
+          cycler.setImage(index);
+        }
+      },
+      info: () => {
+        if (!this.cpfScreen) return null;
+        const cycler = (window as any).cpfImageCycler;
+        return {
+          visible: this.cpfScreen.getAttribute("visible") === "true",
+          position: this.cpfScreen.getAttribute("position"),
+          rotation: this.cpfScreen.getAttribute("rotation"),
+          size: {
+            width: this.cpfScreen.getAttribute("width"),
+            height: this.cpfScreen.getAttribute("height"),
           },
           currentImage: cycler ? cycler.currentImageIndex + 1 : 0,
           totalImages: cycler ? cycler.images.length : 0,
@@ -616,6 +767,154 @@ export class SceneManager {
         },
       });
 
+      // Plataforma image cycler component for automatic image cycling
+      AFRAME.registerComponent("plataforma-image-cycler", {
+        init(this: any) {
+          this.isVisible = false;
+          this.currentImageIndex = 0; // Start with image 1 (plataforma-1-image)
+          this.images = [
+            "#plataforma-1-image",
+            "#plataforma-2-image",
+            "#plataforma-3-image",
+          ];
+          this.intervalId = null;
+
+          this.show = () => {
+            this.el.setAttribute("visible", "true");
+            this.isVisible = true;
+            this.startCycling();
+            console.log(
+              "🏗️ Pantalla de plataformas mostrada con ciclado automático"
+            );
+          };
+
+          this.hide = () => {
+            this.el.setAttribute("visible", "false");
+            this.isVisible = false;
+            this.stopCycling();
+            console.log("🏗️ Pantalla de plataformas oculta");
+          };
+
+          this.startCycling = () => {
+            if (this.intervalId) return; // Already cycling
+
+            this.intervalId = setInterval(() => {
+              this.nextImage();
+            }, 15000); // 15 seconds
+          };
+
+          this.stopCycling = () => {
+            if (this.intervalId) {
+              clearInterval(this.intervalId);
+              this.intervalId = null;
+            }
+          };
+
+          this.nextImage = () => {
+            this.currentImageIndex =
+              (this.currentImageIndex + 1) % this.images.length;
+            this.el.setAttribute("src", this.images[this.currentImageIndex]);
+            console.log(
+              `🏗️ Cambiando a imagen de plataforma ${this.currentImageIndex + 1}/3`
+            );
+          };
+
+          this.setImage = (index: number) => {
+            if (index >= 0 && index < this.images.length) {
+              this.currentImageIndex = index;
+              this.el.setAttribute("src", this.images[index]);
+              console.log(
+                `🏗️ Imagen de plataforma cambiada manualmente a ${index + 1}/3`
+              );
+            }
+          };
+
+          // Expose methods globally for easy access
+          (window as any).plataformaImageCycler = this;
+        },
+
+        remove() {
+          const self = this as any;
+          if (self.intervalId) {
+            clearInterval(self.intervalId);
+            self.intervalId = null;
+          }
+        },
+      });
+
+      // CPF image cycler component for automatic image cycling
+      AFRAME.registerComponent("cpf-image-cycler", {
+        init(this: any) {
+          this.isVisible = false;
+          this.currentImageIndex = 0; // Start with image 1 (cpf-cupiagua-image)
+          this.images = [
+            "#cpf-cupiagua-image",
+            "#cpf-cusiana-image",
+            "#cpf-florena-image",
+          ];
+          this.intervalId = null;
+
+          this.show = () => {
+            this.el.setAttribute("visible", "true");
+            this.isVisible = true;
+            this.startCycling();
+            console.log("🏭 Pantalla de CPF mostrada con ciclado automático");
+          };
+
+          this.hide = () => {
+            this.el.setAttribute("visible", "false");
+            this.isVisible = false;
+            this.stopCycling();
+            console.log("🏭 Pantalla de CPF oculta");
+          };
+
+          this.startCycling = () => {
+            if (this.intervalId) return; // Already cycling
+
+            this.intervalId = setInterval(() => {
+              this.nextImage();
+            }, 15000); // 15 seconds
+          };
+
+          this.stopCycling = () => {
+            if (this.intervalId) {
+              clearInterval(this.intervalId);
+              this.intervalId = null;
+            }
+          };
+
+          this.nextImage = () => {
+            this.currentImageIndex =
+              (this.currentImageIndex + 1) % this.images.length;
+            this.el.setAttribute("src", this.images[this.currentImageIndex]);
+            console.log(
+              `🏭 Cambiando a imagen de CPF ${this.currentImageIndex + 1}/3`
+            );
+          };
+
+          this.setImage = (index: number) => {
+            if (index >= 0 && index < this.images.length) {
+              this.currentImageIndex = index;
+              this.el.setAttribute("src", this.images[index]);
+              console.log(
+                `🏭 Imagen de CPF cambiada manualmente a ${index + 1}/3`
+              );
+            }
+          };
+
+          // Expose methods globally for easy access
+          (window as any).cpfImageCycler = this;
+        },
+
+        remove() {
+          const self = this as any;
+          if (self.intervalId) {
+            clearInterval(self.intervalId);
+            self.intervalId = null;
+          }
+        },
+      });
+
       // Apply components to camera
       const camera = document.querySelector("#main-camera");
       if (camera) {
@@ -718,18 +1017,30 @@ export class SceneManager {
           if (scene.id === "escena-1") {
             this.showParkScreen();
             this.hidePetroleoScreen();
+            this.hidePlataformaScreen();
             logger.info(
               "☀️ Mostrando pantalla solar con reproducción automática para escena 1"
             );
           } else if (scene.id === "escena-2") {
             this.hideParkScreen();
             this.showPetroleoScreen();
+            this.hidePlataformaScreen();
             logger.info(
               "🛢️ Mostrando pantalla de petróleo con ciclado automático para escena 2"
+            );
+          } else if (scene.id === "escena-3") {
+            this.hideParkScreen();
+            this.hidePetroleoScreen();
+            this.showPlataformaScreen();
+            this.showCpfScreen();
+            logger.info(
+              "🏗️ Mostrando pantallas de plataformas y CPF con ciclado automático para escena 3"
             );
           } else {
             this.hideParkScreen();
             this.hidePetroleoScreen();
+            this.hidePlataformaScreen();
+            this.hideCpfScreen();
             logger.info("📺 Ocultando pantallas flotantes para otras escenas");
           }
         } else if (assetPath.endsWith(".mp4") || assetPath.endsWith(".webm")) {
@@ -740,6 +1051,8 @@ export class SceneManager {
           // Hide all floating screens for video scenes
           this.hideParkScreen();
           this.hidePetroleoScreen();
+          this.hidePlataformaScreen();
+          this.hideCpfScreen();
           logger.info("📺 Ocultando pantallas flotantes para escenas de video");
         } else {
           logger.warn(`⚠️ Formato de archivo no reconocido: ${assetPath}`);
@@ -904,6 +1217,8 @@ FPS: ${info.fps || "N/A"}
     // Hide all floating screens
     this.hideParkScreen();
     this.hidePetroleoScreen();
+    this.hidePlataformaScreen();
+    this.hideCpfScreen();
 
     // Stop ambient audio when returning to default view
     this.stopAmbientAudio();
@@ -931,6 +1246,8 @@ FPS: ${info.fps || "N/A"}
     // Hide all floating screens when changing scenes
     this.hideParkScreen();
     this.hidePetroleoScreen();
+    this.hidePlataformaScreen();
+    this.hideCpfScreen();
 
     logger.info("🛑 Escena actual detenida");
   }
@@ -950,6 +1267,8 @@ FPS: ${info.fps || "N/A"}
     this.floatingScreen = null;
     this.parkScreen = null;
     this.petroleoScreen = null;
+    this.plataformaScreen = null;
+    this.cpfScreen = null;
     this.ambientAudio = null;
     this.lights = null;
   }
@@ -1464,5 +1783,101 @@ FPS: ${info.fps || "N/A"}
   public isPetroleoScreenVisible(): boolean {
     if (!this.petroleoScreen) return false;
     return this.petroleoScreen.getAttribute("visible") === "true";
+  }
+
+  // Plataforma Screen Control Methods
+  public showPlataformaScreen(): void {
+    if (!this.plataformaScreen) {
+      logger.warn("⚠️ Referencia de pantalla de plataformas no disponible");
+      return;
+    }
+
+    try {
+      const component = (this.plataformaScreen as any).components[
+        "plataforma-image-cycler"
+      ];
+      if (component && component.show) {
+        component.show();
+      } else {
+        this.plataformaScreen.setAttribute("visible", "true");
+      }
+
+      logger.info("🏗️ Pantalla de plataformas mostrada con ciclado automático");
+    } catch (error) {
+      logger.error("❌ Error mostrando pantalla de plataformas:", error);
+    }
+  }
+
+  public hidePlataformaScreen(): void {
+    if (!this.plataformaScreen) {
+      logger.warn("⚠️ Referencia de pantalla de plataformas no disponible");
+      return;
+    }
+
+    try {
+      const component = (this.plataformaScreen as any).components[
+        "plataforma-image-cycler"
+      ];
+      if (component && component.hide) {
+        component.hide();
+      } else {
+        this.plataformaScreen.setAttribute("visible", "false");
+      }
+
+      logger.info("🏗️ Pantalla de plataformas oculta");
+    } catch (error) {
+      logger.error("❌ Error ocultando pantalla de plataformas:", error);
+    }
+  }
+
+  public isPlataformaScreenVisible(): boolean {
+    if (!this.plataformaScreen) return false;
+    return this.plataformaScreen.getAttribute("visible") === "true";
+  }
+
+  // CPF Screen Control Methods
+  public showCpfScreen(): void {
+    if (!this.cpfScreen) {
+      logger.warn("⚠️ Referencia de pantalla de CPF no disponible");
+      return;
+    }
+
+    try {
+      const component = (this.cpfScreen as any).components["cpf-image-cycler"];
+      if (component && component.show) {
+        component.show();
+      } else {
+        this.cpfScreen.setAttribute("visible", "true");
+      }
+
+      logger.info("🏭 Pantalla de CPF mostrada con ciclado automático");
+    } catch (error) {
+      logger.error("❌ Error mostrando pantalla de CPF:", error);
+    }
+  }
+
+  public hideCpfScreen(): void {
+    if (!this.cpfScreen) {
+      logger.warn("⚠️ Referencia de pantalla de CPF no disponible");
+      return;
+    }
+
+    try {
+      const component = (this.cpfScreen as any).components["cpf-image-cycler"];
+      if (component && component.hide) {
+        component.hide();
+      } else {
+        this.cpfScreen.setAttribute("visible", "false");
+      }
+
+      logger.info("🏭 Pantalla de CPF oculta");
+    } catch (error) {
+      logger.error("❌ Error ocultando pantalla de CPF:", error);
+    }
+  }
+
+  public isCpfScreenVisible(): boolean {
+    if (!this.cpfScreen) return false;
+    return this.cpfScreen.getAttribute("visible") === "true";
   }
 }

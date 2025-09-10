@@ -19,12 +19,12 @@
       "durationSec": 50
     },
     {
-      "id": "3",
-      "title": "Escena 3 (Reservado)",
-      "description": "Escena reservada para futuro contenido de video",
-      "image360": "videos/placeholder.mp4",
-      "audio": "audio/ambient-night.mp3",
-      "durationSec": 40
+      "id": "escena-3",
+      "title": "Escena 3",
+      "description": "Tercera escena con imagen 360° de escena_3.jpg",
+      "image360": "photos/escena_3.jpg",
+      "audio": "audio/ambient-wind.mp3",
+      "durationSec": 45
     },
     {
       "id": "4",

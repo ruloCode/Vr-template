@@ -80,6 +80,65 @@ export function createDashboardRoutes(wsManager: WebSocketManager): Router {
           };
           break;
 
+        case "SHOW_SCREEN":
+          if (!payload.screenType) {
+            return res
+              .status(400)
+              .json({ error: "screenType es requerido para SHOW_SCREEN" });
+          }
+          command = {
+            type: "COMMAND" as const,
+            payload: {
+              commandType: "SHOW_SCREEN" as const,
+              screenType: payload.screenType,
+            },
+          };
+          break;
+
+        case "HIDE_SCREEN":
+          if (!payload.screenType) {
+            return res
+              .status(400)
+              .json({ error: "screenType es requerido para HIDE_SCREEN" });
+          }
+          command = {
+            type: "COMMAND" as const,
+            payload: {
+              commandType: "HIDE_SCREEN" as const,
+              screenType: payload.screenType,
+            },
+          };
+          break;
+
+        case "HIDE_ALL_SCREENS":
+          command = {
+            type: "COMMAND" as const,
+            payload: { commandType: "HIDE_ALL_SCREENS" as const },
+          };
+          break;
+
+        case "SHOW_ALL_SCREENS":
+          command = {
+            type: "COMMAND" as const,
+            payload: { commandType: "SHOW_ALL_SCREENS" as const },
+          };
+          break;
+
+        case "TOGGLE_SCREEN":
+          if (!payload.screenType) {
+            return res
+              .status(400)
+              .json({ error: "screenType es requerido para TOGGLE_SCREEN" });
+          }
+          command = {
+            type: "COMMAND" as const,
+            payload: {
+              commandType: "TOGGLE_SCREEN" as const,
+              screenType: payload.screenType,
+            },
+          };
+          break;
+
         default:
           return res
             .status(400)
@@ -310,6 +369,19 @@ function generateDashboardHTML(): string {
             font-size: 0.9rem;
             color: #6c757d;
         }
+        
+        .screen-info {
+            margin-top: 10px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .screen-info small {
+            color: #495057;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -334,7 +406,7 @@ function generateDashboardHTML(): string {
             </div>
             <div class="stat-card">
                 <span class="stat-number" id="current-scene">-</span>
-                <div class="stat-label">Escena Actual</div>
+                <div class="stat-label">Toma Actual</div>
             </div>
         </div>
         
@@ -343,9 +415,9 @@ function generateDashboardHTML(): string {
                 <h3>🎬 Control de Escenas</h3>
                 <div class="input-group">
                     <select id="scene-select">
-                        <option value="escena-1">Escena 1: Transición Energética (Solar y Eólica)</option>
-                        <option value="escena-2">Escena 2: Transición Energética (Geotermia e hidrógeno)</option>
-                        <option value="escena-3">Escena 3: Exploración On/Offshore</option>
+                        <option value="escena-1">Toma 1: Transición Energética (Solar y Eólica)</option>
+                        <option value="escena-2">Toma 2: Transición Energética (Geotermia e hidrógeno)</option>
+                        <option value="escena-3">Toma 3: Transición Energética (Plataformas petroleras)</option>
                     </select>
                     <button class="btn btn-primary" onclick="loadScene()">Cargar Escena</button>
                 </div>
@@ -370,6 +442,17 @@ function generateDashboardHTML(): string {
                 <div class="input-group">
                     <input type="number" id="custom-delay" placeholder="Milisegundos" value="3000">
                     <button class="btn btn-success" onclick="startInCustom()">START Custom</button>
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <h3>📺 Control de Pantallas Flotantes</h3>
+                <div class="button-group">
+                    <button class="btn btn-success" onclick="showAllScreens()">📺 Mostrar Pantalla Actual</button>
+                    <button class="btn btn-warning" onclick="hideAllScreens()">📺 Ocultar Todas</button>
+                </div>
+                <div class="screen-info">
+                    <small id="screen-status">Pantallas: <span id="current-screen-info">-</span></small>
                 </div>
             </div>
         </div>
@@ -435,6 +518,9 @@ function generateDashboardHTML(): string {
             document.getElementById('avg-latency').textContent = avgLatency + 'ms';
             
             document.getElementById('current-scene').textContent = currentRoom.currentScene || '-';
+            
+            // Actualizar información de pantalla
+            updateScreenInfo();
         }
         
         function updateClientsTable() {
@@ -513,6 +599,37 @@ function generateDashboardHTML(): string {
         
         function seek(deltaMs) {
             sendCommand('SEEK', { deltaMs });
+        }
+        
+        function showAllScreens() {
+            sendCommand('SHOW_ALL_SCREENS');
+        }
+        
+        function hideAllScreens() {
+            sendCommand('HIDE_ALL_SCREENS');
+        }
+        
+        function updateScreenInfo() {
+            const currentScene = document.getElementById('current-scene').textContent;
+            const screenInfoElement = document.getElementById('current-screen-info');
+            
+            let screenInfo = '-';
+            
+            switch (currentScene) {
+                case 'escena-1':
+                    screenInfo = '☀️ Solar disponible';
+                    break;
+                case 'escena-2':
+                    screenInfo = '🛢️ Petróleo disponible';
+                    break;
+                case 'escena-3':
+                    screenInfo = '🏗️ Plataformas disponible';
+                    break;
+                default:
+                    screenInfo = 'Sin pantallas flotantes';
+            }
+            
+            screenInfoElement.textContent = screenInfo;
         }
     </script>
 </body>

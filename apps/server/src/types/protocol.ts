@@ -74,6 +74,24 @@ export const ServerCommandSchema = z.object({
       commandType: z.literal("SEEK"),
       deltaMs: z.number().int(),
     }),
+    z.object({
+      commandType: z.literal("SHOW_SCREEN"),
+      screenType: z.enum(["solar", "petroleo", "plataforma"]),
+    }),
+    z.object({
+      commandType: z.literal("HIDE_SCREEN"),
+      screenType: z.enum(["solar", "petroleo", "plataforma"]),
+    }),
+    z.object({
+      commandType: z.literal("HIDE_ALL_SCREENS"),
+    }),
+    z.object({
+      commandType: z.literal("SHOW_ALL_SCREENS"),
+    }),
+    z.object({
+      commandType: z.literal("TOGGLE_SCREEN"),
+      screenType: z.enum(["solar", "petroleo", "plataforma"]),
+    }),
   ]),
 });
 
