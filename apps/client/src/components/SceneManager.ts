@@ -11,6 +11,8 @@ export class SceneManager {
   private currentScene: VRScene | null = null;
   private isTransitioning = false;
   private floatingScreen: any = null;
+  private parkScreen: any = null;
+  private petroleoScreen: any = null;
   private ambientAudio: any = null;
   private lights: {
     ambient: any;
@@ -78,6 +80,14 @@ export class SceneManager {
           <!-- Panorama 360° assets -->
           <img id="escena-1-image" src="/photos/escena_1.png" crossorigin="anonymous"></img>
           <img id="escena-2-image" src="/photos/escena_2.png" crossorigin="anonymous"></img>
+          <!-- Solar videos for floating screen -->
+          <video id="solar-1-video" src="/videos/solar_1.MP4" preload="auto" loop="false" crossorigin="anonymous"></video>
+          <video id="solar-2-video" src="/videos/solar_2.MP4" preload="auto" loop="false" crossorigin="anonymous"></video>
+          <video id="solar-3-video" src="/videos/solar_3.MP4" preload="auto" loop="false" crossorigin="anonymous"></video>
+          <!-- Petroleo images for floating screen -->
+          <img id="petroleo-1-image" src="/panos/petroleo_1.jpg" crossorigin="anonymous"></img>
+          <img id="petroleo-2-image" src="/panos/petroleo_2.jpg" crossorigin="anonymous"></img>
+          <img id="petroleo-3-image" src="/panos/petroleo_3.jpg" crossorigin="anonymous"></img>
           <!-- Video assets -->
           <video id="escena-1-video" src="/videos/escena-1.mp4" preload="auto" loop="false" crossorigin="anonymous"></video>
           <!-- Audio assets -->
@@ -110,6 +120,32 @@ export class SceneManager {
           visible="false"
           floating-screen
         ></a-plane>
+        
+         <!-- Single floating screen that cycles through solar videos (Scene 1 only) -->
+         <a-plane 
+           id="park-screen"
+           src="#solar-1-video"
+           position="0 55 45"
+           width="100"
+           height="50"
+           rotation="-40 0 2"
+           material="shader: flat; side: double"
+           visible="false"
+           solar-video-cycler
+         ></a-plane>
+         
+         <!-- Single floating screen that cycles through petroleo images (Scene 2 only) -->
+         <a-plane 
+           id="petroleo-screen"
+           src="#petroleo-2-image"
+           position="110 150 20"
+           width="180"
+           height="100"
+           rotation="-30 90 2"
+           material="shader: flat; side: double"
+           visible="false"
+           petroleo-image-cycler
+         ></a-plane>
         
         <!-- Main sky sphere for 360 images (hidden by default) -->
         <a-sky 
@@ -160,6 +196,8 @@ export class SceneManager {
     this.aframeScene = document.querySelector("#vr-scene");
     this.skyElement = document.querySelector("#main-sky");
     this.floatingScreen = document.querySelector("#floating-screen");
+    this.parkScreen = document.querySelector("#park-screen");
+    this.petroleoScreen = document.querySelector("#petroleo-screen");
     this.ambientAudio = document.querySelector("#ambient-wind");
 
     // Get references to lights
@@ -178,6 +216,135 @@ export class SceneManager {
     // Expose ambient audio control globally for debugging
     (window as any).startAmbientAudio = () => {
       this.startAmbientAudioManually();
+    };
+
+    // Expose solar video screen controls globally for debugging
+    (window as any).solarScreen = {
+      show: () => this.showParkScreen(),
+      hide: () => this.hideParkScreen(),
+      move: (x: number, y: number, z: number) => {
+        if (this.parkScreen) {
+          this.parkScreen.setAttribute("position", `${x} ${y} ${z}`);
+          console.log(`☀️ Pantalla solar movida a posición: ${x}, ${y}, ${z}`);
+        }
+      },
+      rotate: (x: number, y: number, z: number) => {
+        if (this.parkScreen) {
+          this.parkScreen.setAttribute("rotation", `${x} ${y} ${z}`);
+          console.log(`☀️ Pantalla solar rotada a: ${x}, ${y}, ${z}`);
+        }
+      },
+      resize: (width: number, height: number) => {
+        if (this.parkScreen) {
+          this.parkScreen.setAttribute("width", width.toString());
+          this.parkScreen.setAttribute("height", height.toString());
+          console.log(`☀️ Pantalla solar redimensionada a: ${width}x${height}`);
+        }
+      },
+      nextVideo: () => {
+        const cycler = (window as any).solarVideoCycler;
+        if (cycler && cycler.nextVideo) {
+          cycler.nextVideo();
+        }
+      },
+      setVideo: (index: number) => {
+        const cycler = (window as any).solarVideoCycler;
+        if (cycler && cycler.setVideo) {
+          cycler.setVideo(index);
+        }
+      },
+      pause: () => {
+        const cycler = (window as any).solarVideoCycler;
+        if (cycler && cycler.currentVideo) {
+          cycler.currentVideo.pause();
+          console.log("⏸️ Video solar pausado");
+        }
+      },
+      play: () => {
+        const cycler = (window as any).solarVideoCycler;
+        if (cycler && cycler.currentVideo) {
+          cycler.currentVideo.play();
+          console.log("▶️ Video solar reanudado");
+        }
+      },
+      info: () => {
+        if (!this.parkScreen) return null;
+        const cycler = (window as any).solarVideoCycler;
+        return {
+          visible: this.parkScreen.getAttribute("visible") === "true",
+          position: this.parkScreen.getAttribute("position"),
+          rotation: this.parkScreen.getAttribute("rotation"),
+          size: {
+            width: this.parkScreen.getAttribute("width"),
+            height: this.parkScreen.getAttribute("height"),
+          },
+          currentVideo: cycler ? cycler.currentVideoIndex + 1 : 0,
+          totalVideos: cycler ? cycler.videos.length : 0,
+          playing:
+            cycler && cycler.currentVideo ? !cycler.currentVideo.paused : false,
+          currentTime:
+            cycler && cycler.currentVideo ? cycler.currentVideo.currentTime : 0,
+          duration:
+            cycler && cycler.currentVideo ? cycler.currentVideo.duration : 0,
+        };
+      },
+    };
+
+    // Expose petroleo screen controls globally for debugging
+    (window as any).petroleoScreen = {
+      show: () => this.showPetroleoScreen(),
+      hide: () => this.hidePetroleoScreen(),
+      move: (x: number, y: number, z: number) => {
+        if (this.petroleoScreen) {
+          this.petroleoScreen.setAttribute("position", `${x} ${y} ${z}`);
+          console.log(
+            `🛢️ Pantalla de petróleo movida a posición: ${x}, ${y}, ${z}`
+          );
+        }
+      },
+      rotate: (x: number, y: number, z: number) => {
+        if (this.petroleoScreen) {
+          this.petroleoScreen.setAttribute("rotation", `${x} ${y} ${z}`);
+          console.log(`🛢️ Pantalla de petróleo rotada a: ${x}, ${y}, ${z}`);
+        }
+      },
+      resize: (width: number, height: number) => {
+        if (this.petroleoScreen) {
+          this.petroleoScreen.setAttribute("width", width.toString());
+          this.petroleoScreen.setAttribute("height", height.toString());
+          console.log(
+            `🛢️ Pantalla de petróleo redimensionada a: ${width}x${height}`
+          );
+        }
+      },
+      nextImage: () => {
+        const cycler = (window as any).petroleoImageCycler;
+        if (cycler && cycler.nextImage) {
+          cycler.nextImage();
+        }
+      },
+      setImage: (index: number) => {
+        const cycler = (window as any).petroleoImageCycler;
+        if (cycler && cycler.setImage) {
+          cycler.setImage(index);
+        }
+      },
+      info: () => {
+        if (!this.petroleoScreen) return null;
+        const cycler = (window as any).petroleoImageCycler;
+        return {
+          visible: this.petroleoScreen.getAttribute("visible") === "true",
+          position: this.petroleoScreen.getAttribute("position"),
+          rotation: this.petroleoScreen.getAttribute("rotation"),
+          size: {
+            width: this.petroleoScreen.getAttribute("width"),
+            height: this.petroleoScreen.getAttribute("height"),
+          },
+          currentImage: cycler ? cycler.currentImageIndex + 1 : 0,
+          totalImages: cycler ? cycler.images.length : 0,
+          cycling: cycler ? !!cycler.intervalId : false,
+        };
+      },
     };
   }
 
@@ -285,6 +452,170 @@ export class SceneManager {
         },
       });
 
+      // Solar video cycler component for automatic video cycling
+      AFRAME.registerComponent("solar-video-cycler", {
+        init(this: any) {
+          this.isVisible = false;
+          this.currentVideoIndex = 0;
+          this.videos = ["#solar-1-video", "#solar-2-video", "#solar-3-video"];
+          this.currentVideo = null;
+
+          this.show = () => {
+            this.el.setAttribute("visible", "true");
+            this.isVisible = true;
+            this.startVideoPlayback();
+            console.log(
+              "☀️ Pantalla solar mostrada con reproducción automática"
+            );
+          };
+
+          this.hide = () => {
+            this.el.setAttribute("visible", "false");
+            this.isVisible = false;
+            this.stopVideoPlayback();
+            console.log("☀️ Pantalla solar oculta");
+          };
+
+          this.startVideoPlayback = () => {
+            this.playCurrentVideo();
+          };
+
+          this.stopVideoPlayback = () => {
+            if (this.currentVideo) {
+              this.currentVideo.pause();
+              this.currentVideo.currentTime = 0;
+            }
+          };
+
+          this.playCurrentVideo = () => {
+            const videoSrc = this.videos[this.currentVideoIndex];
+            this.el.setAttribute("src", videoSrc);
+
+            // Get the video element and set up event listeners
+            this.currentVideo = document.querySelector(videoSrc);
+            if (this.currentVideo) {
+              // Remove any existing event listeners
+              this.currentVideo.removeEventListener("ended", this.onVideoEnded);
+
+              // Add new event listener
+              this.onVideoEnded = () => {
+                this.nextVideo();
+              };
+              this.currentVideo.addEventListener("ended", this.onVideoEnded);
+
+              // Start playing
+              this.currentVideo.currentTime = 0;
+              this.currentVideo.play().catch((error: any) => {
+                console.warn("⚠️ No se pudo reproducir video solar:", error);
+              });
+
+              console.log(
+                `☀️ Reproduciendo video solar ${this.currentVideoIndex + 1}/3`
+              );
+            }
+          };
+
+          this.nextVideo = () => {
+            this.currentVideoIndex =
+              (this.currentVideoIndex + 1) % this.videos.length;
+            this.playCurrentVideo();
+          };
+
+          this.setVideo = (index: number) => {
+            if (index >= 0 && index < this.videos.length) {
+              this.currentVideoIndex = index;
+              this.playCurrentVideo();
+              console.log(`☀️ Video cambiado manualmente a ${index + 1}/3`);
+            }
+          };
+
+          // Expose methods globally for easy access
+          (window as any).solarVideoCycler = this;
+        },
+
+        remove() {
+          const self = this as any;
+          if (self.currentVideo && self.onVideoEnded) {
+            self.currentVideo.removeEventListener("ended", self.onVideoEnded);
+          }
+        },
+      });
+
+      // Petroleo image cycler component for automatic image cycling
+      AFRAME.registerComponent("petroleo-image-cycler", {
+        init(this: any) {
+          this.isVisible = false;
+          this.currentImageIndex = 1; // Start with image 2 (petroleo-2-image)
+          this.images = [
+            "#petroleo-1-image",
+            "#petroleo-2-image",
+            "#petroleo-3-image",
+          ];
+          this.intervalId = null;
+
+          this.show = () => {
+            this.el.setAttribute("visible", "true");
+            this.isVisible = true;
+            this.startCycling();
+            console.log(
+              "🛢️ Pantalla de petróleo mostrada con ciclado automático"
+            );
+          };
+
+          this.hide = () => {
+            this.el.setAttribute("visible", "false");
+            this.isVisible = false;
+            this.stopCycling();
+            console.log("🛢️ Pantalla de petróleo oculta");
+          };
+
+          this.startCycling = () => {
+            if (this.intervalId) return; // Already cycling
+
+            this.intervalId = setInterval(() => {
+              this.nextImage();
+            }, 15000); // 15 seconds
+          };
+
+          this.stopCycling = () => {
+            if (this.intervalId) {
+              clearInterval(this.intervalId);
+              this.intervalId = null;
+            }
+          };
+
+          this.nextImage = () => {
+            this.currentImageIndex =
+              (this.currentImageIndex + 1) % this.images.length;
+            this.el.setAttribute("src", this.images[this.currentImageIndex]);
+            console.log(
+              `🛢️ Cambiando a imagen de petróleo ${this.currentImageIndex + 1}/3`
+            );
+          };
+
+          this.setImage = (index: number) => {
+            if (index >= 0 && index < this.images.length) {
+              this.currentImageIndex = index;
+              this.el.setAttribute("src", this.images[index]);
+              console.log(
+                `🛢️ Imagen de petróleo cambiada manualmente a ${index + 1}/3`
+              );
+            }
+          };
+
+          // Expose methods globally for easy access
+          (window as any).petroleoImageCycler = this;
+        },
+
+        remove() {
+          const self = this as any;
+          if (self.intervalId) {
+            clearInterval(self.intervalId);
+            self.intervalId = null;
+          }
+        },
+      });
+
       // Apply components to camera
       const camera = document.querySelector("#main-camera");
       if (camera) {
@@ -382,10 +713,34 @@ export class SceneManager {
           // Load as panorama 360° image
           this.loadPanoramaFromUrl(`/${assetPath}`);
           logger.info(`🖼️ Cargando imagen como panorama 360°: ${assetPath}`);
+
+          // Show appropriate screen based on scene
+          if (scene.id === "escena-1") {
+            this.showParkScreen();
+            this.hidePetroleoScreen();
+            logger.info(
+              "☀️ Mostrando pantalla solar con reproducción automática para escena 1"
+            );
+          } else if (scene.id === "escena-2") {
+            this.hideParkScreen();
+            this.showPetroleoScreen();
+            logger.info(
+              "🛢️ Mostrando pantalla de petróleo con ciclado automático para escena 2"
+            );
+          } else {
+            this.hideParkScreen();
+            this.hidePetroleoScreen();
+            logger.info("📺 Ocultando pantallas flotantes para otras escenas");
+          }
         } else if (assetPath.endsWith(".mp4") || assetPath.endsWith(".webm")) {
           // Load as video on floating screen
           this.showFloatingScreen(`${scene.id}-video`);
           logger.info(`🎬 Cargando video en pantalla flotante: ${assetPath}`);
+
+          // Hide all floating screens for video scenes
+          this.hideParkScreen();
+          this.hidePetroleoScreen();
+          logger.info("📺 Ocultando pantallas flotantes para escenas de video");
         } else {
           logger.warn(`⚠️ Formato de archivo no reconocido: ${assetPath}`);
         }
@@ -546,6 +901,10 @@ FPS: ${info.fps || "N/A"}
     // Hide floating screen
     this.hideFloatingScreen();
 
+    // Hide all floating screens
+    this.hideParkScreen();
+    this.hidePetroleoScreen();
+
     // Stop ambient audio when returning to default view
     this.stopAmbientAudio();
 
@@ -569,6 +928,10 @@ FPS: ${info.fps || "N/A"}
     // Hide floating screen
     this.hideFloatingScreen();
 
+    // Hide all floating screens when changing scenes
+    this.hideParkScreen();
+    this.hidePetroleoScreen();
+
     logger.info("🛑 Escena actual detenida");
   }
 
@@ -585,6 +948,8 @@ FPS: ${info.fps || "N/A"}
     this.skyElement = null;
     this.currentScene = null;
     this.floatingScreen = null;
+    this.parkScreen = null;
+    this.petroleoScreen = null;
     this.ambientAudio = null;
     this.lights = null;
   }
@@ -999,5 +1364,105 @@ FPS: ${info.fps || "N/A"}
       };
     }
     return null;
+  }
+
+  // Solar Video Screen Control Methods
+  public showParkScreen(): void {
+    if (!this.parkScreen) {
+      logger.warn("⚠️ Referencia de pantalla solar no disponible");
+      return;
+    }
+
+    try {
+      const component = (this.parkScreen as any).components[
+        "solar-video-cycler"
+      ];
+      if (component && component.show) {
+        component.show();
+      } else {
+        this.parkScreen.setAttribute("visible", "true");
+      }
+
+      logger.info("☀️ Pantalla solar mostrada con reproducción automática");
+    } catch (error) {
+      logger.error("❌ Error mostrando pantalla solar:", error);
+    }
+  }
+
+  public hideParkScreen(): void {
+    if (!this.parkScreen) {
+      logger.warn("⚠️ Referencia de pantalla solar no disponible");
+      return;
+    }
+
+    try {
+      const component = (this.parkScreen as any).components[
+        "solar-video-cycler"
+      ];
+      if (component && component.hide) {
+        component.hide();
+      } else {
+        this.parkScreen.setAttribute("visible", "false");
+      }
+
+      logger.info("☀️ Pantalla solar oculta");
+    } catch (error) {
+      logger.error("❌ Error ocultando pantalla solar:", error);
+    }
+  }
+
+  public isParkScreenVisible(): boolean {
+    if (!this.parkScreen) return false;
+    return this.parkScreen.getAttribute("visible") === "true";
+  }
+
+  // Petroleo Screen Control Methods
+  public showPetroleoScreen(): void {
+    if (!this.petroleoScreen) {
+      logger.warn("⚠️ Referencia de pantalla de petróleo no disponible");
+      return;
+    }
+
+    try {
+      const component = (this.petroleoScreen as any).components[
+        "petroleo-image-cycler"
+      ];
+      if (component && component.show) {
+        component.show();
+      } else {
+        this.petroleoScreen.setAttribute("visible", "true");
+      }
+
+      logger.info("🛢️ Pantalla de petróleo mostrada con ciclado automático");
+    } catch (error) {
+      logger.error("❌ Error mostrando pantalla de petróleo:", error);
+    }
+  }
+
+  public hidePetroleoScreen(): void {
+    if (!this.petroleoScreen) {
+      logger.warn("⚠️ Referencia de pantalla de petróleo no disponible");
+      return;
+    }
+
+    try {
+      const component = (this.petroleoScreen as any).components[
+        "petroleo-image-cycler"
+      ];
+      if (component && component.hide) {
+        component.hide();
+      } else {
+        this.petroleoScreen.setAttribute("visible", "false");
+      }
+
+      logger.info("🛢️ Pantalla de petróleo oculta");
+    } catch (error) {
+      logger.error("❌ Error ocultando pantalla de petróleo:", error);
+    }
+  }
+
+  public isPetroleoScreenVisible(): boolean {
+    if (!this.petroleoScreen) return false;
+    return this.petroleoScreen.getAttribute("visible") === "true";
   }
 }
