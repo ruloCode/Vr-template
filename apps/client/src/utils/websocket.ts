@@ -323,12 +323,15 @@ export class VRWebSocketClient {
 // Global WebSocket instance
 export let wsClient: VRWebSocketClient | null = null;
 
-export const initializeWebSocket = (): VRWebSocketClient => {
+export const initializeWebSocket = async (wsUrl?: string): Promise<VRWebSocketClient> => {
   if (wsClient) {
     wsClient.destroy();
   }
 
-  wsClient = new VRWebSocketClient();
+  // Si se proporciona una URL específica, usarla
+  const options = wsUrl ? { url: wsUrl } : {};
+  
+  wsClient = new VRWebSocketClient(options);
   return wsClient;
 };
 
