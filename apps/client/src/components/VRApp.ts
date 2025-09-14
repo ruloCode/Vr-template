@@ -1,6 +1,7 @@
 import { logger, perf, captureError } from "@/utils/logger";
 import { initializeWebSocket, VRWebSocketClient } from "@/utils/websocket";
 import { assetPreloader, PreloadedAssets } from "@/utils/preloader";
+import { NetworkConfigManager } from "@/utils/networkConfig";
 import { AudioManager } from "./AudioManager";
 import { SceneManager } from "./SceneManager";
 import { UIManager } from "./UIManager";
@@ -64,9 +65,12 @@ export class VRApp {
       );
       await this.sceneManager.initialize();
 
-      // Step 5: Initialize WebSocket connection (obligatory)
-      logger.info("5️⃣ Inicializando conexión WebSocket...");
-      this.wsClient = initializeWebSocket();
+      // Step 5: Initialize network configuration and WebSocket connection
+      logger.info("5️⃣ Obteniendo configuración de red...");
+      const networkConfig = await NetworkConfigManager.getInstance().initialize();
+      
+      logger.info("🔌 Inicializando conexión WebSocket...");
+      this.wsClient = await initializeWebSocket(networkConfig.websocket);
       this.setupWebSocketHandlers();
 
       // Wait for WebSocket connection before proceeding
@@ -250,11 +254,23 @@ export class VRApp {
       return;
     }
 
+    // Show scene loading screen
+    if (this.uiManager) {
+      this.uiManager.showSceneLoading(scene.title);
+      this.uiManager.updateSceneLoadingProgress(10);
+    }
+
     // Ensure audio is unlocked before loading scene
     if (this.audioManager && !useAppStore.getState().audioUnlocked) {
       try {
         logger.info("🔊 Desbloqueando audio antes de cargar escena...");
+        if (this.uiManager) {
+          this.uiManager.updateSceneLoadingProgress(30);
+        }
         await this.enableAudio();
+        if (this.uiManager) {
+          this.uiManager.updateSceneLoadingProgress(50);
+        }
       } catch (error) {
         logger.error("❌ Error desbloqueando audio:", error);
         // Continue without audio
@@ -262,7 +278,16 @@ export class VRApp {
     }
 
     try {
+      if (this.uiManager) {
+        this.uiManager.updateSceneLoadingProgress(70);
+      }
+      
       await this.sceneManager.loadScene(scene);
+      
+      if (this.uiManager) {
+        this.uiManager.updateSceneLoadingProgress(90);
+      }
+      
       // Notify server that we're ready
       if (this.wsClient) {
         this.wsClient.send({
@@ -270,8 +295,20 @@ export class VRApp {
           payload: { sceneId },
         });
       }
+      
+      if (this.uiManager) {
+        this.uiManager.updateSceneLoadingProgress(100);
+        // Hide scene loading screen after a brief delay
+        setTimeout(() => {
+          this.uiManager?.hideSceneLoading();
+        }, 1000);
+      }
     } catch (error) {
       logger.error("❌ Error cargando escena:", error);
+      if (this.uiManager) {
+        this.uiManager.hideSceneLoading();
+        this.uiManager.showMainInterface();
+      }
     }
   }
 

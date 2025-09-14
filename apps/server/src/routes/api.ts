@@ -1,6 +1,8 @@
 import { Router, Request, Response } from "express";
 import { WebSocketManager } from "../websocket/manager.js";
 import { logger } from "../utils/logger.js";
+import { getLocalIP, generateAccessUrls } from "../utils/network.js";
+import { config } from "../utils/config.js";
 
 export function createApiRoutes(wsManager: WebSocketManager): Router {
   const router = Router();
@@ -146,6 +148,49 @@ export function createApiRoutes(wsManager: WebSocketManager): Router {
     } catch (error) {
       logger.error("Error sending command:", error);
       return res.status(500).json({ error: "Error enviando comando" });
+    }
+  });
+
+  // Network configuration endpoint for dynamic client connection
+  router.get("/config", (req: Request, res: Response) => {
+    try {
+      const localIP = getLocalIP();
+      const urls = generateAccessUrls(config.port);
+      const wsPort = config.port + 1;
+      
+      // Detectar si la petición viene de la misma máquina o red
+      const clientIP = req.ip || req.connection.remoteAddress || "unknown";
+      const isLocal = clientIP.includes("127.0.0.1") || clientIP.includes("::1");
+      
+      const wsUrl = isLocal 
+        ? `ws://localhost:${wsPort}/ws`
+        : `ws://${localIP}:${wsPort}/ws`;
+      
+      const serverUrl = isLocal
+        ? `http://localhost:${config.port}`
+        : `http://${localIP}:${config.port}`;
+
+      res.json({
+        network: {
+          serverIP: localIP,
+          serverPort: config.port,
+          wsPort: wsPort,
+          clientIP: clientIP,
+          isLocal: isLocal
+        },
+        urls: {
+          websocket: wsUrl,
+          server: serverUrl,
+          dashboard: `${serverUrl}/dashboard`,
+          available: urls.network
+        },
+        timestamp: Date.now()
+      });
+      
+      logger.debug(`📡 Config request from ${clientIP} - Local: ${isLocal}`);
+    } catch (error) {
+      logger.error("Error getting network config:", error);
+      res.status(500).json({ error: "Error obteniendo configuración de red" });
     }
   });
 

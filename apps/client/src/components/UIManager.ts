@@ -91,22 +91,37 @@ export class UIManager {
         <div id="ready-state" class="ready-state" style="display: none;">
           <div class="ready-content">
             <div class="status-icon">✅</div>
-            <h2>Sistema Listo</h2>
+            <h2>VR Ecopetrol - Dispositivo Conectado</h2>
             <p id="ready-message">Esperando comandos del dashboard...</p>
             
+            <div class="waiting-indicator">
+              <div class="pulse-animation"></div>
+              <p class="waiting-text">Dispositivo listo para recibir experiencias 360°</p>
+            </div>
+
             <div class="device-info">
               <div class="info-item">
-                <span class="label">Dispositivo:</span>
+                <span class="label">ID del Dispositivo:</span>
                 <span id="device-id">-</span>
               </div>
               <div class="info-item">
-                <span class="label">Conexión:</span>
+                <span class="label">Estado de Conexión:</span>
                 <span id="connection-state">-</span>
               </div>
               <div class="info-item" id="battery-info" style="display: none;">
-                <span class="label">Batería:</span>
+                <span class="label">Nivel de Batería:</span>
                 <span id="battery-level">-</span>
               </div>
+            </div>
+
+            <div class="instructions">
+              <h4>📋 Instrucciones</h4>
+              <ul>
+                <li>El dispositivo está conectado y listo</li>
+                <li>Las escenas se cargarán automáticamente desde el dashboard</li>
+                <li>Mantén el dispositivo en posición horizontal</li>
+                <li>Asegúrate de tener suficiente batería</li>
+              </ul>
             </div>
 
             <div class="manual-controls" style="display: none;">
@@ -123,6 +138,22 @@ export class UIManager {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- Scene Loading -->
+        <div id="scene-loading" class="scene-loading" style="display: none;">
+          <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h2>Cargando Experiencia</h2>
+            <p id="loading-scene-name">Preparando escena...</p>
+            <div class="loading-progress">
+              <div class="loading-bar">
+                <div id="scene-progress-fill" class="loading-fill"></div>
+              </div>
+              <span id="scene-progress-text">0%</span>
+            </div>
+            <p class="loading-instruction">Mantén el dispositivo estable</p>
           </div>
         </div>
 
@@ -385,7 +416,7 @@ export class UIManager {
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.8);
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -393,17 +424,145 @@ export class UIManager {
 
       .ready-content {
         text-align: center;
-        max-width: 500px;
-        padding: 2rem;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 15px;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        max-width: 600px;
+        padding: 2.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
       }
 
       .status-icon {
         font-size: 4rem;
         margin-bottom: 1rem;
+        animation: pulse 2s infinite;
+      }
+
+      .waiting-indicator {
+        margin: 2rem 0;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .pulse-animation {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1rem;
+        background: linear-gradient(45deg, #00d4aa, #00b4d8);
+        border-radius: 50%;
+        animation: pulse-glow 2s infinite;
+      }
+
+      .waiting-text {
+        font-size: 1.2rem;
+        color: #e0e6ed;
+        margin: 0;
+        font-weight: 500;
+      }
+
+      .instructions {
+        margin: 2rem 0;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        text-align: left;
+      }
+
+      .instructions h4 {
+        margin-bottom: 1rem;
+        color: #00d4aa;
+        font-size: 1.1rem;
+      }
+
+      .instructions ul {
+        margin: 0;
+        padding-left: 1.5rem;
+      }
+
+      .instructions li {
+        margin-bottom: 0.5rem;
+        color: #e0e6ed;
+        font-size: 0.95rem;
+        line-height: 1.4;
+      }
+
+      .scene-loading {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #2d1b69 0%, #11998e 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      }
+
+      .loading-content {
+        text-align: center;
+        max-width: 450px;
+        padding: 2.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      .loading-spinner {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 1.5rem;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid #00d4aa;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      .loading-content h2 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        color: white;
+      }
+
+      .loading-content p {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+        color: #e0e6ed;
+      }
+
+      .loading-progress {
+        margin: 2rem 0;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .loading-bar {
+        flex: 1;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .loading-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #00d4aa, #00b4d8);
+        border-radius: 4px;
+        transition: width 0.3s ease;
+        width: 0%;
+      }
+
+      .loading-instruction {
+        font-size: 0.9rem;
+        color: #b8c6db;
+        margin-top: 1rem;
+        font-style: italic;
       }
 
       .device-info {
@@ -562,6 +721,24 @@ export class UIManager {
       @keyframes pulse {
         0%, 100% { opacity: 1; transform: scale(1); }
         50% { opacity: 0.7; transform: scale(0.95); }
+      }
+
+      @keyframes pulse-glow {
+        0%, 100% { 
+          opacity: 1; 
+          transform: scale(1);
+          box-shadow: 0 0 20px rgba(0, 212, 170, 0.5);
+        }
+        50% { 
+          opacity: 0.8; 
+          transform: scale(1.1);
+          box-shadow: 0 0 30px rgba(0, 212, 170, 0.8);
+        }
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
       }
 
       @media (max-width: 768px) {
@@ -1000,6 +1177,41 @@ export class UIManager {
     const connectionError = document.getElementById("connection-error");
     if (connectionError) {
       connectionError.style.display = "none";
+    }
+  }
+
+  public showSceneLoading(sceneName?: string): void {
+    const sceneLoading = document.getElementById("scene-loading");
+    const sceneNameElement = document.getElementById("loading-scene-name");
+    
+    if (sceneLoading) {
+      sceneLoading.style.display = "flex";
+      
+      if (sceneNameElement && sceneName) {
+        sceneNameElement.textContent = `Cargando: ${sceneName}`;
+      }
+    }
+    
+    this.hideMainInterface();
+  }
+
+  public hideSceneLoading(): void {
+    const sceneLoading = document.getElementById("scene-loading");
+    if (sceneLoading) {
+      sceneLoading.style.display = "none";
+    }
+  }
+
+  public updateSceneLoadingProgress(percentage: number): void {
+    const fillElement = document.getElementById("scene-progress-fill");
+    const textElement = document.getElementById("scene-progress-text");
+    
+    if (fillElement) {
+      fillElement.style.width = `${percentage}%`;
+    }
+    
+    if (textElement) {
+      textElement.textContent = `${percentage}%`;
     }
   }
 

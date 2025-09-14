@@ -1,6 +1,6 @@
 // Client configuration
 export const config = {
-  // WebSocket connection
+  // WebSocket connection - será configurado dinámicamente
   wsUrl:
     import.meta.env.VITE_WS_URL ||
     (() => {
@@ -12,7 +12,7 @@ export const config = {
       return `${protocol}//${host}:${port}/ws`;
     })(),
 
-  // Server URL for API calls
+  // Server URL for API calls - será configurado dinámicamente
   serverUrl:
     import.meta.env.VITE_SERVER_URL ||
     (() => {
