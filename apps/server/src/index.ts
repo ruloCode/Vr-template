@@ -9,6 +9,7 @@ import { createApiRoutes } from "./routes/api.js";
 import { createDashboardRoutes } from "./dashboard/routes.js";
 import { config, isDevelopment } from "./utils/config.js";
 import { logger } from "./utils/logger.js";
+import { getLocalIP, generateAccessUrls } from "./utils/network.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -158,20 +159,31 @@ class VRSyncServer {
 
   public start(): void {
     const server = this.app.listen(config.port, config.host, () => {
+      const localIP = getLocalIP();
+      const urls = generateAccessUrls(config.port);
+      
       logger.info(`🚀 VR Sync Server iniciado`);
       logger.info(`📡 HTTP Server: http://${config.host}:${config.port}`);
-      logger.info(
-        `🎮 Dashboard: http://${config.host}:${config.port}/dashboard`
-      );
-      logger.info(`🔗 WebSocket: ws://${config.host}:${config.port + 1}/ws`);
+      logger.info(`🔗 WebSocket: ws://${config.host}:${config.port + 1}${config.paths.websocket}`);
       logger.info(`🌍 Environment: ${config.nodeEnv}`);
       logger.info(`📁 Static files: ${config.staticDir}`);
+      
+      // Mostrar URLs de acceso para dispositivos
+      logger.info("📱 URLs de acceso para dispositivos:");
+      logger.info(`   Local: http://localhost:${config.port}`);
+      logger.info(`   Red: http://${localIP}:${config.port}`);
+      logger.info(`   Dashboard: http://${localIP}:${config.port}/dashboard`);
+      
+      if (urls.network.length > 1) {
+        logger.info("🌐 Interfaces de red disponibles:");
+        urls.network.forEach(url => logger.info(`   ${url}`));
+      }
 
       if (isDevelopment) {
         logger.info(
-          `📋 Health Check: http://${config.host}:${config.port}/health`
+          `📋 Health Check: http://${localIP}:${config.port}/health`
         );
-        logger.info(`🔧 API: http://${config.host}:${config.port}/api`);
+        logger.info(`🔧 API Config: http://${localIP}:${config.port}/api/config`);
       }
     });
 
