@@ -1,0 +1,14 @@
+{
+  "name": "clientevanilla-https",
+  "version": "1.0.0",
+  "description": "Cliente VR vanilla con soporte HTTPS",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "https": "node server.js"
+  },
+  "keywords": ["vr", "aframe", "https", "ecopetrol"],
+  "author": "Ecopetrol",
+  "license": "ISC"
+}
