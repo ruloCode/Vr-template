@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <title>Ejemplo VR Paisaje - Rulocode</title>
+    <meta name="description" content="Ejemplo simple de VR con paisaje usando A-Frame y assets locales">
+    <script src="aframe-v1.3.0.min.js"></script>
+    <style>
+      body { margin: 0; }
+      .a-loader-title { font-family: sans-serif; }
+      #clock-html {
+        position: fixed;
+        top: 20px;
+        right: 40px;
+        background: rgba(30,30,30,0.7);
+        color: #FFD700;
+        font-family: monospace;
+        font-size: 2.2em;
+        padding: 0.2em 0.7em;
+        border-radius: 0.5em;
+        z-index: 1000;
+        letter-spacing: 0.1em;
+        box-shadow: 0 2px 8px #0008;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="clock-html">08:00</div>
+    <a-scene background="color: #88c">
+      <!-- Audio y assets -->
+      <a-assets>
+        <audio id="ambiente-dia" src="audio/ambient-wind.mp3"></audio>
+        <audio id="ambiente-noche" src="audio/ambient-night.mp3"></audio>
+        <img id="fondo-dia" src="images/spherical/forest.jpg">
+        <img id="fondo-noche" src="images/spherical/default.jpg">
+      </a-assets>
+      <a-sound id="sound" src="#ambiente-dia" autoplay="true" loop="true" volume="0.5"></a-sound>
+
+      <!-- Skybox esférico -->
+      <a-sky id="sky" src="#fondo-dia" rotation="0 -90 0"></a-sky>
+
+      <!-- Luz ambiental -->
+      <a-entity id="ambientLight" light="type: ambient; color: #ffffff; intensity: 0.7"></a-entity>
+
+      <!-- Suelo con textura de pasto -->
+      <a-plane src="images/grass.jpg" rotation="-90 0 0" width="40" height="40" repeat="10 10" material="repeat: 10 10"></a-plane>
+
+      <!-- Árbol 3D -->
+      <a-entity gltf-model="models/trees/OakTree.gltf" position="0 0 -5" scale="2 2 2"></a-entity>
+
+      <!-- Cámara y controles VR -->
+      <a-entity camera look-controls wasd-controls position="0 1.6 5"></a-entity>
+
+      <script>
+        // Tiempo virtual acelerado: 1 seg real = 1 min virtual
+        let hora = 8, minuto = 0;
+        let esDia = true;
+        const sky = document.querySelector('#sky');
+        const sound = document.querySelector('#sound');
+        const ambientLight = document.querySelector('#ambientLight');
+        const clockHtml = document.getElementById('clock-html');
+
+        function pad(n) { return n < 10 ? '0'+n : n; }
+        function actualizarReloj() {
+          clockHtml.textContent = pad(hora) + ':' + pad(minuto);
+        }
+        function actualizarClima() {
+          // Día: 07:00 a 19:00
+          const horaNum = hora + minuto/60;
+          const nuevoEsDia = (horaNum >= 7 && horaNum < 19);
+          if (nuevoEsDia !== esDia) {
+            esDia = nuevoEsDia;
+            if (esDia) {
+              sky.setAttribute('src', '#fondo-dia');
+              sound.setAttribute('src', '#ambiente-dia');
+              ambientLight.setAttribute('light', 'type: ambient; color: #ffffff; intensity: 0.7');
+            } else {
+              sky.setAttribute('src', '#fondo-noche');
+              sound.setAttribute('src', '#ambiente-noche');
+              ambientLight.setAttribute('light', 'type: ambient; color: #222244; intensity: 0.3');
+            }
+          }
+        }
+        function avanzarTiempo() {
+          minuto++;
+          if (minuto >= 60) { minuto = 0; hora++; }
+          if (hora >= 24) { hora = 0; }
+          actualizarReloj();
+          actualizarClima();
+        }
+        actualizarReloj();
+        setInterval(avanzarTiempo, 1000); // 1 seg real = 1 min virtual
+      </script>
+    </a-scene>
+  </body>
+</html>
