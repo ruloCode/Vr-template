@@ -4,6 +4,8 @@ import compression from "compression";
 import helmet from "helmet";
 import path from "path";
 import { fileURLToPath } from "url";
+import https from "https";
+import fs from "fs";
 import { WebSocketManager } from "./websocket/manager.js";
 import { createApiRoutes } from "./routes/api.js";
 import { createDashboardRoutes } from "./dashboard/routes.js";
@@ -17,13 +19,36 @@ const __dirname = path.dirname(__filename);
 class VRSyncServer {
   private app: express.Application;
   private wsManager: WebSocketManager;
+  private sslOptions: https.ServerOptions | null = null;
 
   constructor() {
     this.app = express();
-    this.wsManager = new WebSocketManager();
+    this.loadSSLCertificates();
+    this.wsManager = new WebSocketManager(this.sslOptions);
     this.setupMiddleware();
     this.setupRoutes();
     this.setupErrorHandling();
+  }
+
+  private loadSSLCertificates(): void {
+    try {
+      const sslPath = path.join(__dirname, "../ssl");
+      const keyPath = path.join(sslPath, "key.pem");
+      const certPath = path.join(sslPath, "cert.pem");
+
+      if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+        this.sslOptions = {
+          key: fs.readFileSync(keyPath),
+          cert: fs.readFileSync(certPath),
+        };
+        logger.info("✅ SSL certificates loaded successfully");
+      } else {
+        logger.warn("⚠️ SSL certificates not found, running HTTP only");
+      }
+    } catch (error) {
+      logger.error("❌ Error loading SSL certificates:", error);
+      logger.warn("⚠️ Falling back to HTTP only");
+    }
   }
 
   private setupMiddleware(): void {
@@ -158,33 +183,47 @@ class VRSyncServer {
   }
 
   public start(): void {
-    const server = this.app.listen(config.port, config.host, () => {
-      const localIP = getLocalIP();
+    const localIP = getLocalIP();
+    const protocol = this.sslOptions ? "https" : "http";
+    const wsProtocol = this.sslOptions ? "wss" : "ws";
+
+    const serverCreation = this.sslOptions
+      ? https.createServer(this.sslOptions, this.app)
+      : this.app;
+
+    const server = serverCreation.listen(config.port, config.host, () => {
       const urls = generateAccessUrls(config.port);
-      
+
       logger.info(`🚀 VR Sync Server iniciado`);
-      logger.info(`📡 HTTP Server: http://${config.host}:${config.port}`);
-      logger.info(`🔗 WebSocket: ws://${config.host}:${config.port + 1}${config.paths.websocket}`);
+      logger.info(`📡 ${protocol.toUpperCase()} Server: ${protocol}://${config.host}:${config.port}`);
+      logger.info(`🔗 WebSocket: ${wsProtocol}://${config.host}:${config.port + 1}${config.paths.websocket}`);
       logger.info(`🌍 Environment: ${config.nodeEnv}`);
       logger.info(`📁 Static files: ${config.staticDir}`);
-      
+
       // Mostrar URLs de acceso para dispositivos
       logger.info("📱 URLs de acceso para dispositivos:");
-      logger.info(`   Local: http://localhost:${config.port}`);
-      logger.info(`   Red: http://${localIP}:${config.port}`);
-      logger.info(`   Dashboard: http://${localIP}:${config.port}/dashboard`);
-      
+      logger.info(`   Local: ${protocol}://localhost:${config.port}`);
+      logger.info(`   Red: ${protocol}://${localIP}:${config.port}`);
+      logger.info(`   Dashboard: ${protocol}://${localIP}:${config.port}/dashboard`);
+
       if (urls.network.length > 1) {
         logger.info("🌐 Interfaces de red disponibles:");
-        urls.network.forEach(url => logger.info(`   ${url}`));
+        urls.network.forEach(url => {
+          const fullUrl = url.replace('http://', `${protocol}://`);
+          logger.info(`   ${fullUrl}`);
+        });
       }
 
       if (isDevelopment) {
         logger.info(
-          `📋 Health Check: http://${localIP}:${config.port}/health`
+          `📋 Health Check: ${protocol}://${localIP}:${config.port}/health`
         );
-        logger.info(`🔧 API Config: http://${localIP}:${config.port}/api/config`);
+        logger.info(`🔧 API Config: ${protocol}://${localIP}:${config.port}/api/config`);
       }
+
+      // Log WebSocket connection info for clients
+      logger.info("🔌 Para conectar clientes:");
+      logger.info(`   WebSocket URL: ${wsProtocol}://${localIP}:${config.port + 1}${config.paths.websocket}`);
     });
 
     server.on("error", (err: any) => {

@@ -78,7 +78,7 @@ const httpServer = http.createServer((req, res) => {
 
 // Start servers - usando puerto 8444 para evitar conflicto con vr-a-frame-example
 const httpsPort = 8444;
-const httpPort = 8081;
+const httpPort = 8082; // Changed from 8081 to avoid conflict with WebSocket server
 const host = '0.0.0.0';
 
 httpsServer.listen(httpsPort, host, () => {
