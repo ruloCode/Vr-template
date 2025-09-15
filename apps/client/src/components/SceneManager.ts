@@ -73,7 +73,7 @@ export class SceneManager {
         id="vr-scene"
         embedded
         vr-mode-ui="enabled: ${config.aframe.enableVR}"
-        device-orientation-permission-ui="enabled: false"
+        device-orientation-permission-ui="enabled: true"
         renderer="antialias: true; colorManagement: true; physicallyCorrectLights: true; gammaOutput: true; anisotropy: 16; precision: high"
         background="color: #000000"
       >
