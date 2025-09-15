@@ -5,6 +5,7 @@
     <title>Ejemplo VR Paisaje - Rulocode</title>
     <meta name="description" content="Ejemplo simple de VR con paisaje usando A-Frame y assets locales">
     <script src="aframe-v1.3.0.min.js"></script>
+    <script src="websocket-client.js"></script>
     <style>
       body { margin: 0; }
       .a-loader-title { font-family: sans-serif; }
@@ -55,41 +56,122 @@
         // Tiempo virtual acelerado: 1 seg real = 1 min virtual
         let hora = 8, minuto = 0;
         let esDia = true;
-        const sky = document.querySelector('#sky');
-        const sound = document.querySelector('#sound');
-        const ambientLight = document.querySelector('#ambientLight');
-        const clockHtml = document.getElementById('clock-html');
+        let vrClient = null;
+        let sceneId = 'escena1'; // Default scene
 
-        function pad(n) { return n < 10 ? '0'+n : n; }
-        function actualizarReloj() {
-          clockHtml.textContent = pad(hora) + ':' + pad(minuto);
-        }
-        function actualizarClima() {
-          // Día: 07:00 a 19:00
-          const horaNum = hora + minuto/60;
-          const nuevoEsDia = (horaNum >= 7 && horaNum < 19);
-          if (nuevoEsDia !== esDia) {
-            esDia = nuevoEsDia;
-            if (esDia) {
-              sky.setAttribute('src', '#fondo-dia');
-              sound.setAttribute('src', '#ambiente-dia');
-              ambientLight.setAttribute('light', 'type: ambient; color: #ffffff; intensity: 0.7');
-            } else {
-              sky.setAttribute('src', '#fondo-noche');
-              sound.setAttribute('src', '#ambiente-noche');
-              ambientLight.setAttribute('light', 'type: ambient; color: #222244; intensity: 0.3');
+        // Initialize WebSocket client after DOM loads
+        document.addEventListener('DOMContentLoaded', function() {
+          const sky = document.querySelector('#sky');
+          const sound = document.querySelector('#sound');
+          const ambientLight = document.querySelector('#ambientLight');
+          const clockHtml = document.getElementById('clock-html');
+
+          // Initialize WebSocket client
+          vrClient = new VRWebSocketClient({
+            serverUrl: 'wss://192.168.40.31:8081/ws',
+            deviceId: `clientevanilla-${Date.now()}`,
+            onConnect: () => {
+              console.log('🎮 VR Client connected to server');
+              // Send ready signal for current scene
+              setTimeout(() => vrClient.sendReady(sceneId), 1000);
+            },
+            onDisconnect: () => {
+              console.log('🔌 VR Client disconnected from server');
+            },
+            onCommand: (command) => {
+              handleServerCommand(command);
+            },
+            onError: (error) => {
+              console.error('🚨 VR Client error:', error);
+            }
+          });
+
+          // Connect to server
+          vrClient.connect();
+
+          function pad(n) { return n < 10 ? '0'+n : n; }
+
+          function actualizarReloj() {
+            clockHtml.textContent = pad(hora) + ':' + pad(minuto);
+          }
+
+          function actualizarClima() {
+            // Día: 07:00 a 19:00
+            const horaNum = hora + minuto/60;
+            const nuevoEsDia = (horaNum >= 7 && horaNum < 19);
+            if (nuevoEsDia !== esDia) {
+              esDia = nuevoEsDia;
+              if (esDia) {
+                sky.setAttribute('src', '#fondo-dia');
+                sound.setAttribute('src', '#ambiente-dia');
+                ambientLight.setAttribute('light', 'type: ambient; color: #ffffff; intensity: 0.7');
+              } else {
+                sky.setAttribute('src', '#fondo-noche');
+                sound.setAttribute('src', '#ambiente-noche');
+                ambientLight.setAttribute('light', 'type: ambient; color: #222244; intensity: 0.3');
+              }
+            }
+
+            // Send state update to server
+            if (vrClient && vrClient.isConnected) {
+              vrClient.sendState(sceneId, horaNum, true, 100);
             }
           }
-        }
-        function avanzarTiempo() {
-          minuto++;
-          if (minuto >= 60) { minuto = 0; hora++; }
-          if (hora >= 24) { hora = 0; }
+
+          function avanzarTiempo() {
+            minuto++;
+            if (minuto >= 60) { minuto = 0; hora++; }
+            if (hora >= 24) { hora = 0; }
+            actualizarReloj();
+            actualizarClima();
+          }
+
+          function handleServerCommand(command) {
+            console.log('📢 Processing server command:', command);
+
+            switch(command.commandType) {
+              case 'LOAD':
+                sceneId = command.sceneId;
+                console.log('🎬 Loading scene:', sceneId);
+                // For this simple example, acknowledge the scene load
+                setTimeout(() => vrClient.sendReady(sceneId), 500);
+                break;
+
+              case 'START_AT':
+                const targetTime = command.epochMs;
+                const currentTime = vrClient.getServerTime();
+                console.log('▶️ Start at:', new Date(targetTime), 'Current:', new Date(currentTime));
+                // In a real app, you'd sync your timeline to this timestamp
+                break;
+
+              case 'PAUSE':
+                console.log('⏸️ Pausing experience');
+                // Pause your timeline/audio here
+                break;
+
+              case 'RESUME':
+                console.log('▶️ Resuming experience');
+                // Resume your timeline/audio here
+                break;
+
+              case 'SEEK':
+                const deltaMs = command.deltaMs;
+                console.log('⏭️ Seeking by:', deltaMs, 'ms');
+                // Adjust your timeline by deltaMs
+                break;
+
+              default:
+                console.log('🤷 Unknown command:', command.commandType);
+            }
+          }
+
           actualizarReloj();
-          actualizarClima();
-        }
-        actualizarReloj();
-        setInterval(avanzarTiempo, 1000); // 1 seg real = 1 min virtual
+          setInterval(avanzarTiempo, 1000); // 1 seg real = 1 min virtual
+
+          // Expose to global scope for debugging
+          window.vrClient = vrClient;
+          window.handleServerCommand = handleServerCommand;
+        });
       </script>
     </a-scene>
   </body>

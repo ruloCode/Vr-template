@@ -1,5 +1,6 @@
 import { WebSocket, WebSocketServer } from "ws";
 import { v4 as uuidv4 } from "uuid";
+import https from "https";
 import {
   ClientMessage,
   ClientMessageSchema,
@@ -19,12 +20,30 @@ export class WebSocketManager {
   private clients: Map<string, ClientConnection> = new Map();
   private room: RoomState;
   private heartbeatInterval: NodeJS.Timeout | null = null;
+  private sslOptions: https.ServerOptions | null;
 
-  constructor() {
-    this.wss = new WebSocketServer({
+  constructor(sslOptions: https.ServerOptions | null = null) {
+    this.sslOptions = sslOptions;
+
+    const wsOptions: any = {
       port: config.port + 1, // WS en puerto +1
       path: config.paths.websocket,
-    });
+    };
+
+    // If SSL is available, create HTTPS server for WSS
+    if (this.sslOptions) {
+      const httpsServer = https.createServer(this.sslOptions);
+      wsOptions.server = httpsServer;
+      delete wsOptions.port; // Remove port when using existing server
+
+      httpsServer.listen(config.port + 1, config.host, () => {
+        logger.info(`🔒 WSS (Secure WebSocket) server started on port ${config.port + 1}`);
+      });
+    } else {
+      logger.info(`🔓 WS (Regular WebSocket) server starting on port ${config.port + 1}`);
+    }
+
+    this.wss = new WebSocketServer(wsOptions);
 
     this.room = {
       id: "main",
@@ -36,7 +55,8 @@ export class WebSocketManager {
     this.setupWebSocketServer();
     this.startHeartbeat();
 
-    logger.info(`WebSocket server started on port ${config.port + 1}`);
+    const protocol = this.sslOptions ? "WSS" : "WS";
+    logger.info(`✅ ${protocol} WebSocket server initialized on port ${config.port + 1}`);
   }
 
   private setupWebSocketServer(): void {
