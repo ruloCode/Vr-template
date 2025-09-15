@@ -415,9 +415,8 @@ function generateDashboardHTML(): string {
                 <h3>🎬 Control de Escenas</h3>
                 <div class="input-group">
                     <select id="scene-select">
-                        <option value="escena-1">Toma 1: Transición Energética (Solar y Eólica)</option>
-                        <option value="escena-2">Toma 2: Transición Energética (Geotermia e hidrógeno)</option>
-                        <option value="escena-3">Toma 3: Transición Energética (Plataformas petroleras)</option>
+                        <option value="escena-1">Escena 1: Energías Renovables (Solar y Eólica)</option>
+                        <option value="escena-2">Escena 2: Operaciones Petroleras</option>
                     </select>
                     <button class="btn btn-primary" onclick="loadScene()">Cargar Escena</button>
                 </div>
@@ -617,13 +616,10 @@ function generateDashboardHTML(): string {
             
             switch (currentScene) {
                 case 'escena-1':
-                    screenInfo = '☀️ Solar disponible';
+                    screenInfo = '☀️ Energías Renovables disponible';
                     break;
                 case 'escena-2':
-                    screenInfo = '🛢️ Petróleo disponible';
-                    break;
-                case 'escena-3':
-                    screenInfo = '🏗️ Plataformas disponible';
+                    screenInfo = '🛢️ Operaciones Petroleras disponible';
                     break;
                 default:
                     screenInfo = 'Sin pantallas flotantes';

@@ -10,31 +10,14 @@
     <style>
       body { margin: 0; }
       .a-loader-title { font-family: sans-serif; }
-      #clock-html {
-        position: fixed;
-        top: 20px;
-        right: 40px;
-        background: rgba(30,30,30,0.7);
-        color: #FFD700;
-        font-family: monospace;
-        font-size: 2.2em;
-        padding: 0.2em 0.7em;
-        border-radius: 0.5em;
-        z-index: 1000;
-        letter-spacing: 0.1em;
-        box-shadow: 0 2px 8px #0008;
-      }
     </style>
   </head>
   <body>
-    <div id="clock-html">08:00</div>
     <a-scene background="color: #88c">
       <!-- Audio y assets - Dynamic loading -->
       <a-assets>
         <audio id="current-audio" src="audio/ambient-wind.mp3"></audio>
-        <img id="current-skybox" src="panos/cpf_florena.jpg">
-        <img id="grass-texture" src="images/grass.jpg">
-        <a-asset-item id="tree-model" src="models/OakTree.gltf"></a-asset-item>
+        <img id="current-skybox" src="images/escena_1.png">
       </a-assets>
 
       <!-- Scene loading overlay -->
@@ -70,21 +53,9 @@
                 light="type: directional; color: #ffeeaa; intensity: 0.8"
                 position="0 1 1"></a-entity>
 
-      <!-- Ground plane -->
-      <a-plane id="scene-ground"
-               src="#grass-texture"
-               rotation="-90 0 0"
-               width="40"
-               height="40"
-               repeat="10 10"
-               material="repeat: 10 10"></a-plane>
-
-      <!-- 3D Models container -->
+      <!-- 3D Models container (empty for clean 360° view) -->
       <a-entity id="scene-models">
-        <a-entity id="oak-tree"
-                  gltf-model="#tree-model"
-                  position="0 0 -5"
-                  scale="2 2 2"></a-entity>
+        <!-- Models will be loaded dynamically from scene config -->
       </a-entity>
 
       <!-- Cámara y controles VR -->
@@ -92,10 +63,8 @@
 
       <script>
         // VR Scene Management System
-        let hora = 8, minuto = 0;
-        let esDia = true;
         let vrClient = null;
-        let currentSceneId = 'escena1'; // Default scene
+        let currentSceneId = 'escena-1'; // Default scene
         let sceneManager = null;
 
         // Scene Manager Class
@@ -113,7 +82,6 @@
               sound: document.querySelector('#scene-sound'),
               ambientLight: document.querySelector('#ambient-light'),
               directionalLight: document.querySelector('#directional-light'),
-              ground: document.querySelector('#scene-ground'),
               models: document.querySelector('#scene-models'),
               overlay: document.querySelector('#scene-overlay'),
               assets: {
@@ -127,6 +95,7 @@
             console.log('🔍 loadScene called with:', sceneId);
             console.log('🔍 Available scenes:', Object.keys(SCENES_CONFIG));
             console.log('🔍 Scene exists?', !!SCENES_CONFIG[sceneId]);
+            console.log('🔍 Full SCENES_CONFIG:', SCENES_CONFIG);
 
             if (this.isLoading) {
               console.warn('⚠️ Scene loading already in progress');
@@ -136,6 +105,9 @@
             if (!SCENES_CONFIG[sceneId]) {
               console.error('❌ Scene not found:', sceneId);
               console.log('Available scenes:', Object.keys(SCENES_CONFIG));
+              console.log('❌ Attempted scene ID:', sceneId);
+              console.log('❌ Scene ID type:', typeof sceneId);
+              console.log('❌ Scene ID length:', sceneId.length);
               return false;
             }
 
@@ -176,18 +148,33 @@
           }
 
           async updateAssets(sceneConfig) {
+            console.log('🎯 Updating assets for scene:', sceneConfig.id);
+            console.log('🏞️ New skybox path:', sceneConfig.assets.skybox);
+            console.log('🔊 New audio path:', sceneConfig.assets.audio);
+
             // Update audio asset
             this.elements.assets.audio.setAttribute('src', sceneConfig.assets.audio);
 
             // Update skybox asset
             this.elements.assets.skybox.setAttribute('src', sceneConfig.assets.skybox);
 
+            console.log('✅ Assets updated, waiting for load...');
+
             // Wait for assets to load
             return new Promise(resolve => setTimeout(resolve, 500));
           }
 
           updateSkybox(sceneConfig) {
-            this.elements.skybox.setAttribute('src', '#current-skybox');
+            console.log('🏞️ Updating skybox to:', sceneConfig.assets.skybox);
+
+            // Force A-Frame to reload the texture by temporarily removing and re-adding the src
+            this.elements.skybox.removeAttribute('src');
+
+            // Use a small delay to ensure the removal is processed
+            setTimeout(() => {
+              this.elements.skybox.setAttribute('src', '#current-skybox');
+              console.log('✅ Skybox updated successfully');
+            }, 100);
           }
 
           updateLighting(sceneConfig) {
@@ -210,15 +197,19 @@
             // Clear existing models
             this.elements.models.innerHTML = '';
 
-            // Add models from config
-            sceneConfig.assets.models.forEach(model => {
-              const modelEntity = document.createElement('a-entity');
-              modelEntity.setAttribute('id', model.id);
-              modelEntity.setAttribute('gltf-model', '#tree-model');
-              modelEntity.setAttribute('position', model.position);
-              modelEntity.setAttribute('scale', model.scale);
-              this.elements.models.appendChild(modelEntity);
-            });
+            // Add models from config if any
+            if (sceneConfig.assets.models && sceneConfig.assets.models.length > 0) {
+              sceneConfig.assets.models.forEach(model => {
+                const modelEntity = document.createElement('a-entity');
+                modelEntity.setAttribute('id', model.id);
+                if (model.gltfModel) {
+                  modelEntity.setAttribute('gltf-model', model.gltfModel);
+                }
+                modelEntity.setAttribute('position', model.position || '0 0 0');
+                modelEntity.setAttribute('scale', model.scale || '1 1 1');
+                this.elements.models.appendChild(modelEntity);
+              });
+            }
           }
 
           updateAudio(sceneConfig) {
@@ -238,24 +229,36 @@
 
         // Initialize WebSocket client after DOM loads
         document.addEventListener('DOMContentLoaded', function() {
-          const clockHtml = document.getElementById('clock-html');
 
           // Initialize Scene Manager
           sceneManager = new VRSceneManager();
 
+          // Determine server URL based on current host
+          const currentHost = window.location.hostname;
+          const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+          const serverPort = window.location.protocol === 'https:' ? '8081' : '8081';
+          const serverUrl = `${protocol}//${currentHost}:${serverPort}/ws`;
+
+          console.log('🔗 Connecting to WebSocket server:', serverUrl);
+
           // Initialize WebSocket client
           vrClient = new VRWebSocketClient({
-            serverUrl: 'wss://192.168.40.31:8081/ws',
+            serverUrl: serverUrl,
             deviceId: `clientevanilla-${Date.now()}`,
             onConnect: () => {
               console.log('🎮 VR Client connected to server');
+              console.log('🔍 Current scene ID on connect:', currentSceneId);
               // Send ready signal for current scene
-              setTimeout(() => vrClient.sendReady(currentSceneId), 1000);
+              setTimeout(() => {
+                console.log('📤 Sending READY signal for scene:', currentSceneId);
+                vrClient.sendReady(currentSceneId);
+              }, 1000);
             },
             onDisconnect: () => {
               console.log('🔌 VR Client disconnected from server');
             },
             onCommand: (command) => {
+              console.log('📨 Received command from server:', command);
               handleServerCommand(command);
             },
             onError: (error) => {
@@ -266,54 +269,27 @@
           // Connect to server
           vrClient.connect();
 
-          function pad(n) { return n < 10 ? '0'+n : n; }
 
-          function actualizarReloj() {
-            clockHtml.textContent = pad(hora) + ':' + pad(minuto);
-          }
-
-          function actualizarClima() {
-            // Día: 07:00 a 19:00
-            const horaNum = hora + minuto/60;
-            const nuevoEsDia = (horaNum >= 7 && horaNum < 19);
-
-            if (nuevoEsDia !== esDia) {
-              esDia = nuevoEsDia;
-
-              // Automatically switch scenes based on time of day
-              if (sceneManager) {
-                if (esDia) {
-                  console.log('☀️ Switching to day scene (escena1)');
-                  sceneManager.loadScene('escena1');
-                } else {
-                  console.log('🌙 Switching to night scene (escena2)');
-                  sceneManager.loadScene('escena2');
-                }
-              }
-            }
-
+          function sendStateUpdate() {
             // Send state update to server
             if (vrClient && vrClient.isConnected) {
-              vrClient.sendState(currentSceneId, horaNum, true, 100);
+              vrClient.sendState(currentSceneId, 0, true, 100);
             }
           }
 
-          function avanzarTiempo() {
-            minuto++;
-            if (minuto >= 60) { minuto = 0; hora++; }
-            if (hora >= 24) { hora = 0; }
-            actualizarReloj();
-            actualizarClima();
-          }
 
           function handleServerCommand(command) {
             console.log('📢 Processing server command:', command);
+            console.log('📢 Command type:', command.commandType);
+            console.log('📢 Full command object:', JSON.stringify(command, null, 2));
 
             switch(command.commandType) {
               case 'LOAD':
                 const newSceneId = command.sceneId;
                 console.log('🎬 Loading scene from server:', newSceneId);
                 console.log('🔍 Scene manager exists?', !!sceneManager);
+                console.log('🔍 Available scenes:', Object.keys(SCENES_CONFIG || {}));
+                console.log('🔍 Current scene ID before load:', currentSceneId);
 
                 // Load the scene using scene manager
                 if (sceneManager) {
@@ -321,8 +297,10 @@
                   sceneManager.loadScene(newSceneId).then(success => {
                     if (success) {
                       console.log('✅ Scene loaded successfully from dashboard');
+                      console.log('✅ Current scene ID after load:', currentSceneId);
                     } else {
                       console.error('❌ Failed to load scene from dashboard');
+                      console.error('❌ Scene config for', newSceneId, ':', SCENES_CONFIG[newSceneId]);
                     }
                   }).catch(error => {
                     console.error('💥 Error in loadScene promise:', error);
@@ -333,16 +311,8 @@
                 break;
 
               case 'START_AT':
-                const targetTime = command.epochMs;
-                const currentTime = vrClient.getServerTime();
-                console.log('▶️ Start at:', new Date(targetTime), 'Current:', new Date(currentTime));
-
-                // Sync timeline to target time
-                const timeDiff = targetTime - currentTime;
-                if (Math.abs(timeDiff) > 1000) { // If more than 1 second difference
-                  console.log('⏰ Syncing timeline, difference:', timeDiff, 'ms');
-                  // You could adjust hora/minuto here based on the time difference
-                }
+                console.log('▶️ Starting experience');
+                // Start the experience
                 break;
 
               case 'PAUSE':
@@ -364,23 +334,8 @@
                 break;
 
               case 'SEEK':
-                const deltaMs = command.deltaMs;
-                console.log('⏭️ Seeking by:', deltaMs, 'ms');
-                // Adjust timeline by deltaMs
-                const deltaMinutes = deltaMs / 60000; // Convert to virtual minutes
-                minuto += Math.round(deltaMinutes);
-                if (minuto >= 60) {
-                  hora += Math.floor(minuto / 60);
-                  minuto = minuto % 60;
-                }
-                if (minuto < 0) {
-                  hora -= Math.ceil(Math.abs(minuto) / 60);
-                  minuto = 60 + (minuto % 60);
-                }
-                if (hora >= 24) hora = hora % 24;
-                if (hora < 0) hora = 24 + (hora % 24);
-                actualizarReloj();
-                actualizarClima();
+                console.log('⏭️ Seeking command received');
+                // No timeline to seek anymore
                 break;
 
               default:
@@ -388,8 +343,6 @@
             }
           }
 
-          actualizarReloj();
-          setInterval(avanzarTiempo, 1000); // 1 seg real = 1 min virtual
 
           // Expose to global scope for debugging
           window.vrClient = vrClient;
@@ -407,24 +360,20 @@
             }
           };
 
-          // Time control functions for demonstration
-          window.setTime = (newHora, newMinuto = 0) => {
-            hora = newHora;
-            minuto = newMinuto;
-            actualizarReloj();
-            actualizarClima();
-            console.log(`⏰ Time set to ${pad(hora)}:${pad(minuto)}`);
-          };
-
-          window.skipToNight = () => window.setTime(20, 0); // 8:00 PM
-          window.skipToDay = () => window.setTime(8, 0);   // 8:00 AM
 
           console.log('🎮 VR Scene Controls Available:');
-          console.log('  loadScene("escena1") - Load day scene');
-          console.log('  loadScene("escena2") - Load night scene');
-          console.log('  setTime(hour, minute) - Set virtual time');
-          console.log('  skipToDay() - Jump to 8:00 AM');
-          console.log('  skipToNight() - Jump to 8:00 PM');
+          console.log('  loadScene("escena-1") - Load Energías Renovables scene');
+          console.log('  loadScene("escena-2") - Load Operaciones Petroleras scene');
+          console.log('  toggleScene() - Toggle between scenes manually');
+
+          // Add a simple scene toggle function
+          window.toggleScene = () => {
+            if (sceneManager) {
+              const newScene = currentSceneId === 'escena-1' ? 'escena-2' : 'escena-1';
+              console.log(`🔀 Toggling to ${newScene}`);
+              sceneManager.loadScene(newScene);
+            }
+          };
         });
       </script>
     </a-scene>
