@@ -11,9 +11,10 @@
   },
   "packageManager": "pnpm@8.15.0",
   "scripts": {
-    "dev": "pnpm run dev:server & pnpm run dev:client",
+    "dev": "concurrently \"pnpm --filter server dev\" \"pnpm --filter clientevanilla-https dev\"",
     "dev:server": "pnpm --filter server dev",
     "dev:client": "pnpm --filter client dev",
+    "dev:clientevanilla": "pnpm --filter clientevanilla-https dev",
     "build": "pnpm --filter client build && pnpm --filter server build",
     "start": "pnpm --filter server start",
     "start:production": "NODE_ENV=production pnpm --filter server start",
