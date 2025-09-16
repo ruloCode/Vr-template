@@ -1,15 +1,22 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>Ejemplo VR Paisaje - Rulocode</title>
-    <meta name="description" content="Ejemplo simple de VR con paisaje usando A-Frame y assets locales">
+    <meta
+      name="description"
+      content="Ejemplo simple de VR con paisaje usando A-Frame y assets locales"
+    />
     <script src="aframe-v1.3.0.min.js"></script>
     <script src="scenes-config.js"></script>
     <script src="websocket-client.js"></script>
     <style>
-      body { margin: 0; }
-      .a-loader-title { font-family: sans-serif; }
+      body {
+        margin: 0;
+      }
+      .a-loader-title {
+        font-family: sans-serif;
+      }
     </style>
   </head>
   <body>
@@ -17,41 +24,141 @@
       <!-- Audio y assets - Dynamic loading -->
       <a-assets>
         <audio id="current-audio" src="audio/ambient-wind.mp3"></audio>
-        <img id="current-skybox" src="images/escena_1.png">
+        <img id="current-skybox" src="images/escena_1.png" />
+
+        <!-- Solar videos for floating screen (Scene 1 only) -->
+        <video
+          id="solar-1-video"
+          src="videos/solar_1.MP4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+        ></video>
+        <video
+          id="solar-2-video"
+          src="videos/solar_2.MP4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+        ></video>
+        <video
+          id="solar-3-video"
+          src="videos/solar_3.MP4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+        ></video>
+
+        <!-- Petroleo images for floating screen (Scene 2 only) -->
+        <img id="petroleo-1-image" src="images/petroleo_1.jpg" />
+        <img id="petroleo-2-image" src="images/petroleo_2.jpg" />
+        <img id="petroleo-3-image" src="images/petroleo_3.jpg" />
+
+        <!-- Plataforma images for floating screen (Scene 3 only) -->
+        <img id="plataforma-1-image" src="images/plataforma_1.jpg" />
+        <img id="plataforma-2-image" src="images/plataforma_2.jpg" />
+        <img id="plataforma-3-image" src="images/plataforma_3.jpg" />
+
+        <!-- CPF images for floating screen (Scene 3 only) -->
+        <img id="cpf-cupiagua-image" src="images/cpf_cupiagua.jpg" />
+        <img id="cpf_cusiana-image" src="images/cpf_cusiana.jpg" />
+        <img id="cpf_florena-image" src="images/cpf_florena.jpg" />
       </a-assets>
 
       <!-- Scene loading overlay -->
-      <a-entity id="scene-overlay"
-                geometry="primitive: plane; width: 10; height: 6"
-                material="color: black; opacity: 0"
-                position="0 0 -2"
-                visible="false">
-        <a-text value="Loading Scene..."
-                position="0 0 0.01"
-                align="center"
-                color="white"
-                scale="2 2 2"></a-text>
+      <a-entity
+        id="scene-overlay"
+        geometry="primitive: plane; width: 10; height: 6"
+        material="color: black; opacity: 0"
+        position="0 0 -2"
+        visible="false"
+      >
+        <a-text
+          value="Loading Scene..."
+          position="0 0 0.01"
+          align="center"
+          color="white"
+          scale="2 2 2"
+        ></a-text>
       </a-entity>
 
       <!-- Audio component -->
-      <a-sound id="scene-sound"
-               src="#current-audio"
-               autoplay="true"
-               loop="true"
-               volume="0.5"></a-sound>
+      <a-sound
+        id="scene-sound"
+        src="#current-audio"
+        autoplay="true"
+        loop="true"
+        volume="0.5"
+      ></a-sound>
 
       <!-- Skybox esférico -->
-      <a-sky id="scene-skybox"
-             src="#current-skybox"
-             rotation="0 -90 0"></a-sky>
+      <a-sky id="scene-skybox" src="#current-skybox" rotation="0 -90 0"></a-sky>
+
+      <!-- Single floating screen that cycles through solar videos (Scene 1 only) -->
+      <a-plane
+        id="park-screen"
+        src="#solar-1-video"
+        position="-50 55 20"
+        rotation="-30 -87 0"
+        width="100"
+        height="50"
+        material="shader: flat; side: double"
+        visible="false"
+        solar-video-cycler
+      ></a-plane>
+
+      <!-- Single floating screen that cycles through petroleo images (Scene 2 only) -->
+      <a-plane
+        id="petroleo-screen"
+        src="#petroleo-2-image"
+        position="0 150 150"
+        rotation="-30 0 0"
+        width="180"
+        height="100"
+        material="shader: flat; side: double"
+        visible="false"
+        petroleo-image-cycler
+      ></a-plane>
+
+      <!-- Single floating screen that cycles through plataforma images (Scene 3 only) -->
+      <a-plane
+        id="plataforma-screen"
+        src="#plataforma-1-image"
+        position="-200 100 0"
+        rotation="30 100 0"
+        width="180"
+        height="100"
+        material="shader: flat; side: double"
+        visible="false"
+        plataforma-image-cycler
+      ></a-plane>
+
+      <a-plane
+        id="cpf-screen"
+        src="#cpf-cupiagua-image"
+        position="150 140 100"
+        rotation="-30 80 0"
+        width="180"
+        height="100"
+        material="shader: flat; side: double"
+        visible="false"
+        cpf-image-cycler
+      ></a-plane>
 
       <!-- Lighting system -->
-      <a-entity id="ambient-light"
-                light="type: ambient; color: #ffffff; intensity: 0.7"></a-entity>
+      <a-entity
+        id="ambient-light"
+        light="type: ambient; color: #ffffff; intensity: 0.7"
+      ></a-entity>
 
-      <a-entity id="directional-light"
-                light="type: directional; color: #ffeeaa; intensity: 0.8"
-                position="0 1 1"></a-entity>
+      <a-entity
+        id="directional-light"
+        light="type: directional; color: #ffeeaa; intensity: 0.8"
+        position="0 1 1"
+      ></a-entity>
 
       <!-- 3D Models container (empty for clean 360° view) -->
       <a-entity id="scene-models">
@@ -59,13 +166,326 @@
       </a-entity>
 
       <!-- Cámara y controles VR -->
-      <a-entity camera look-controls wasd-controls position="0 1.6 5"></a-entity>
+      <a-entity
+        camera
+        look-controls
+        wasd-controls
+        position="0 1.6 5"
+      ></a-entity>
 
       <script>
         // VR Scene Management System
         let vrClient = null;
-        let currentSceneId = 'escena-1'; // Default scene
+        let currentSceneId = "escena-1"; // Default scene
         let sceneManager = null;
+
+        // Petroleo image cycler component for automatic image cycling
+        AFRAME.registerComponent("petroleo-image-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentImageIndex = 0;
+            this.images = [
+              "#petroleo-1-image",
+              "#petroleo-2-image",
+              "#petroleo-3-image",
+            ];
+            this.cycleInterval = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              this.startImageCycling();
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopImageCycling();
+            };
+
+            this.startImageCycling = () => {
+              this.showCurrentImage();
+              this.cycleInterval = setInterval(() => {
+                this.nextImage();
+              }, 3000); // Cambiar imagen cada 3 segundos
+            };
+
+            this.stopImageCycling = () => {
+              if (this.cycleInterval) {
+                clearInterval(this.cycleInterval);
+                this.cycleInterval = null;
+              }
+            };
+
+            this.showCurrentImage = () => {
+              const imageSrc = this.images[this.currentImageIndex];
+              this.el.setAttribute("src", imageSrc);
+            };
+
+            this.nextImage = () => {
+              this.currentImageIndex =
+                (this.currentImageIndex + 1) % this.images.length;
+              this.showCurrentImage();
+            };
+
+            this.setImage = (index) => {
+              if (index >= 0 && index < this.images.length) {
+                this.currentImageIndex = index;
+                this.showCurrentImage();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.petroleoImageCycler = this;
+          },
+
+          remove() {
+            this.stopImageCycling();
+          },
+        });
+
+        // Plataforma image cycler component for automatic image cycling
+        AFRAME.registerComponent("plataforma-image-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentImageIndex = 0;
+            this.images = [
+              "#plataforma-1-image",
+              "#plataforma-2-image",
+              "#plataforma-3-image",
+            ];
+            this.cycleInterval = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              this.startImageCycling();
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopImageCycling();
+            };
+
+            this.startImageCycling = () => {
+              this.showCurrentImage();
+              this.cycleInterval = setInterval(() => {
+                this.nextImage();
+              }, 3000); // Cambiar imagen cada 3 segundos
+            };
+
+            this.stopImageCycling = () => {
+              if (this.cycleInterval) {
+                clearInterval(this.cycleInterval);
+                this.cycleInterval = null;
+              }
+            };
+
+            this.showCurrentImage = () => {
+              const imageSrc = this.images[this.currentImageIndex];
+              this.el.setAttribute("src", imageSrc);
+            };
+
+            this.nextImage = () => {
+              this.currentImageIndex =
+                (this.currentImageIndex + 1) % this.images.length;
+              this.showCurrentImage();
+            };
+
+            this.setImage = (index) => {
+              if (index >= 0 && index < this.images.length) {
+                this.currentImageIndex = index;
+                this.showCurrentImage();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.plataformaImageCycler = this;
+          },
+
+          remove() {
+            this.stopImageCycling();
+          },
+        });
+
+        // CPF image cycler component for automatic image cycling
+        AFRAME.registerComponent("cpf-image-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentImageIndex = 0;
+            this.images = [
+              "#cpf-cupiagua-image",
+              "#cpf_cusiana-image",
+              "#cpf_florena-image",
+            ];
+            this.cycleInterval = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              this.startImageCycling();
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopImageCycling();
+            };
+
+            this.startImageCycling = () => {
+              this.showCurrentImage();
+              this.cycleInterval = setInterval(() => {
+                this.nextImage();
+              }, 3000); // Cambiar imagen cada 3 segundos
+            };
+
+            this.stopImageCycling = () => {
+              if (this.cycleInterval) {
+                clearInterval(this.cycleInterval);
+                this.cycleInterval = null;
+              }
+            };
+
+            this.showCurrentImage = () => {
+              const imageSrc = this.images[this.currentImageIndex];
+              this.el.setAttribute("src", imageSrc);
+            };
+
+            this.nextImage = () => {
+              this.currentImageIndex =
+                (this.currentImageIndex + 1) % this.images.length;
+              this.showCurrentImage();
+            };
+
+            this.setImage = (index) => {
+              if (index >= 0 && index < this.images.length) {
+                this.currentImageIndex = index;
+                this.showCurrentImage();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.cpfImageCycler = this;
+          },
+
+          remove() {
+            this.stopImageCycling();
+          },
+        });
+
+        // Solar video cycler component for automatic video cycling
+        AFRAME.registerComponent("solar-video-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentVideoIndex = 0;
+            this.videos = [
+              "#solar-1-video",
+              "#solar-2-video",
+              "#solar-3-video",
+            ];
+            this.currentVideo = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              // Small delay to ensure videos are loaded
+              setTimeout(() => {
+                this.startVideoPlayback();
+              }, 500);
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopVideoPlayback();
+            };
+
+            this.startVideoPlayback = () => {
+              this.playCurrentVideo();
+            };
+
+            this.stopVideoPlayback = () => {
+              if (this.currentVideo) {
+                this.currentVideo.pause();
+                this.currentVideo.currentTime = 0;
+              }
+            };
+
+            this.playCurrentVideo = () => {
+              const videoSrc = this.videos[this.currentVideoIndex];
+              this.el.setAttribute("src", videoSrc);
+
+              // Get the video element and set up event listeners
+              this.currentVideo = document.querySelector(videoSrc);
+              if (this.currentVideo) {
+                // Remove any existing event listeners
+                this.currentVideo.removeEventListener(
+                  "ended",
+                  this.onVideoEnded
+                );
+
+                // Add new event listener
+                this.onVideoEnded = () => {
+                  this.nextVideo();
+                };
+                this.currentVideo.addEventListener("ended", this.onVideoEnded);
+
+                // Wait for video to be ready before playing
+                const playVideo = () => {
+                  this.currentVideo.currentTime = 0;
+                  this.currentVideo.play().catch((error) => {
+                    console.warn(
+                      "⚠️ No se pudo reproducir video solar:",
+                      error
+                    );
+                    // Try to load the video again
+                    this.currentVideo.load();
+                    setTimeout(() => {
+                      this.currentVideo.play().catch((retryError) => {
+                        console.warn("⚠️ Segundo intento fallido:", retryError);
+                      });
+                    }, 1000);
+                  });
+                };
+
+                // Check if video is ready
+                if (this.currentVideo.readyState >= 2) {
+                  playVideo();
+                } else {
+                  this.currentVideo.addEventListener("canplay", playVideo, {
+                    once: true,
+                  });
+                  this.currentVideo.load();
+                }
+              } else {
+                console.warn("⚠️ Video element not found:", videoSrc);
+              }
+            };
+
+            this.nextVideo = () => {
+              this.currentVideoIndex =
+                (this.currentVideoIndex + 1) % this.videos.length;
+              this.playCurrentVideo();
+            };
+
+            this.setVideo = (index) => {
+              if (index >= 0 && index < this.videos.length) {
+                this.currentVideoIndex = index;
+                this.playCurrentVideo();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.solarVideoCycler = this;
+          },
+
+          remove() {
+            if (this.currentVideo && this.onVideoEnded) {
+              this.currentVideo.removeEventListener("ended", this.onVideoEnded);
+            }
+          },
+        });
 
         // Scene Manager Class
         class VRSceneManager {
@@ -78,40 +498,36 @@
 
           initializeElements() {
             this.elements = {
-              skybox: document.querySelector('#scene-skybox'),
-              sound: document.querySelector('#scene-sound'),
-              ambientLight: document.querySelector('#ambient-light'),
-              directionalLight: document.querySelector('#directional-light'),
-              models: document.querySelector('#scene-models'),
-              overlay: document.querySelector('#scene-overlay'),
+              skybox: document.querySelector("#scene-skybox"),
+              sound: document.querySelector("#scene-sound"),
+              ambientLight: document.querySelector("#ambient-light"),
+              directionalLight: document.querySelector("#directional-light"),
+              models: document.querySelector("#scene-models"),
+              overlay: document.querySelector("#scene-overlay"),
+              parkScreen: document.querySelector("#park-screen"),
+              petroleoScreen: document.querySelector("#petroleo-screen"),
+              plataformaScreen: document.querySelector("#plataforma-screen"),
+              cpfScreen: document.querySelector("#cpf-screen"),
               assets: {
-                audio: document.querySelector('#current-audio'),
-                skybox: document.querySelector('#current-skybox')
-              }
+                audio: document.querySelector("#current-audio"),
+                skybox: document.querySelector("#current-skybox"),
+              },
             };
           }
 
           async loadScene(sceneId) {
-            console.log('🔍 loadScene called with:', sceneId);
-            console.log('🔍 Available scenes:', Object.keys(SCENES_CONFIG));
-            console.log('🔍 Scene exists?', !!SCENES_CONFIG[sceneId]);
-            console.log('🔍 Full SCENES_CONFIG:', SCENES_CONFIG);
-
             if (this.isLoading) {
-              console.warn('⚠️ Scene loading already in progress');
+              console.warn("⚠️ Carga de escena ya en progreso");
               return false;
             }
 
             if (!SCENES_CONFIG[sceneId]) {
-              console.error('❌ Scene not found:', sceneId);
-              console.log('Available scenes:', Object.keys(SCENES_CONFIG));
-              console.log('❌ Attempted scene ID:', sceneId);
-              console.log('❌ Scene ID type:', typeof sceneId);
-              console.log('❌ Scene ID length:', sceneId.length);
+              console.error("❌ Escena no encontrada:", sceneId);
+              console.log("Escenas disponibles:", Object.keys(SCENES_CONFIG));
               return false;
             }
 
-            console.log('🎬 Loading scene:', sceneId);
+            console.log("🎬 Cargando escena:", sceneId);
             this.isLoading = true;
             this.showLoadingOverlay();
 
@@ -126,11 +542,12 @@
               this.updateLighting(sceneConfig);
               this.updateModels(sceneConfig);
               this.updateAudio(sceneConfig);
+              this.updateFloatingScreens(sceneConfig);
 
               this.currentScene = sceneConfig;
               currentSceneId = sceneId;
 
-              console.log('✅ Scene loaded successfully:', sceneId);
+              console.log("✅ Escena cargada exitosamente:", sceneId);
 
               // Notify server we're ready
               if (vrClient && vrClient.isConnected) {
@@ -139,7 +556,7 @@
 
               return true;
             } catch (error) {
-              console.error('❌ Error loading scene:', error);
+              console.error("❌ Error al cargar escena:", error);
               return false;
             } finally {
               this.isLoading = false;
@@ -148,127 +565,332 @@
           }
 
           async updateAssets(sceneConfig) {
-            console.log('🎯 Updating assets for scene:', sceneConfig.id);
-            console.log('🏞️ New skybox path:', sceneConfig.assets.skybox);
-            console.log('🔊 New audio path:', sceneConfig.assets.audio);
-
             // Update audio asset
-            this.elements.assets.audio.setAttribute('src', sceneConfig.assets.audio);
+            this.elements.assets.audio.setAttribute(
+              "src",
+              sceneConfig.assets.audio
+            );
 
             // Update skybox asset
-            this.elements.assets.skybox.setAttribute('src', sceneConfig.assets.skybox);
-
-            console.log('✅ Assets updated, waiting for load...');
+            this.elements.assets.skybox.setAttribute(
+              "src",
+              sceneConfig.assets.skybox
+            );
 
             // Wait for assets to load
-            return new Promise(resolve => setTimeout(resolve, 500));
+            return new Promise((resolve) => setTimeout(resolve, 500));
           }
 
           updateSkybox(sceneConfig) {
-            console.log('🏞️ Updating skybox to:', sceneConfig.assets.skybox);
-
             // Force A-Frame to reload the texture by temporarily removing and re-adding the src
-            this.elements.skybox.removeAttribute('src');
+            this.elements.skybox.removeAttribute("src");
 
             // Use a small delay to ensure the removal is processed
             setTimeout(() => {
-              this.elements.skybox.setAttribute('src', '#current-skybox');
-              console.log('✅ Skybox updated successfully');
+              this.elements.skybox.setAttribute("src", "#current-skybox");
             }, 100);
           }
 
           updateLighting(sceneConfig) {
             const { ambient, directional } = sceneConfig.lighting;
 
-            this.elements.ambientLight.setAttribute('light', {
-              type: 'ambient',
+            this.elements.ambientLight.setAttribute("light", {
+              type: "ambient",
               color: ambient.color,
-              intensity: ambient.intensity
+              intensity: ambient.intensity,
             });
 
-            this.elements.directionalLight.setAttribute('light', {
-              type: 'directional',
+            this.elements.directionalLight.setAttribute("light", {
+              type: "directional",
               color: directional.color,
-              intensity: directional.intensity
+              intensity: directional.intensity,
             });
           }
 
           updateModels(sceneConfig) {
             // Clear existing models
-            this.elements.models.innerHTML = '';
+            this.elements.models.innerHTML = "";
 
             // Add models from config if any
-            if (sceneConfig.assets.models && sceneConfig.assets.models.length > 0) {
-              sceneConfig.assets.models.forEach(model => {
-                const modelEntity = document.createElement('a-entity');
-                modelEntity.setAttribute('id', model.id);
+            if (
+              sceneConfig.assets.models &&
+              sceneConfig.assets.models.length > 0
+            ) {
+              sceneConfig.assets.models.forEach((model) => {
+                const modelEntity = document.createElement("a-entity");
+                modelEntity.setAttribute("id", model.id);
                 if (model.gltfModel) {
-                  modelEntity.setAttribute('gltf-model', model.gltfModel);
+                  modelEntity.setAttribute("gltf-model", model.gltfModel);
                 }
-                modelEntity.setAttribute('position', model.position || '0 0 0');
-                modelEntity.setAttribute('scale', model.scale || '1 1 1');
+                modelEntity.setAttribute("position", model.position || "0 0 0");
+                modelEntity.setAttribute("scale", model.scale || "1 1 1");
                 this.elements.models.appendChild(modelEntity);
               });
             }
           }
 
           updateAudio(sceneConfig) {
-            this.elements.sound.setAttribute('src', '#current-audio');
+            this.elements.sound.setAttribute("src", "#current-audio");
+          }
+
+          updateFloatingScreens(sceneConfig) {
+            // Show/hide floating screens based on scene
+            if (sceneConfig.id === "escena-1") {
+              this.showParkScreen();
+              this.hidePetroleoScreen();
+              this.hidePlataformaScreen();
+              this.hideCpfScreen();
+            } else if (sceneConfig.id === "escena-2") {
+              this.hideParkScreen();
+              this.showPetroleoScreen();
+              this.hidePlataformaScreen();
+              this.hideCpfScreen();
+            } else if (sceneConfig.id === "escena-3") {
+              this.hideParkScreen();
+              this.hidePetroleoScreen();
+              this.showPlataformaScreen();
+              this.showCpfScreen();
+            } else {
+              this.hideParkScreen();
+              this.hidePetroleoScreen();
+              this.hidePlataformaScreen();
+              this.hideCpfScreen();
+            }
+          }
+
+          showParkScreen() {
+            if (!this.elements.parkScreen) {
+              console.warn("⚠️ Referencia de pantalla solar no disponible");
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.parkScreen.components["solar-video-cycler"];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.parkScreen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              console.error("❌ Error mostrando pantalla solar:", error);
+            }
+          }
+
+          hideParkScreen() {
+            if (!this.elements.parkScreen) {
+              console.warn("⚠️ Referencia de pantalla solar no disponible");
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.parkScreen.components["solar-video-cycler"];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.parkScreen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              console.error("❌ Error ocultando pantalla solar:", error);
+            }
+          }
+
+          // Petroleo Screen Control Methods
+          showPetroleoScreen() {
+            if (!this.elements.petroleoScreen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de petróleo no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.petroleoScreen.components[
+                  "petroleo-image-cycler"
+                ];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.petroleoScreen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              console.error("❌ Error mostrando pantalla de petróleo:", error);
+            }
+          }
+
+          hidePetroleoScreen() {
+            if (!this.elements.petroleoScreen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de petróleo no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.petroleoScreen.components[
+                  "petroleo-image-cycler"
+                ];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.petroleoScreen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              console.error("❌ Error ocultando pantalla de petróleo:", error);
+            }
+          }
+
+          // Plataforma Screen Control Methods
+          showPlataformaScreen() {
+            if (!this.elements.plataformaScreen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de plataformas no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.plataformaScreen.components[
+                  "plataforma-image-cycler"
+                ];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.plataformaScreen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              console.error(
+                "❌ Error mostrando pantalla de plataformas:",
+                error
+              );
+            }
+          }
+
+          hidePlataformaScreen() {
+            if (!this.elements.plataformaScreen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de plataformas no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.plataformaScreen.components[
+                  "plataforma-image-cycler"
+                ];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.plataformaScreen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              console.error(
+                "❌ Error ocultando pantalla de plataformas:",
+                error
+              );
+            }
+          }
+
+          // CPF Screen Control Methods
+          showCpfScreen() {
+            if (!this.elements.cpfScreen) {
+              console.warn("⚠️ Referencia de pantalla de CPF no disponible");
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.cpfScreen.components["cpf-image-cycler"];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.cpfScreen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              console.error("❌ Error mostrando pantalla de CPF:", error);
+            }
+          }
+
+          hideCpfScreen() {
+            if (!this.elements.cpfScreen) {
+              console.warn("⚠️ Referencia de pantalla de CPF no disponible");
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.cpfScreen.components["cpf-image-cycler"];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.cpfScreen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              console.error("❌ Error ocultando pantalla de CPF:", error);
+            }
           }
 
           showLoadingOverlay() {
-            this.elements.overlay.setAttribute('visible', 'true');
-            this.elements.overlay.setAttribute('material', 'opacity', 0.8);
+            this.elements.overlay.setAttribute("visible", "true");
+            this.elements.overlay.setAttribute("material", "opacity", 0.8);
           }
 
           hideLoadingOverlay() {
-            this.elements.overlay.setAttribute('visible', 'false');
-            this.elements.overlay.setAttribute('material', 'opacity', 0);
+            this.elements.overlay.setAttribute("visible", "false");
+            this.elements.overlay.setAttribute("material", "opacity", 0);
           }
         }
 
         // Initialize WebSocket client after DOM loads
-        document.addEventListener('DOMContentLoaded', function() {
-
+        document.addEventListener("DOMContentLoaded", function () {
           // Initialize Scene Manager
           sceneManager = new VRSceneManager();
 
           // Determine server URL based on current host
           const currentHost = window.location.hostname;
-          const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-          const serverPort = window.location.protocol === 'https:' ? '8081' : '8081';
+          const protocol =
+            window.location.protocol === "https:" ? "wss:" : "ws:";
+          const serverPort =
+            window.location.protocol === "https:" ? "8081" : "8081";
           const serverUrl = `${protocol}//${currentHost}:${serverPort}/ws`;
 
-          console.log('🔗 Connecting to WebSocket server:', serverUrl);
+          console.log("🔗 Conectando al servidor WebSocket:", serverUrl);
 
           // Initialize WebSocket client
           vrClient = new VRWebSocketClient({
             serverUrl: serverUrl,
             deviceId: `clientevanilla-${Date.now()}`,
             onConnect: () => {
-              console.log('🎮 VR Client connected to server');
-              console.log('🔍 Current scene ID on connect:', currentSceneId);
+              console.log("🎮 VR Client connected to server");
+              console.log("🔍 Current scene ID on connect:", currentSceneId);
               // Send ready signal for current scene
               setTimeout(() => {
-                console.log('📤 Sending READY signal for scene:', currentSceneId);
+                console.log(
+                  "📤 Sending READY signal for scene:",
+                  currentSceneId
+                );
                 vrClient.sendReady(currentSceneId);
               }, 1000);
             },
             onDisconnect: () => {
-              console.log('🔌 VR Client disconnected from server');
+              console.log("🔌 VR Client disconnected from server");
             },
             onCommand: (command) => {
-              console.log('📨 Received command from server:', command);
+              console.log("📨 Received command from server:", command);
               handleServerCommand(command);
             },
             onError: (error) => {
-              console.error('🚨 VR Client error:', error);
-            }
+              console.error("🚨 VR Client error:", error);
+            },
           });
 
           // Connect to server
           vrClient.connect();
-
 
           function sendStateUpdate() {
             // Send state update to server
@@ -277,72 +899,221 @@
             }
           }
 
-
           function handleServerCommand(command) {
-            console.log('📢 Processing server command:', command);
-            console.log('📢 Command type:', command.commandType);
-            console.log('📢 Full command object:', JSON.stringify(command, null, 2));
-
-            switch(command.commandType) {
-              case 'LOAD':
+            switch (command.commandType) {
+              case "LOAD":
                 const newSceneId = command.sceneId;
-                console.log('🎬 Loading scene from server:', newSceneId);
-                console.log('🔍 Scene manager exists?', !!sceneManager);
-                console.log('🔍 Available scenes:', Object.keys(SCENES_CONFIG || {}));
-                console.log('🔍 Current scene ID before load:', currentSceneId);
+                console.log("🎬 Cargando escena desde servidor:", newSceneId);
 
                 // Load the scene using scene manager
                 if (sceneManager) {
-                  console.log('🚀 Calling sceneManager.loadScene with:', newSceneId);
-                  sceneManager.loadScene(newSceneId).then(success => {
-                    if (success) {
-                      console.log('✅ Scene loaded successfully from dashboard');
-                      console.log('✅ Current scene ID after load:', currentSceneId);
-                    } else {
-                      console.error('❌ Failed to load scene from dashboard');
-                      console.error('❌ Scene config for', newSceneId, ':', SCENES_CONFIG[newSceneId]);
-                    }
-                  }).catch(error => {
-                    console.error('💥 Error in loadScene promise:', error);
-                  });
+                  sceneManager
+                    .loadScene(newSceneId)
+                    .then((success) => {
+                      if (success) {
+                        console.log("✅ Escena cargada desde dashboard");
+                      } else {
+                        console.error("❌ Failed to load scene from dashboard");
+                      }
+                    })
+                    .catch((error) => {
+                      console.error("💥 Error in loadScene promise:", error);
+                    });
                 } else {
-                  console.error('❌ Scene manager not initialized');
+                  console.error("❌ Scene manager not initialized");
                 }
                 break;
 
-              case 'START_AT':
-                console.log('▶️ Starting experience');
+              case "START_AT":
+                console.log("▶️ Iniciando experiencia VR");
                 // Start the experience
                 break;
 
-              case 'PAUSE':
-                console.log('⏸️ Pausing experience');
+              case "PAUSE":
+                console.log("⏸️ Pausando experiencia VR");
                 // Pause audio and timeline
-                const audioEl = document.querySelector('#scene-sound');
+                const audioEl = document.querySelector("#scene-sound");
                 if (audioEl) {
                   audioEl.components.sound.pauseSound();
                 }
                 break;
 
-              case 'RESUME':
-                console.log('▶️ Resuming experience');
+              case "RESUME":
+                console.log("▶️ Reanudando experiencia VR");
                 // Resume audio and timeline
-                const resumeAudioEl = document.querySelector('#scene-sound');
+                const resumeAudioEl = document.querySelector("#scene-sound");
                 if (resumeAudioEl) {
                   resumeAudioEl.components.sound.playSound();
                 }
                 break;
 
-              case 'SEEK':
-                console.log('⏭️ Seeking command received');
+              case "SEEK":
+                console.log("⏭️ Seeking command received");
                 // No timeline to seek anymore
                 break;
 
+              case "SHOW_SCREEN":
+                handleShowScreenCommand(command.screenType);
+                break;
+
+              case "HIDE_SCREEN":
+                handleHideScreenCommand(command.screenType);
+                break;
+
+              case "HIDE_ALL_SCREENS":
+                handleHideAllScreensCommand();
+                break;
+
+              case "SHOW_ALL_SCREENS":
+                handleShowAllScreensCommand();
+                break;
+
+              case "TOGGLE_SCREEN":
+                handleToggleScreenCommand(command.screenType);
+                break;
+
               default:
-                console.log('🤷 Unknown command:', command.commandType);
+                console.log("🤷 Unknown command:", command.commandType);
             }
           }
 
+          // Screen control command handlers
+          function handleShowScreenCommand(screenType) {
+            if (!sceneManager) {
+              console.warn("⚠️ SceneManager no disponible");
+              return;
+            }
+
+            switch (screenType) {
+              case "solar":
+                sceneManager.showParkScreen();
+                break;
+              case "petroleo":
+                sceneManager.showPetroleoScreen();
+                break;
+              case "plataforma":
+                sceneManager.showPlataformaScreen();
+                break;
+              case "cpf":
+                sceneManager.showCpfScreen();
+                break;
+              default:
+                console.warn("⚠️ Tipo de pantalla no reconocido:", screenType);
+            }
+          }
+
+          function handleHideScreenCommand(screenType) {
+            if (!sceneManager) {
+              console.warn("⚠️ SceneManager no disponible");
+              return;
+            }
+
+            switch (screenType) {
+              case "solar":
+                sceneManager.hideParkScreen();
+                break;
+              case "petroleo":
+                sceneManager.hidePetroleoScreen();
+                break;
+              case "plataforma":
+                sceneManager.hidePlataformaScreen();
+                break;
+              case "cpf":
+                sceneManager.hideCpfScreen();
+                break;
+              default:
+                console.warn("⚠️ Tipo de pantalla no reconocido:", screenType);
+            }
+          }
+
+          function handleHideAllScreensCommand() {
+            if (!sceneManager) {
+              console.warn("⚠️ SceneManager no disponible");
+              return;
+            }
+
+            sceneManager.hideParkScreen();
+            sceneManager.hidePetroleoScreen();
+            sceneManager.hidePlataformaScreen();
+            sceneManager.hideCpfScreen();
+          }
+
+          function handleShowAllScreensCommand() {
+            if (!sceneManager) {
+              console.warn("⚠️ SceneManager no disponible");
+              return;
+            }
+
+            // Mostrar solo las pantallas correspondientes a la escena actual
+            switch (currentSceneId) {
+              case "escena-1":
+                sceneManager.showParkScreen();
+                break;
+              case "escena-2":
+                sceneManager.showPetroleoScreen();
+                break;
+              case "escena-3":
+                sceneManager.showPlataformaScreen();
+                sceneManager.showCpfScreen();
+                break;
+              default:
+            }
+          }
+
+          function handleToggleScreenCommand(screenType) {
+            if (!sceneManager) {
+              console.warn("⚠️ SceneManager no disponible");
+              return;
+            }
+
+            switch (screenType) {
+              case "solar":
+                const parkScreen = document.querySelector("#park-screen");
+                if (
+                  parkScreen &&
+                  parkScreen.getAttribute("visible") === "true"
+                ) {
+                  sceneManager.hideParkScreen();
+                } else {
+                  sceneManager.showParkScreen();
+                }
+                break;
+              case "petroleo":
+                const petroleoScreen =
+                  document.querySelector("#petroleo-screen");
+                if (
+                  petroleoScreen &&
+                  petroleoScreen.getAttribute("visible") === "true"
+                ) {
+                  sceneManager.hidePetroleoScreen();
+                } else {
+                  sceneManager.showPetroleoScreen();
+                }
+                break;
+              case "plataforma":
+                const plataformaScreen =
+                  document.querySelector("#plataforma-screen");
+                if (
+                  plataformaScreen &&
+                  plataformaScreen.getAttribute("visible") === "true"
+                ) {
+                  sceneManager.hidePlataformaScreen();
+                } else {
+                  sceneManager.showPlataformaScreen();
+                }
+                break;
+              case "cpf":
+                const cpfScreen = document.querySelector("#cpf-screen");
+                if (cpfScreen && cpfScreen.getAttribute("visible") === "true") {
+                  sceneManager.hideCpfScreen();
+                } else {
+                  sceneManager.showCpfScreen();
+                }
+                break;
+              default:
+                console.warn("⚠️ Tipo de pantalla no reconocido:", screenType);
+            }
+          }
 
           // Expose to global scope for debugging
           window.vrClient = vrClient;
@@ -350,27 +1121,416 @@
           window.handleServerCommand = handleServerCommand;
           window.SCENES_CONFIG = SCENES_CONFIG;
 
+          // Expose screen command handlers for testing
+          window.handleShowScreenCommand = handleShowScreenCommand;
+          window.handleHideScreenCommand = handleHideScreenCommand;
+          window.handleHideAllScreensCommand = handleHideAllScreensCommand;
+          window.handleShowAllScreensCommand = handleShowAllScreensCommand;
+          window.handleToggleScreenCommand = handleToggleScreenCommand;
+
+          // Expose screen controls globally for debugging
+          window.solarScreen = {
+            show: () => sceneManager.showParkScreen(),
+            hide: () => sceneManager.hideParkScreen(),
+            move: (x, y, z) => {
+              const parkScreen = document.querySelector("#park-screen");
+              if (parkScreen) {
+                parkScreen.setAttribute("position", `${x} ${y} ${z}`);
+              }
+            },
+            rotate: (x, y, z) => {
+              const parkScreen = document.querySelector("#park-screen");
+              if (parkScreen) {
+                parkScreen.setAttribute("rotation", `${x} ${y} ${z}`);
+              }
+            },
+            resize: (width, height) => {
+              const parkScreen = document.querySelector("#park-screen");
+              if (parkScreen) {
+                parkScreen.setAttribute("width", width.toString());
+                parkScreen.setAttribute("height", height.toString());
+              }
+            },
+            nextVideo: () => {
+              const cycler = window.solarVideoCycler;
+              if (cycler && cycler.nextVideo) {
+                cycler.nextVideo();
+              }
+            },
+            setVideo: (index) => {
+              const cycler = window.solarVideoCycler;
+              if (cycler && cycler.setVideo) {
+                cycler.setVideo(index);
+              }
+            },
+            pause: () => {
+              const cycler = window.solarVideoCycler;
+              if (cycler && cycler.currentVideo) {
+                cycler.currentVideo.pause();
+              }
+            },
+            play: () => {
+              const cycler = window.solarVideoCycler;
+              if (cycler && cycler.currentVideo) {
+                cycler.currentVideo.play();
+              }
+            },
+            info: () => {
+              const parkScreen = document.querySelector("#park-screen");
+              if (!parkScreen) return null;
+              const cycler = window.solarVideoCycler;
+              return {
+                visible: parkScreen.getAttribute("visible") === "true",
+                position: parkScreen.getAttribute("position"),
+                rotation: parkScreen.getAttribute("rotation"),
+                size: {
+                  width: parkScreen.getAttribute("width"),
+                  height: parkScreen.getAttribute("height"),
+                },
+                currentVideo: cycler ? cycler.currentVideoIndex + 1 : 0,
+                totalVideos: cycler ? cycler.videos.length : 0,
+                playing:
+                  cycler && cycler.currentVideo
+                    ? !cycler.currentVideo.paused
+                    : false,
+                currentTime:
+                  cycler && cycler.currentVideo
+                    ? cycler.currentVideo.currentTime
+                    : 0,
+                duration:
+                  cycler && cycler.currentVideo
+                    ? cycler.currentVideo.duration
+                    : 0,
+              };
+            },
+            debug: () => {
+              const parkScreen = document.querySelector("#park-screen");
+              if (!parkScreen) return;
+              const cycler = window.solarVideoCycler;
+              return {
+                visible: parkScreen.getAttribute("visible"),
+                position: parkScreen.getAttribute("position"),
+                rotation: parkScreen.getAttribute("rotation"),
+                size: `${parkScreen.getAttribute("width")}x${parkScreen.getAttribute("height")}`,
+                currentVideo: cycler ? cycler.currentVideoIndex + 1 : 0,
+                totalVideos: cycler ? cycler.videos.length : 0,
+                playing:
+                  cycler && cycler.currentVideo
+                    ? !cycler.currentVideo.paused
+                    : false,
+              };
+            },
+          };
+
+          // Petroleo Screen Controls
+          window.petroleoScreen = {
+            show: () => sceneManager.showPetroleoScreen(),
+            hide: () => sceneManager.hidePetroleoScreen(),
+            move: (x, y, z) => {
+              const petroleoScreen = document.querySelector("#petroleo-screen");
+              if (petroleoScreen) {
+                petroleoScreen.setAttribute("position", `${x} ${y} ${z}`);
+              }
+            },
+            rotate: (x, y, z) => {
+              const petroleoScreen = document.querySelector("#petroleo-screen");
+              if (petroleoScreen) {
+                petroleoScreen.setAttribute("rotation", `${x} ${y} ${z}`);
+              }
+            },
+            resize: (width, height) => {
+              const petroleoScreen = document.querySelector("#petroleo-screen");
+              if (petroleoScreen) {
+                petroleoScreen.setAttribute("width", width.toString());
+                petroleoScreen.setAttribute("height", height.toString());
+              }
+            },
+            nextImage: () => {
+              const cycler = window.petroleoImageCycler;
+              if (cycler && cycler.nextImage) {
+                cycler.nextImage();
+              }
+            },
+            setImage: (index) => {
+              const cycler = window.petroleoImageCycler;
+              if (cycler && cycler.setImage) {
+                cycler.setImage(index);
+              }
+            },
+            info: () => {
+              const petroleoScreen = document.querySelector("#petroleo-screen");
+              if (!petroleoScreen) return null;
+              const cycler = window.petroleoImageCycler;
+              return {
+                visible: petroleoScreen.getAttribute("visible") === "true",
+                position: petroleoScreen.getAttribute("position"),
+                rotation: petroleoScreen.getAttribute("rotation"),
+                size: {
+                  width: petroleoScreen.getAttribute("width"),
+                  height: petroleoScreen.getAttribute("height"),
+                },
+                currentImage: cycler ? cycler.currentImageIndex + 1 : 0,
+                totalImages: cycler ? cycler.images.length : 0,
+              };
+            },
+          };
+
+          // Plataforma Screen Controls
+          window.plataformaScreen = {
+            show: () => sceneManager.showPlataformaScreen(),
+            hide: () => sceneManager.hidePlataformaScreen(),
+            move: (x, y, z) => {
+              const plataformaScreen =
+                document.querySelector("#plataforma-screen");
+              if (plataformaScreen) {
+                plataformaScreen.setAttribute("position", `${x} ${y} ${z}`);
+              }
+            },
+            rotate: (x, y, z) => {
+              const plataformaScreen =
+                document.querySelector("#plataforma-screen");
+              if (plataformaScreen) {
+                plataformaScreen.setAttribute("rotation", `${x} ${y} ${z}`);
+              }
+            },
+            resize: (width, height) => {
+              const plataformaScreen =
+                document.querySelector("#plataforma-screen");
+              if (plataformaScreen) {
+                plataformaScreen.setAttribute("width", width.toString());
+                plataformaScreen.setAttribute("height", height.toString());
+              }
+            },
+            nextImage: () => {
+              const cycler = window.plataformaImageCycler;
+              if (cycler && cycler.nextImage) {
+                cycler.nextImage();
+              }
+            },
+            setImage: (index) => {
+              const cycler = window.plataformaImageCycler;
+              if (cycler && cycler.setImage) {
+                cycler.setImage(index);
+              }
+            },
+            info: () => {
+              const plataformaScreen =
+                document.querySelector("#plataforma-screen");
+              if (!plataformaScreen) return null;
+              const cycler = window.plataformaImageCycler;
+              return {
+                visible: plataformaScreen.getAttribute("visible") === "true",
+                position: plataformaScreen.getAttribute("position"),
+                rotation: plataformaScreen.getAttribute("rotation"),
+                size: {
+                  width: plataformaScreen.getAttribute("width"),
+                  height: plataformaScreen.getAttribute("height"),
+                },
+                currentImage: cycler ? cycler.currentImageIndex + 1 : 0,
+                totalImages: cycler ? cycler.images.length : 0,
+              };
+            },
+          };
+
+          // CPF Screen Controls
+          window.cpfScreen = {
+            show: () => sceneManager.showCpfScreen(),
+            hide: () => sceneManager.hideCpfScreen(),
+            move: (x, y, z) => {
+              const cpfScreen = document.querySelector("#cpf-screen");
+              if (cpfScreen) {
+                cpfScreen.setAttribute("position", `${x} ${y} ${z}`);
+              }
+            },
+            rotate: (x, y, z) => {
+              const cpfScreen = document.querySelector("#cpf-screen");
+              if (cpfScreen) {
+                cpfScreen.setAttribute("rotation", `${x} ${y} ${z}`);
+              }
+            },
+            resize: (width, height) => {
+              const cpfScreen = document.querySelector("#cpf-screen");
+              if (cpfScreen) {
+                cpfScreen.setAttribute("width", width.toString());
+                cpfScreen.setAttribute("height", height.toString());
+              }
+            },
+            nextImage: () => {
+              const cycler = window.cpfImageCycler;
+              if (cycler && cycler.nextImage) {
+                cycler.nextImage();
+              }
+            },
+            setImage: (index) => {
+              const cycler = window.cpfImageCycler;
+              if (cycler && cycler.setImage) {
+                cycler.setImage(index);
+              }
+            },
+            info: () => {
+              const cpfScreen = document.querySelector("#cpf-screen");
+              if (!cpfScreen) return null;
+              const cycler = window.cpfImageCycler;
+              return {
+                visible: cpfScreen.getAttribute("visible") === "true",
+                position: cpfScreen.getAttribute("position"),
+                rotation: cpfScreen.getAttribute("rotation"),
+                size: {
+                  width: cpfScreen.getAttribute("width"),
+                  height: cpfScreen.getAttribute("height"),
+                },
+                currentImage: cycler ? cycler.currentImageIndex + 1 : 0,
+                totalImages: cycler ? cycler.images.length : 0,
+              };
+            },
+          };
+
           // Test scene loading functions for development
           window.loadScene = (sceneId) => {
             if (sceneManager) {
               return sceneManager.loadScene(sceneId);
             } else {
-              console.error('Scene manager not initialized');
+              console.error("Scene manager not initialized");
               return false;
             }
           };
 
+          console.log("🎮 VR Scene Controls Available:");
+          console.log(
+            '  loadScene("escena-1") - Load Energías Renovables scene'
+          );
+          console.log(
+            '  loadScene("escena-2") - Load Operaciones Petroleras scene'
+          );
+          console.log(
+            '  loadScene("escena-3") - Load Operaciones de Plataforma scene'
+          );
+          console.log("  toggleScene() - Toggle between scenes manually");
 
-          console.log('🎮 VR Scene Controls Available:');
-          console.log('  loadScene("escena-1") - Load Energías Renovables scene');
-          console.log('  loadScene("escena-2") - Load Operaciones Petroleras scene');
-          console.log('  toggleScene() - Toggle between scenes manually');
+          console.log("🎮 Screen Command Controls Available:");
+          console.log('  handleShowScreenCommand("solar") - Show solar screen');
+          console.log(
+            '  handleShowScreenCommand("petroleo") - Show petroleo screen'
+          );
+          console.log(
+            '  handleShowScreenCommand("plataforma") - Show plataforma screen'
+          );
+          console.log('  handleShowScreenCommand("cpf") - Show CPF screen');
+          console.log('  handleHideScreenCommand("solar") - Hide solar screen');
+          console.log(
+            '  handleHideScreenCommand("petroleo") - Hide petroleo screen'
+          );
+          console.log(
+            '  handleHideScreenCommand("plataforma") - Hide plataforma screen'
+          );
+          console.log('  handleHideScreenCommand("cpf") - Hide CPF screen');
+          console.log("  handleHideAllScreensCommand() - Hide all screens");
+          console.log(
+            "  handleShowAllScreensCommand() - Show screens for current scene"
+          );
+          console.log(
+            '  handleToggleScreenCommand("solar") - Toggle solar screen'
+          );
+          console.log(
+            '  handleToggleScreenCommand("petroleo") - Toggle petroleo screen'
+          );
+          console.log(
+            '  handleToggleScreenCommand("plataforma") - Toggle plataforma screen'
+          );
+          console.log('  handleToggleScreenCommand("cpf") - Toggle CPF screen');
+
+          console.log("🎮 Solar Screen Controls Available:");
+          console.log("  solarScreen.show() - Show solar floating screen");
+          console.log("  solarScreen.hide() - Hide solar floating screen");
+          console.log(
+            "  solarScreen.move(x, y, z) - Move solar screen to position"
+          );
+          console.log("  solarScreen.rotate(x, y, z) - Rotate solar screen");
+          console.log(
+            "  solarScreen.resize(width, height) - Resize solar screen"
+          );
+          console.log("  solarScreen.nextVideo() - Play next solar video");
+          console.log(
+            "  solarScreen.setVideo(index) - Set specific video (0-2)"
+          );
+          console.log("  solarScreen.pause() - Pause current video");
+          console.log("  solarScreen.play() - Resume current video");
+          console.log("  solarScreen.info() - Get screen information");
+          console.log(
+            "  solarScreen.debug() - Debug screen position and state"
+          );
+
+          console.log("🎮 Petroleo Screen Controls Available:");
+          console.log(
+            "  petroleoScreen.show() - Show petroleo floating screen"
+          );
+          console.log(
+            "  petroleoScreen.hide() - Hide petroleo floating screen"
+          );
+          console.log(
+            "  petroleoScreen.move(x, y, z) - Move petroleo screen to position"
+          );
+          console.log(
+            "  petroleoScreen.rotate(x, y, z) - Rotate petroleo screen"
+          );
+          console.log(
+            "  petroleoScreen.resize(width, height) - Resize petroleo screen"
+          );
+          console.log(
+            "  petroleoScreen.nextImage() - Show next petroleo image"
+          );
+          console.log(
+            "  petroleoScreen.setImage(index) - Set specific image (0-2)"
+          );
+          console.log("  petroleoScreen.info() - Get screen information");
+
+          console.log("🎮 Plataforma Screen Controls Available:");
+          console.log(
+            "  plataformaScreen.show() - Show plataforma floating screen"
+          );
+          console.log(
+            "  plataformaScreen.hide() - Hide plataforma floating screen"
+          );
+          console.log(
+            "  plataformaScreen.move(x, y, z) - Move plataforma screen to position"
+          );
+          console.log(
+            "  plataformaScreen.rotate(x, y, z) - Rotate plataforma screen"
+          );
+          console.log(
+            "  plataformaScreen.resize(width, height) - Resize plataforma screen"
+          );
+          console.log(
+            "  plataformaScreen.nextImage() - Show next plataforma image"
+          );
+          console.log(
+            "  plataformaScreen.setImage(index) - Set specific image (0-2)"
+          );
+          console.log("  plataformaScreen.info() - Get screen information");
+
+          console.log("🎮 CPF Screen Controls Available:");
+          console.log("  cpfScreen.show() - Show CPF floating screen");
+          console.log("  cpfScreen.hide() - Hide CPF floating screen");
+          console.log(
+            "  cpfScreen.move(x, y, z) - Move CPF screen to position"
+          );
+          console.log("  cpfScreen.rotate(x, y, z) - Rotate CPF screen");
+          console.log("  cpfScreen.resize(width, height) - Resize CPF screen");
+          console.log("  cpfScreen.nextImage() - Show next CPF image");
+          console.log("  cpfScreen.setImage(index) - Set specific image (0-2)");
+          console.log("  cpfScreen.info() - Get screen information");
 
           // Add a simple scene toggle function
           window.toggleScene = () => {
             if (sceneManager) {
-              const newScene = currentSceneId === 'escena-1' ? 'escena-2' : 'escena-1';
-              console.log(`🔀 Toggling to ${newScene}`);
+              let newScene;
+              if (currentSceneId === "escena-1") {
+                newScene = "escena-2";
+              } else if (currentSceneId === "escena-2") {
+                newScene = "escena-3";
+              } else {
+                newScene = "escena-1";
+              }
               sceneManager.loadScene(newScene);
             }
           };
