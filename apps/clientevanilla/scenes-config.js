@@ -1,6 +1,6 @@
 /**
  * Scene Configuration for VR ClienteVanilla - Ecopetrol
- * Configuration with escena_1.png, escena_2.png, escena_3.png, escena_4.png, and escena_5.png
+ * Configuration with escena_1.png, escena_2.png, escena_3.png, escena_4.png, escena_5.png, escena_7.png, escena_8.png, escena_9.png, escena_10.png, and escena_11.png
  */
 const SCENES_CONFIG = {
   "escena-1": {
@@ -112,6 +112,126 @@ const SCENES_CONFIG = {
       directional: {
         color: "#ffffff",
         intensity: 0.9,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "escena-7": {
+    id: "escena-7",
+    name: "Escena 7 - Vista Industrial Avanzada",
+    description:
+      "Vista panorámica de instalaciones industriales avanzadas y tecnología moderna",
+    assets: {
+      skybox: "images/escena_7.png",
+      audio: "audio/ambient-industrial.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.85,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 0.95,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "escena-8": {
+    id: "escena-8",
+    name: "Escena 8 - Operaciones Industriales",
+    description:
+      "Vista panorámica de operaciones industriales y equipos especializados",
+    assets: {
+      skybox: "images/escena_8.png",
+      audio: "audio/ambient-industrial.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.87,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 0.96,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "escena-9": {
+    id: "escena-9",
+    name: "Escena 9 - Instalaciones Avanzadas",
+    description:
+      "Vista panorámica de instalaciones industriales avanzadas y tecnología moderna",
+    assets: {
+      skybox: "images/escena_9.png",
+      audio: "audio/ambient-industrial.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.85,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 0.95,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "escena-10": {
+    id: "escena-10",
+    name: "Escena 10 - Operaciones Especializadas",
+    description:
+      "Vista panorámica de operaciones especializadas y equipos de alta tecnología",
+    assets: {
+      skybox: "images/escena_10.png",
+      audio: "audio/ambient-industrial.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "escena-11": {
+    id: "escena-11",
+    name: "Escena 11 - Infraestructura Completa",
+    description:
+      "Vista panorámica completa de la infraestructura industrial y operacional",
+    assets: {
+      skybox: "images/escena_11.png",
+      audio: "audio/ambient-industrial.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.88,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 0.98,
         position: "0 1 1",
       },
     },
