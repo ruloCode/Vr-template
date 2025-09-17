@@ -209,12 +209,15 @@ export class VRWebSocketClient {
       .getState()
       .updateServerTime(tServer, serverOffset, roundTripTime);
 
-    logger.debug(
-      "🏓 Ping/Pong - RTT:",
-      roundTripTime + "ms",
-      "Offset:",
-      serverOffset + "ms"
-    );
+    // Solo mostrar log si hay problemas de conectividad
+    if (roundTripTime > 1000 || Math.abs(serverOffset) > 5000) {
+      logger.warn(
+        "🏓 Ping/Pong con problemas - RTT:",
+        roundTripTime + "ms",
+        "Offset:",
+        serverOffset + "ms"
+      );
+    }
   }
 
   private sendHello(): void {
@@ -323,14 +326,16 @@ export class VRWebSocketClient {
 // Global WebSocket instance
 export let wsClient: VRWebSocketClient | null = null;
 
-export const initializeWebSocket = async (wsUrl?: string): Promise<VRWebSocketClient> => {
+export const initializeWebSocket = async (
+  wsUrl?: string
+): Promise<VRWebSocketClient> => {
   if (wsClient) {
     wsClient.destroy();
   }
 
   // Si se proporciona una URL específica, usarla
   const options = wsUrl ? { url: wsUrl } : {};
-  
+
   wsClient = new VRWebSocketClient(options);
   return wsClient;
 };

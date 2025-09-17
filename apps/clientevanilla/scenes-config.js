@@ -1,6 +1,6 @@
 /**
  * Scene Configuration for VR ClienteVanilla - Ecopetrol
- * Configuration with escena_1.png, escena_2.png, escena_3.png, and escena_4.png
+ * Configuration with escena_1.png, escena_2.png, escena_3.png, escena_4.png, and escena_5.png
  */
 const SCENES_CONFIG = {
   "escena-1": {
@@ -89,6 +89,53 @@ const SCENES_CONFIG = {
       directional: {
         color: "#ffffff",
         intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "escena-5": {
+    id: "escena-5",
+    name: "Escena 5 - Vista Panorámica",
+    description: "Vista panorámica completa del entorno industrial y natural",
+    assets: {
+      skybox: "images/escena_5.png",
+      audio: "audio/ambient-industrial.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.8,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 0.9,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  base: {
+    id: "base",
+    name: "Escena Base",
+    description:
+      "Escena base por defecto cuando no hay escena específica cargada",
+    assets: {
+      skybox: "images/base.jpg",
+      audio: "audio/ambient-base.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.7,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 0.8,
         position: "0 1 1",
       },
     },
