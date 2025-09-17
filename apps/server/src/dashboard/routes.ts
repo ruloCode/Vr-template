@@ -421,6 +421,11 @@ function generateDashboardHTML(): string {
                         <option value="escena-3">Escena 3: Operaciones de Plataforma</option>
                         <option value="escena-4">Escena 4: Entorno Natural</option>
                         <option value="escena-5">Escena 5: Vista Panorámica</option>
+                        <option value="escena-7">Escena 7: Vista Industrial Avanzada</option>
+                        <option value="escena-8">Escena 8: Operaciones Industriales</option>
+                        <option value="escena-9">Escena 9: Instalaciones Avanzadas</option>
+                        <option value="escena-10">Escena 10: Operaciones Especializadas</option>
+                        <option value="escena-11">Escena 11: Infraestructura Completa</option>
                     </select>
                     <button class="btn btn-primary" onclick="loadScene()">Cargar Escena</button>
                 </div>
@@ -636,6 +641,21 @@ function generateDashboardHTML(): string {
                     break;
                 case 'escena-5':
                     screenInfo = '🌅 Vista Panorámica disponible';
+                    break;
+                case 'escena-7':
+                    screenInfo = '🏭 Vista Industrial Avanzada disponible';
+                    break;
+                case 'escena-8':
+                    screenInfo = '🏭 Operaciones Industriales disponible';
+                    break;
+                case 'escena-9':
+                    screenInfo = '🏗️ Instalaciones Avanzadas disponible';
+                    break;
+                case 'escena-10':
+                    screenInfo = '⚙️ Operaciones Especializadas disponible';
+                    break;
+                case 'escena-11':
+                    screenInfo = '🏢 Infraestructura Completa disponible';
                     break;
                 default:
                     screenInfo = 'Sin pantallas flotantes';
