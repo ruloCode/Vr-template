@@ -178,6 +178,7 @@
         let vrClient = null;
         let currentSceneId = "base"; // Default scene
         let sceneManager = null;
+        let audioEnabled = false; // Track if audio has been enabled by user interaction
 
         // Petroleo image cycler component for automatic image cycling
         AFRAME.registerComponent("petroleo-image-cycler", {
@@ -487,6 +488,41 @@
           },
         });
 
+        // Audio initialization function
+        function enableAudio() {
+          if (audioEnabled) return Promise.resolve();
+
+          return new Promise((resolve) => {
+            try {
+              const audioElement = document.querySelector("#current-audio");
+              const soundComponent = document.querySelector("#scene-sound");
+
+              if (audioElement && soundComponent) {
+                // Try to play and immediately pause to unlock audio context
+                audioElement.play()
+                  .then(() => {
+                    audioElement.pause();
+                    audioElement.currentTime = 0;
+                    audioEnabled = true;
+                    console.log("🔊 Audio context enabled");
+                    resolve();
+                  })
+                  .catch((error) => {
+                    console.warn("⚠️ Could not enable audio:", error);
+                    audioEnabled = false;
+                    resolve(); // Still resolve to continue
+                  });
+              } else {
+                console.warn("⚠️ Audio elements not found");
+                resolve();
+              }
+            } catch (error) {
+              console.error("❌ Error enabling audio:", error);
+              resolve();
+            }
+          });
+        }
+
         // Scene Manager Class
         class VRSceneManager {
           constructor() {
@@ -534,6 +570,9 @@
             const sceneConfig = SCENES_CONFIG[sceneId];
 
             try {
+              // Enable audio if not already enabled
+              await enableAudio();
+
               // Update assets
               await this.updateAssets(sceneConfig);
 
@@ -630,7 +669,48 @@
           }
 
           updateAudio(sceneConfig) {
+            // Update the audio source
             this.elements.sound.setAttribute("src", "#current-audio");
+
+            // Only attempt to play if audio is enabled
+            if (!audioEnabled) {
+              console.log("🔇 Audio not enabled yet, will play when user interacts");
+              return;
+            }
+
+            // Force audio to reload and play
+            setTimeout(() => {
+              try {
+                const audioComponent = this.elements.sound.components.sound;
+                if (audioComponent) {
+                  // Stop current audio if playing
+                  audioComponent.stopSound();
+
+                  // Small delay to ensure the asset is loaded
+                  setTimeout(() => {
+                    // Start playing the new audio
+                    audioComponent.playSound();
+                    console.log("🔊 Audio started for scene:", sceneConfig.id, "- Audio file:", sceneConfig.assets.audio);
+                  }, 200);
+                } else {
+                  console.warn("⚠️ Audio component not found");
+                }
+              } catch (error) {
+                console.error("❌ Error playing audio:", error);
+                // Fallback: try to play directly from the audio element
+                try {
+                  const audioElement = document.querySelector("#current-audio");
+                  if (audioElement) {
+                    audioElement.currentTime = 0;
+                    audioElement.play().catch(playError => {
+                      console.warn("⚠️ Direct audio play failed:", playError);
+                    });
+                  }
+                } catch (fallbackError) {
+                  console.error("❌ Fallback audio play failed:", fallbackError);
+                }
+              }
+            }, 100);
           }
 
           updateFloatingScreens(sceneConfig) {
@@ -891,6 +971,23 @@
 
           // Connect to server
           vrClient.connect();
+
+          // Add event listeners for user interaction to enable audio
+          const enableAudioOnInteraction = () => {
+            if (!audioEnabled) {
+              enableAudio().then(() => {
+                if (audioEnabled && sceneManager && sceneManager.currentScene) {
+                  // Try to start audio for current scene
+                  sceneManager.updateAudio(sceneManager.currentScene);
+                }
+              });
+            }
+          };
+
+          // Listen for various user interactions
+          document.addEventListener('click', enableAudioOnInteraction, { once: true });
+          document.addEventListener('touchstart', enableAudioOnInteraction, { once: true });
+          document.addEventListener('keydown', enableAudioOnInteraction, { once: true });
 
           function sendStateUpdate() {
             // Send state update to server

@@ -32,7 +32,7 @@ const SCENES_CONFIG = {
     description: "Vista panorámica de operaciones petroleras industriales",
     assets: {
       skybox: "images/escena_2.png",
-      audio: "audio/ambient-night.mp3",
+      audio: "audio/ambient-wind.mp3",
       models: [],
     },
     lighting: {
