@@ -24,7 +24,7 @@
       <!-- Audio y assets - Dynamic loading -->
       <a-assets>
         <audio id="current-audio" src="audio/ambient-wind.mp3"></audio>
-        <img id="current-skybox" src="images/escena_1.png" />
+        <img id="current-skybox" src="images/base.jpg" />
 
         <!-- Solar videos for floating screen (Scene 1 only) -->
         <video
@@ -176,7 +176,7 @@
       <script>
         // VR Scene Management System
         let vrClient = null;
-        let currentSceneId = "escena-1"; // Default scene
+        let currentSceneId = "base"; // Default scene
         let sceneManager = null;
 
         // Petroleo image cycler component for automatic image cycling
@@ -1524,12 +1524,18 @@
           window.toggleScene = () => {
             if (sceneManager) {
               let newScene;
-              if (currentSceneId === "escena-1") {
+              if (currentSceneId === "base") {
+                newScene = "escena-1";
+              } else if (currentSceneId === "escena-1") {
                 newScene = "escena-2";
               } else if (currentSceneId === "escena-2") {
                 newScene = "escena-3";
+              } else if (currentSceneId === "escena-3") {
+                newScene = "escena-4";
+              } else if (currentSceneId === "escena-4") {
+                newScene = "escena-5";
               } else {
-                newScene = "escena-1";
+                newScene = "base";
               }
               sceneManager.loadScene(newScene);
             }

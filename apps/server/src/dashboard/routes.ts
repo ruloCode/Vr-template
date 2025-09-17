@@ -415,8 +415,12 @@ function generateDashboardHTML(): string {
                 <h3>🎬 Control de Escenas</h3>
                 <div class="input-group">
                     <select id="scene-select">
+                        <option value="base">Escena Base: Vista por Defecto</option>
                         <option value="escena-1">Escena 1: Energías Renovables (Solar y Eólica)</option>
                         <option value="escena-2">Escena 2: Operaciones Petroleras</option>
+                        <option value="escena-3">Escena 3: Operaciones de Plataforma</option>
+                        <option value="escena-4">Escena 4: Entorno Natural</option>
+                        <option value="escena-5">Escena 5: Vista Panorámica</option>
                     </select>
                     <button class="btn btn-primary" onclick="loadScene()">Cargar Escena</button>
                 </div>
@@ -615,11 +619,23 @@ function generateDashboardHTML(): string {
             let screenInfo = '-';
             
             switch (currentScene) {
+                case 'base':
+                    screenInfo = '🏠 Escena Base - Sin pantallas flotantes';
+                    break;
                 case 'escena-1':
                     screenInfo = '☀️ Energías Renovables disponible';
                     break;
                 case 'escena-2':
                     screenInfo = '🛢️ Operaciones Petroleras disponible';
+                    break;
+                case 'escena-3':
+                    screenInfo = '🏗️ Operaciones de Plataforma disponible';
+                    break;
+                case 'escena-4':
+                    screenInfo = '🌿 Entorno Natural disponible';
+                    break;
+                case 'escena-5':
+                    screenInfo = '🌅 Vista Panorámica disponible';
                     break;
                 default:
                     screenInfo = 'Sin pantallas flotantes';
