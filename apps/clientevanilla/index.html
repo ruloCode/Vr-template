@@ -29,7 +29,7 @@
         <!-- Solar videos for floating screen (Scene 1 only) -->
         <video
           id="solar-1-video"
-          src="videos/solar_1.MP4"
+          src="videos/escena 1/solar_1.MP4"
           preload="metadata"
           loop="false"
           crossorigin="anonymous"
@@ -37,7 +37,7 @@
         ></video>
         <video
           id="solar-2-video"
-          src="videos/solar_2.MP4"
+          src="videos/escena 1/solar_2.MP4"
           preload="metadata"
           loop="false"
           crossorigin="anonymous"
@@ -45,7 +45,7 @@
         ></video>
         <video
           id="solar-3-video"
-          src="videos/solar_3.MP4"
+          src="videos/escena 1/solar_3.MP4"
           preload="metadata"
           loop="false"
           crossorigin="anonymous"
@@ -53,19 +53,19 @@
         ></video>
 
         <!-- Petroleo images for floating screen (Scene 2 only) -->
-        <img id="petroleo-1-image" src="images/petroleo_1.jpg" />
-        <img id="petroleo-2-image" src="images/petroleo_2.jpg" />
-        <img id="petroleo-3-image" src="images/petroleo_3.jpg" />
+        <img id="petroleo-1-image" src="images/escena 2/petroleo_1.jpg" />
+        <img id="petroleo-2-image" src="images/escena 2/petroleo_2.jpg" />
+        <img id="petroleo-3-image" src="images/escena 2/petroleo_3.jpg" />
 
         <!-- Plataforma images for floating screen (Scene 3 only) -->
-        <img id="plataforma-1-image" src="images/plataforma_1.jpg" />
-        <img id="plataforma-2-image" src="images/plataforma_2.jpg" />
-        <img id="plataforma-3-image" src="images/plataforma_3.jpg" />
+        <img id="plataforma-1-image" src="images/escena 3/plataforma_1.jpg" />
+        <img id="plataforma-2-image" src="images/escena 3/plataforma_2.jpg" />
+        <img id="plataforma-3-image" src="images/escena 3/plataforma_3.jpg" />
 
         <!-- CPF images for floating screen (Scene 3 only) -->
-        <img id="cpf-cupiagua-image" src="images/cpf_cupiagua.jpg" />
-        <img id="cpf_cusiana-image" src="images/cpf_cusiana.jpg" />
-        <img id="cpf_florena-image" src="images/cpf_florena.jpg" />
+        <img id="cpf-cupiagua-image" src="images/escena 3/cpf_cupiagua.jpg" />
+        <img id="cpf_cusiana-image" src="images/escena 3/cpf_cusiana.jpg" />
+        <img id="cpf_florena-image" src="images/escena 3/cpf_florena.jpg" />
       </a-assets>
 
       <!-- Scene loading overlay -->
@@ -114,8 +114,8 @@
       <a-plane
         id="petroleo-screen"
         src="#petroleo-2-image"
-        position="0 150 150"
-        rotation="-30 0 0"
+        position="0 160 -100"
+        rotation="30 0 0"
         width="180"
         height="100"
         material="shader: flat; side: double"
@@ -127,10 +127,10 @@
       <a-plane
         id="plataforma-screen"
         src="#plataforma-1-image"
-        position="-200 100 0"
-        rotation="30 100 0"
-        width="180"
-        height="100"
+        position="-150 150 0"
+        rotation="20 80 0"
+        width="200"
+        height="120"
         material="shader: flat; side: double"
         visible="false"
         plataforma-image-cycler
@@ -139,10 +139,10 @@
       <a-plane
         id="cpf-screen"
         src="#cpf-cupiagua-image"
-        position="150 140 100"
-        rotation="-30 80 0"
-        width="180"
-        height="100"
+        position="150 150 100"
+        rotation="-20 80 0"
+        width="200"
+        height="120"
         material="shader: flat; side: double"
         visible="false"
         cpf-image-cycler
@@ -166,12 +166,7 @@
       </a-entity>
 
       <!-- Cámara y controles VR -->
-      <a-entity
-        camera
-        look-controls
-        wasd-controls
-        position="0 1.6 5"
-      ></a-entity>
+      <a-entity camera look-controls position="0 0 0"></a-entity>
 
       <script>
         // VR Scene Management System
