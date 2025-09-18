@@ -29,7 +29,7 @@
         <!-- Solar videos for floating screen (Scene 1 only) -->
         <video
           id="solar-1-video"
-          src="videos/escena 1/solar_1.MP4"
+          src="videos/escena%201/solar_1.MP4"
           preload="metadata"
           loop="false"
           crossorigin="anonymous"
@@ -37,7 +37,7 @@
         ></video>
         <video
           id="solar-2-video"
-          src="videos/escena 1/solar_2.MP4"
+          src="videos/escena%201/solar_2.MP4"
           preload="metadata"
           loop="false"
           crossorigin="anonymous"
@@ -45,7 +45,7 @@
         ></video>
         <video
           id="solar-3-video"
-          src="videos/escena 1/solar_3.MP4"
+          src="videos/escena%201/solar_3.MP4"
           preload="metadata"
           loop="false"
           crossorigin="anonymous"
@@ -53,19 +53,19 @@
         ></video>
 
         <!-- Petroleo images for floating screen (Scene 2 only) -->
-        <img id="petroleo-1-image" src="images/escena 2/petroleo_1.jpg" />
-        <img id="petroleo-2-image" src="images/escena 2/petroleo_2.jpg" />
-        <img id="petroleo-3-image" src="images/escena 2/petroleo_3.jpg" />
+        <img id="petroleo-1-image" src="images/escena%202/petroleo_1.jpg" />
+        <img id="petroleo-2-image" src="images/escena%202/petroleo_2.jpg" />
+        <img id="petroleo-3-image" src="images/escena%202/petroleo_3.jpg" />
 
         <!-- Plataforma images for floating screen (Scene 3 only) -->
-        <img id="plataforma-1-image" src="images/escena 3/plataforma_1.jpg" />
-        <img id="plataforma-2-image" src="images/escena 3/plataforma_2.jpg" />
-        <img id="plataforma-3-image" src="images/escena 3/plataforma_3.jpg" />
+        <img id="plataforma-1-image" src="images/escena%203/plataforma_1.jpg" />
+        <img id="plataforma-2-image" src="images/escena%203/plataforma_2.jpg" />
+        <img id="plataforma-3-image" src="images/escena%203/plataforma_3.jpg" />
 
         <!-- CPF images for floating screen (Scene 3 only) -->
-        <img id="cpf-cupiagua-image" src="images/escena 3/cpf_cupiagua.jpg" />
-        <img id="cpf_cusiana-image" src="images/escena 3/cpf_cusiana.jpg" />
-        <img id="cpf_florena-image" src="images/escena 3/cpf_florena.jpg" />
+        <img id="cpf-cupiagua-image" src="images/escena%203/cpf_cupiagua.jpg" />
+        <img id="cpf_cusiana-image" src="images/escena%203/cpf_cusiana.jpg" />
+        <img id="cpf_florena-image" src="images/escena%203/cpf_florena.jpg" />
       </a-assets>
 
       <!-- Scene loading overlay -->
@@ -494,7 +494,8 @@
 
               if (audioElement && soundComponent) {
                 // Try to play and immediately pause to unlock audio context
-                audioElement.play()
+                audioElement
+                  .play()
                   .then(() => {
                     audioElement.pause();
                     audioElement.currentTime = 0;
@@ -669,7 +670,9 @@
 
             // Only attempt to play if audio is enabled
             if (!audioEnabled) {
-              console.log("🔇 Audio not enabled yet, will play when user interacts");
+              console.log(
+                "🔇 Audio not enabled yet, will play when user interacts"
+              );
               return;
             }
 
@@ -685,7 +688,12 @@
                   setTimeout(() => {
                     // Start playing the new audio
                     audioComponent.playSound();
-                    console.log("🔊 Audio started for scene:", sceneConfig.id, "- Audio file:", sceneConfig.assets.audio);
+                    console.log(
+                      "🔊 Audio started for scene:",
+                      sceneConfig.id,
+                      "- Audio file:",
+                      sceneConfig.assets.audio
+                    );
                   }, 200);
                 } else {
                   console.warn("⚠️ Audio component not found");
@@ -697,12 +705,15 @@
                   const audioElement = document.querySelector("#current-audio");
                   if (audioElement) {
                     audioElement.currentTime = 0;
-                    audioElement.play().catch(playError => {
+                    audioElement.play().catch((playError) => {
                       console.warn("⚠️ Direct audio play failed:", playError);
                     });
                   }
                 } catch (fallbackError) {
-                  console.error("❌ Fallback audio play failed:", fallbackError);
+                  console.error(
+                    "❌ Fallback audio play failed:",
+                    fallbackError
+                  );
                 }
               }
             }, 100);
@@ -980,9 +991,15 @@
           };
 
           // Listen for various user interactions
-          document.addEventListener('click', enableAudioOnInteraction, { once: true });
-          document.addEventListener('touchstart', enableAudioOnInteraction, { once: true });
-          document.addEventListener('keydown', enableAudioOnInteraction, { once: true });
+          document.addEventListener("click", enableAudioOnInteraction, {
+            once: true,
+          });
+          document.addEventListener("touchstart", enableAudioOnInteraction, {
+            once: true,
+          });
+          document.addEventListener("keydown", enableAudioOnInteraction, {
+            once: true,
+          });
 
           function sendStateUpdate() {
             // Send state update to server
