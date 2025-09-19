@@ -28,17 +28,17 @@ export class SceneManager {
   ) {
     // this.imageCache = imageCache;
     this.audioManager = audioManager;
-    logger.info("🎬 SceneManager inicializado");
+    // SceneManager initialized
   }
 
   public async initialize(): Promise<void> {
     try {
-      logger.info("🏗️ Creando escena A-Frame...");
+      // Creating A-Frame scene
 
       await this.createAFrameScene();
       this.setupVRControls();
 
-      logger.info("✅ SceneManager inicializado completamente");
+      // SceneManager fully initialized
     } catch (error) {
       logger.error("❌ Error inicializando SceneManager:", error);
       captureError(error as Error, "scene-manager-init");
@@ -503,29 +503,29 @@ export class SceneManager {
     if (!this.aframeScene) return;
 
     this.aframeScene.addEventListener("loaded", () => {
-      logger.info("🎬 A-Frame scene loaded");
+      // A-Frame scene loaded
     });
 
     this.aframeScene.addEventListener("enter-vr", () => {
-      logger.info("🥽 Entrando en modo VR");
+      // Entering VR mode
       useAppStore.getState().setFullscreen(true);
     });
 
     this.aframeScene.addEventListener("exit-vr", () => {
-      logger.info("👀 Saliendo de modo VR");
+      // Exiting VR mode
       useAppStore.getState().setFullscreen(false);
     });
 
     // Listen for controller events if available
     this.aframeScene.addEventListener("controllerconnected", (event: any) => {
-      logger.info("🎮 Controller conectado:", event.detail);
+      // Controller connected
     });
   }
 
   private setDefaultModel(): void {
     // Load panorama as default view instead of 3D model
     this.loadCityPanorama();
-    logger.info("🏙️ Vista por defecto establecida: Panorama de la ciudad");
+    // Default view established
   }
 
   private setupVRControls(): void {
@@ -927,7 +927,7 @@ export class SceneManager {
    * Resetea el estado de transición en caso de que se haya quedado colgado
    */
   public resetTransitionState(): void {
-    logger.info("🔄 Reseteando estado de transición");
+    // Resetting transition state
     this.isTransitioning = false;
     this.showLoading(false);
   }
@@ -944,27 +944,27 @@ export class SceneManager {
       this.isTransitioning = true;
       perf.mark(`scene-load-start-${scene.id}`);
 
-      logger.info("🎬 Cargando escena:", scene.id, "-", scene.title);
+      logger.info(`Cargando escena: ${scene.id}`);
 
       // Stop current scene if any
       if (this.currentScene) {
-        logger.debug("⏹️ Deteniendo escena actual:", this.currentScene.id);
+        // Stopping current scene
         this.stopCurrentScene();
       }
 
       // Show loading indicator
-      logger.debug("⏳ Mostrando indicador de carga");
+      // Showing loading indicator
       this.showLoading(true);
 
       // Load audio first
-      logger.debug("🎵 Cargando audio:", scene.audio);
+      // Loading audio
       await this.audioManager.loadAudio(scene.audio);
-      logger.debug("✅ Audio cargado exitosamente");
+      // Audio loaded successfully
 
       // Load scene content (video or image)
-      logger.debug("🖼️ Cargando contenido de escena...");
+      // Loading scene content
       await this.loadSceneContent(scene);
-      logger.debug("✅ Contenido de escena cargado exitosamente");
+      // Scene content loaded successfully
 
       // Start ambient audio for scenes that use ambient-wind.mp3
       if (scene.audio === "audio/ambient-wind.mp3") {
@@ -1011,51 +1011,45 @@ export class SceneManager {
         ) {
           // Load as panorama 360° image
           this.loadPanoramaFromUrl(`/${assetPath}`);
-          logger.info(`🖼️ Cargando imagen como panorama 360°: ${assetPath}`);
+          // Loading image as 360° panorama
 
           // Show appropriate screen based on scene
           if (scene.id === "escena-1") {
             this.showParkScreen();
             this.hidePetroleoScreen();
             this.hidePlataformaScreen();
-            logger.info(
-              "☀️ Mostrando pantalla solar con reproducción automática para escena 1"
-            );
+            // Showing solar screen for scene 1
           } else if (scene.id === "escena-2") {
             this.hideParkScreen();
             this.showPetroleoScreen();
             this.hidePlataformaScreen();
-            logger.info(
-              "🛢️ Mostrando pantalla de petróleo con ciclado automático para escena 2"
-            );
+            // Showing oil screen for scene 2
           } else if (scene.id === "escena-3") {
             this.hideParkScreen();
             this.hidePetroleoScreen();
             this.showPlataformaScreen();
             this.showCpfScreen();
-            logger.info(
-              "🏗️ Mostrando pantallas de plataformas y CPF con ciclado automático para escena 3"
-            );
+            // Showing platform screens for scene 3
           } else {
             this.hideParkScreen();
             this.hidePetroleoScreen();
             this.hidePlataformaScreen();
             this.hideCpfScreen();
-            logger.info("📺 Ocultando pantallas flotantes para otras escenas");
+            // Hiding floating screens for other scenes
           }
         } else if (assetPath.endsWith(".mp4") || assetPath.endsWith(".webm")) {
           // Load as video on floating screen
           this.showFloatingScreen(`${scene.id}-video`);
-          logger.info(`🎬 Cargando video en pantalla flotante: ${assetPath}`);
+          // Loading video in floating screen
 
           // Hide all floating screens for video scenes
           this.hideParkScreen();
           this.hidePetroleoScreen();
           this.hidePlataformaScreen();
           this.hideCpfScreen();
-          logger.info("📺 Ocultando pantallas flotantes para escenas de video");
+          // Hiding floating screens for video scenes
         } else {
-          logger.warn(`⚠️ Formato de archivo no reconocido: ${assetPath}`);
+          // Unrecognized file format
         }
 
         resolve();
@@ -1080,7 +1074,7 @@ export class SceneManager {
       // Configure camera for 360° exploration
       this.configureCameraForPanorama();
 
-      logger.info(`🌅 Panorama 360° cargado: ${imageAssetId}`);
+      // 360° panorama loaded
     } catch (error) {
       logger.error("❌ Error cargando panorama 360°:", error);
     }
@@ -1099,9 +1093,7 @@ export class SceneManager {
         "enabled: true; reverseMouseDrag: false;"
       );
 
-      logger.info(
-        "📹 Cámara configurada para exploración 360° desde altura más baja"
-      );
+      // Camera configured for 360° exploration
     }
   }
 
@@ -1180,9 +1172,7 @@ FPS: ${info.fps || "N/A"}
       camera.setAttribute("position", "0 -5 0");
       camera.setAttribute("rotation", "0 0 0");
 
-      logger.info(
-        "📹 Cámara reseteada para panorama 360° desde altura más baja"
-      );
+      // Camera reset for panorama
     }
   }
 
@@ -1190,7 +1180,7 @@ FPS: ${info.fps || "N/A"}
     const camera = document.querySelector("#main-camera");
     if (camera) {
       camera.setAttribute("rotation", rotation);
-      logger.info(`📹 Rotación de cámara cambiada a: ${rotation}`);
+      // Camera rotation changed
     }
   }
 
@@ -1233,7 +1223,7 @@ FPS: ${info.fps || "N/A"}
     this.currentScene = null;
     useAppStore.getState().setCurrentScene(null);
 
-    logger.info("🏙️ Volviendo al panorama de la ciudad por defecto");
+    // Returning to default city panorama
   }
 
   public stopCurrentScene(): void {
@@ -1249,11 +1239,11 @@ FPS: ${info.fps || "N/A"}
     this.hidePlataformaScreen();
     this.hideCpfScreen();
 
-    logger.info("🛑 Escena actual detenida");
+    // Current scene stopped
   }
 
   public destroy(): void {
-    logger.info("🧹 Destruyendo SceneManager");
+    // Destroying SceneManager
 
     // Remove A-Frame scene
     const app = document.getElementById("app");
@@ -1294,7 +1284,7 @@ FPS: ${info.fps || "N/A"}
         this.lights.directional2.setAttribute("intensity", "0.3");
       }
 
-      logger.info("🌙 Iluminación reducida para escena");
+      // Lighting reduced for scene
     } catch (error) {
       logger.error("❌ Error reduciendo iluminación:", error);
     }
@@ -1320,7 +1310,7 @@ FPS: ${info.fps || "N/A"}
         this.lights.directional2.setAttribute("intensity", "0.7");
       }
 
-      logger.info("☀️ Iluminación restaurada a valores por defecto");
+      // Lighting restored to default values
     } catch (error) {
       logger.error("❌ Error restaurando iluminación:", error);
     }
@@ -1359,9 +1349,7 @@ FPS: ${info.fps || "N/A"}
         );
       }
 
-      logger.info(
-        `💡 Iluminación ajustada - Ambiente: ${ambientIntensity}, Direccional1: ${directional1Intensity}, Direccional2: ${directional2Intensity}`
-      );
+      // Lighting adjusted
     } catch (error) {
       logger.error("❌ Error ajustando iluminación:", error);
     }
@@ -1428,9 +1416,7 @@ FPS: ${info.fps || "N/A"}
       if (playPromise !== undefined) {
         playPromise
           .then(() => {
-            logger.info(
-              "🌬️ Audio ambiental de viento iniciado al 100% de volumen"
-            );
+            // Ambient wind audio started
           })
           .catch((error: any) => {
             logger.warn("⚠️ No se pudo reproducir audio ambiental:", error);
@@ -1456,7 +1442,7 @@ FPS: ${info.fps || "N/A"}
       this.ambientAudio.pause();
       this.ambientAudio.currentTime = 0;
 
-      logger.info("🔇 Audio ambiental detenido");
+      // Ambient audio stopped
     } catch (error) {
       logger.error("❌ Error deteniendo audio ambiental:", error);
     }
@@ -1473,9 +1459,7 @@ FPS: ${info.fps || "N/A"}
       const clampedVolume = Math.max(0.0, Math.min(1.0, volume));
       this.ambientAudio.volume = clampedVolume;
 
-      logger.info(
-        `🔊 Volumen de audio ambiental ajustado a: ${(clampedVolume * 100).toFixed(0)}%`
-      );
+      // Ambient audio volume adjusted
     } catch (error) {
       logger.error("❌ Error ajustando volumen de audio ambiental:", error);
     }

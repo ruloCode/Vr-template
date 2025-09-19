@@ -78,10 +78,7 @@ class VRSyncServer {
     // Request logging in development
     if (isDevelopment) {
       this.app.use((req, res, next) => {
-        logger.debug(`${req.method} ${req.path}`, {
-          ip: req.ip,
-          userAgent: req.get("User-Agent"),
-        });
+        // Request logged
         next();
       });
     }
@@ -194,36 +191,27 @@ class VRSyncServer {
     const server = serverCreation.listen(config.port, config.host, () => {
       const urls = generateAccessUrls(config.port);
 
-      logger.info(`🚀 VR Sync Server iniciado`);
-      logger.info(`📡 ${protocol.toUpperCase()} Server: ${protocol}://${config.host}:${config.port}`);
-      logger.info(`🔗 WebSocket: ${wsProtocol}://${config.host}:${config.port + 1}${config.paths.websocket}`);
-      logger.info(`🌍 Environment: ${config.nodeEnv}`);
-      logger.info(`📁 Static files: ${config.staticDir}`);
+      logger.info(
+        `🚀 VR Sync Server iniciado en ${protocol}://${config.host}:${config.port}`
+      );
 
-      // Mostrar URLs de acceso para dispositivos
-      logger.info("📱 URLs de acceso para dispositivos:");
-      logger.info(`   Local: ${protocol}://localhost:${config.port}`);
-      logger.info(`   Red: ${protocol}://${localIP}:${config.port}`);
-      logger.info(`   Dashboard: ${protocol}://${localIP}:${config.port}/dashboard`);
+      // URLs de acceso para dispositivos
+      logger.info(
+        `📱 Dashboard: ${protocol}://${localIP}:${config.port}/dashboard`
+      );
 
-      if (urls.network.length > 1) {
-        logger.info("🌐 Interfaces de red disponibles:");
-        urls.network.forEach(url => {
-          const fullUrl = url.replace('http://', `${protocol}://`);
-          logger.info(`   ${fullUrl}`);
-        });
-      }
+      // Network interfaces available
 
       if (isDevelopment) {
         logger.info(
           `📋 Health Check: ${protocol}://${localIP}:${config.port}/health`
         );
-        logger.info(`🔧 API Config: ${protocol}://${localIP}:${config.port}/api/config`);
+        logger.info(
+          `🔧 API Config: ${protocol}://${localIP}:${config.port}/api/config`
+        );
       }
 
-      // Log WebSocket connection info for clients
-      logger.info("🔌 Para conectar clientes:");
-      logger.info(`   WebSocket URL: ${wsProtocol}://${localIP}:${config.port + 1}${config.paths.websocket}`);
+      // WebSocket connection info for clients
     });
 
     server.on("error", (err: any) => {
