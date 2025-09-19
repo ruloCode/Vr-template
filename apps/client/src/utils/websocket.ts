@@ -40,7 +40,7 @@ export class VRWebSocketClient {
         this.isIntentionalClose = false;
         this.updateConnectionState("connecting");
 
-        logger.info("🔌 Conectando a WebSocket:", this.options.url);
+        // Connecting to WebSocket
 
         this.ws = new WebSocket(this.options.url);
 
@@ -54,7 +54,7 @@ export class VRWebSocketClient {
 
         this.ws.onopen = () => {
           clearTimeout(connectionTimeout);
-          logger.info("✅ WebSocket conectado");
+          // WebSocket connected
           this.reconnectAttempts = 0;
           this.updateConnectionState("connected");
           this.startPingInterval();
@@ -67,7 +67,7 @@ export class VRWebSocketClient {
           this.cleanup();
 
           if (event.wasClean) {
-            logger.info("🔌 WebSocket cerrado limpiamente");
+            // WebSocket closed cleanly
             this.updateConnectionState("disconnected");
           } else {
             logger.warn(
@@ -112,12 +112,12 @@ export class VRWebSocketClient {
     }
 
     this.updateConnectionState("disconnected");
-    logger.info("🔌 WebSocket desconectado por el cliente");
+    // WebSocket disconnected by client
   }
 
   public resetReconnectAttempts(): void {
     this.reconnectAttempts = 0;
-    logger.info("🔄 Intentos de reconexión reseteados");
+    // Reconnection attempts reset
   }
 
   public send(message: ClientMessage): void {
@@ -128,7 +128,7 @@ export class VRWebSocketClient {
 
         if (message.type !== "PING") {
           // Don't log pings to reduce noise
-          logger.debug("📤 Enviado:", message.type, message.payload);
+          // Message sent
         }
       } catch (error) {
         logger.error("❌ Error validando mensaje:", error);
@@ -159,7 +159,7 @@ export class VRWebSocketClient {
 
       if (message.type !== "PONG") {
         // Don't log pongs to reduce noise
-        logger.debug("📥 Recibido:", message.type, message.payload);
+        // Message received
       }
 
       // Handle internal messages
@@ -194,7 +194,7 @@ export class VRWebSocketClient {
         roundTripTime
       );
 
-    logger.info("👋 Recibido WELCOME del servidor");
+    // Welcome received from server
   }
 
   private handlePong(message: ServerMessage & { type: "PONG" }): void {

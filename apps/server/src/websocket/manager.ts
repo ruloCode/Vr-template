@@ -37,10 +37,14 @@ export class WebSocketManager {
       delete wsOptions.port; // Remove port when using existing server
 
       httpsServer.listen(config.port + 1, config.host, () => {
-        logger.info(`🔒 WSS (Secure WebSocket) server started on port ${config.port + 1}`);
+        logger.info(
+          `🔒 WSS (Secure WebSocket) server started on port ${config.port + 1}`
+        );
       });
     } else {
-      logger.info(`🔓 WS (Regular WebSocket) server starting on port ${config.port + 1}`);
+      logger.info(
+        `🔓 WS (Regular WebSocket) server starting on port ${config.port + 1}`
+      );
     }
 
     this.wss = new WebSocketServer(wsOptions);
@@ -56,7 +60,9 @@ export class WebSocketManager {
     this.startHeartbeat();
 
     const protocol = this.sslOptions ? "WSS" : "WS";
-    logger.info(`✅ ${protocol} WebSocket server initialized on port ${config.port + 1}`);
+    logger.info(
+      `✅ ${protocol} WebSocket server initialized on port ${config.port + 1}`
+    );
   }
 
   private setupWebSocketServer(): void {
@@ -65,9 +71,7 @@ export class WebSocketManager {
       const connection = new ClientConnection(clientId, ws, this);
       this.clients.set(clientId, connection);
 
-      logger.info(
-        `Cliente conectado: ${clientId} desde ${request.socket.remoteAddress}`
-      );
+      logger.info(`Cliente conectado: ${clientId}`);
 
       ws.on("close", () => {
         this.handleClientDisconnect(clientId);
@@ -101,7 +105,7 @@ export class WebSocketManager {
       connection.close();
       this.clients.delete(clientId);
       this.updateRoomState();
-      logger.info(`Cliente desconectado: ${clientId}`);
+      // Client disconnected
     }
   }
 
@@ -112,7 +116,7 @@ export class WebSocketManager {
   }
 
   public broadcastCommand(command: ServerMessage): void {
-    logger.info(`Broadcasting command: ${command.type}`, command.payload);
+    // Broadcasting command
 
     for (const connection of this.clients.values()) {
       connection.send(command);
@@ -144,7 +148,7 @@ export class WebSocketManager {
     }
 
     this.wss.close();
-    logger.info("WebSocket server cerrado");
+    // WebSocket server closed
   }
 }
 
@@ -224,9 +228,7 @@ class ClientConnection {
       },
     });
 
-    logger.info(
-      `Cliente ${this.clientId} (${message.payload.deviceId}) enviado WELCOME`
-    );
+    logger.info(`Cliente ${this.clientId} conectado`);
   }
 
   private handlePing(message: ClientMessage & { type: "PING" }): void {
@@ -252,9 +254,7 @@ class ClientConnection {
     this.status.status = "ready";
     this.status.lastStateUpdate = Date.now();
 
-    logger.info(
-      `Cliente ${this.clientId} listo para escena ${message.payload.sceneId}`
-    );
+    logger.info(`Cliente ${this.clientId} listo`);
   }
 
   private handleState(message: ClientMessage & { type: "STATE" }): void {

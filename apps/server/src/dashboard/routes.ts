@@ -146,7 +146,7 @@ export function createDashboardRoutes(wsManager: WebSocketManager): Router {
       }
 
       wsManager.broadcastCommand(command);
-      logger.info(`Comando ${commandType} enviado desde dashboard`);
+      // Command sent from dashboard
 
       return res.json({ success: true, command: commandType });
     } catch (error) {
@@ -421,6 +421,7 @@ function generateDashboardHTML(): string {
                         <option value="escena-3">Escena 3: Operaciones de Plataforma</option>
                         <option value="escena-4">Escena 4: Entorno Natural</option>
                         <option value="escena-5">Escena 5: Vista Panorámica</option>
+                        <option value="escena-6">Escena 6: Operaciones Especializadas</option>
                         <option value="escena-7">Escena 7: Vista Industrial Avanzada</option>
                         <option value="escena-8">Escena 8: Operaciones Industriales</option>
                         <option value="escena-9">Escena 9: Instalaciones Avanzadas</option>
@@ -641,6 +642,9 @@ function generateDashboardHTML(): string {
                     break;
                 case 'escena-5':
                     screenInfo = '🌅 Vista Panorámica disponible';
+                    break;
+                case 'escena-6':
+                    screenInfo = '⚙️ Operaciones Especializadas disponible';
                     break;
                 case 'escena-7':
                     screenInfo = '🏭 Vista Industrial Avanzada disponible';

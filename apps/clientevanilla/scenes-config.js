@@ -118,6 +118,30 @@ const SCENES_CONFIG = {
     timeOfDay: "day",
   },
 
+  "escena-6": {
+    id: "escena-6",
+    name: "Escena 6 - Operaciones Especializadas",
+    description:
+      "Vista panorámica de operaciones especializadas y tecnología avanzada",
+    assets: {
+      skybox: "images/escena_6.png",
+      audio: "audio/ambient-industrial.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.85,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 0.95,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
   "escena-7": {
     id: "escena-7",
     name: "Escena 7 - Vista Industrial Avanzada",
