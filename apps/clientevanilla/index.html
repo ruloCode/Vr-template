@@ -1,0 +1,4175 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Ejemplo VR Paisaje - Rulocode</title>
+    <meta
+      name="description"
+      content="Ejemplo simple de VR con paisaje usando A-Frame y assets locales"
+    />
+    <script src="aframe-v1.3.0.min.js"></script>
+    <script src="scenes-config.js"></script>
+    <script src="websocket-client.js"></script>
+    <style>
+      body {
+        margin: 0;
+      }
+      .a-loader-title {
+        font-family: sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <a-scene background="color: #88c">
+      <!-- Audio y assets - Dynamic loading -->
+      <a-assets>
+        <audio id="current-audio" src="audio/ambient-wind.mp3"></audio>
+        <img id="current-skybox" src="images/base.jpg" />
+
+        <!-- Solar videos for floating screen (Scene 1 only) -->
+        <video
+          id="solar-1-video"
+          src="videos/escena%201/solar_1.MP4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+        ></video>
+        <video
+          id="solar-2-video"
+          src="videos/escena%201/solar_2.MP4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+        ></video>
+        <video
+          id="solar-3-video"
+          src="videos/escena%201/solar_3.MP4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+        ></video>
+
+        <!-- Petroleo images for floating screen (Scene 2 only) -->
+        <img id="petroleo-1-image" src="images/escena%202/petroleo_1.jpg" />
+        <img id="petroleo-2-image" src="images/escena%202/petroleo_2.jpg" />
+        <img id="petroleo-3-image" src="images/escena%202/petroleo_3.jpg" />
+
+        <!-- images for floating screen (Scene 3 only) -->
+        <img id="plataforma-1-image" src="images/escena%203/plataforma_1.jpg" />
+        <img id="plataforma-2-image" src="images/escena%203/plataforma_2.jpg" />
+        <img id="plataforma-3-image" src="images/escena%203/plataforma_3.jpg" />
+
+        <!-- images for floating screen (Scene 3 only) -->
+        <img id="cpf-cupiagua-image" src="images/escena%203/cpf_cupiagua.jpg" />
+        <img id="cpf_cusiana-image" src="images/escena%203/cpf_cusiana.jpg" />
+        <img id="cpf_florena-image" src="images/escena%203/cpf_florena.jpg" />
+
+        <!-- Images for floating screens (Scenes 4-11) -->
+
+        <!-- Images for Scene 4 -->
+        <img id="escena4-1-image" src="images/escena%202/petroleo_1.jpg" />
+        <img id="escena4-2-image" src="images/escena%202/petroleo_2.jpg" />
+        <img id="escena4-3-image" src="images/escena%202/petroleo_3.jpg" />
+        <img id="escena4B-1-image" src="images/escena%202/petroleo_1.jpg" />
+        <img id="escena4B-2-image" src="images/escena%202/petroleo_2.jpg" />
+        <img id="escena4B-3-image" src="images/escena%202/petroleo_3.jpg" />
+
+        <!-- Images for Scene 5 -->
+        <img id="escena5-1-image" src="images/escena%202/petroleo_1.jpg" />
+        <img id="escena5-2-image" src="images/escena%202/petroleo_2.jpg" />
+        <img id="escena5-3-image" src="images/escena%202/petroleo_3.jpg" />
+        <img id="escena5B-1-image" src="images/escena%202/petroleo_1.jpg" />
+        <img id="escena5B-2-image" src="images/escena%202/petroleo_2.jpg" />
+        <img id="escena5B-3-image" src="images/escena%202/petroleo_3.jpg" />
+
+        <!-- Images for Scene 6 -->
+        <img id="escena6-1-image" src="images/escena%202/petroleo_1.jpg" />
+        <img id="escena6-2-image" src="images/escena%202/petroleo_2.jpg" />
+        <img id="escena6-3-image" src="images/escena%202/petroleo_3.jpg" />
+        <img id="escena6B-1-image" src="images/escena%202/petroleo_1.jpg" />
+        <img id="escena6B-2-image" src="images/escena%202/petroleo_2.jpg" />
+        <img id="escena6B-3-image" src="images/escena%202/petroleo_3.jpg" />
+
+        <!-- Images for Scene 7 -->
+        <img id="escena7-1-image" src="images/escena%202/petroleo_1.jpg" />
+        <img id="escena7-2-image" src="images/escena%202/petroleo_2.jpg" />
+        <img id="escena7-3-image" src="images/escena%202/petroleo_3.jpg" />
+        <img id="escena7B-1-image" src="images/escena%202/petroleo_1.jpg" />
+        <img id="escena7B-2-image" src="images/escena%202/petroleo_2.jpg" />
+        <img id="escena7B-3-image" src="images/escena%202/petroleo_3.jpg" />
+
+        <!-- Images for Scene 8 -->
+        <img id="escena8-1-image" src="images/escena%202/petroleo_1.jpg" />
+        <img id="escena8-2-image" src="images/escena%202/petroleo_2.jpg" />
+        <img id="escena8-3-image" src="images/escena%202/petroleo_3.jpg" />
+        <img id="escena8B-1-image" src="images/escena%202/petroleo_1.jpg" />
+        <img id="escena8B-2-image" src="images/escena%202/petroleo_2.jpg" />
+        <img id="escena8B-3-image" src="images/escena%202/petroleo_3.jpg" />
+
+        <!-- Images for Scene 9 -->
+        <img id="escena9-1-image" src="images/escena%202/petroleo_1.jpg" />
+        <img id="escena9-2-image" src="images/escena%202/petroleo_2.jpg" />
+        <img id="escena9-3-image" src="images/escena%202/petroleo_3.jpg" />
+        <img id="escena9B-1-image" src="images/escena%202/petroleo_1.jpg" />
+        <img id="escena9B-2-image" src="images/escena%202/petroleo_2.jpg" />
+        <img id="escena9B-3-image" src="images/escena%202/petroleo_3.jpg" />
+
+        <!-- Images for Scene 10 -->
+        <img id="escena10-1-image" src="images/escena%202/petroleo_1.jpg" />
+        <img id="escena10-2-image" src="images/escena%202/petroleo_2.jpg" />
+        <img id="escena10-3-image" src="images/escena%202/petroleo_3.jpg" />
+        <img id="escena10B-1-image" src="images/escena%202/petroleo_1.jpg" />
+        <img id="escena10B-2-image" src="images/escena%202/petroleo_2.jpg" />
+        <img id="escena10B-3-image" src="images/escena%202/petroleo_3.jpg" />
+
+        <!-- Images for Scene 11 -->
+        <img id="escena11-1-image" src="images/escena%202/petroleo_1.jpg" />
+        <img id="escena11-2-image" src="images/escena%202/petroleo_2.jpg" />
+        <img id="escena11-3-image" src="images/escena%202/petroleo_3.jpg" />
+        <img id="escena11B-1-image" src="images/escena%202/petroleo_1.jpg" />
+        <img id="escena11B-2-image" src="images/escena%202/petroleo_2.jpg" />
+        <img id="escena11B-3-image" src="images/escena%202/petroleo_3.jpg" />
+      </a-assets>
+
+      <!-- Scene loading overlay -->
+      <a-entity
+        id="scene-overlay"
+        geometry="primitive: sphere; radius: 10"
+        material="color: black; opacity: 0; side: back"
+        position="0 0 0"
+        visible="false"
+      >
+        <!-- Texto visible desde cualquier dirección -->
+        <a-text
+          id="loading-text-front"
+          value="Cargando Escena..."
+          position="0 0 -9.5"
+          align="center"
+          color="white"
+          scale="2 2 2"
+        ></a-text>
+        <a-text
+          id="loading-text-back"
+          value="Cargando Escena..."
+          position="0 0 9.5"
+          align="center"
+          color="white"
+          scale="2 2 2"
+          rotation="0 180 0"
+        ></a-text>
+        <a-text
+          id="loading-text-left"
+          value="Cargando Escena..."
+          position="-9.5 0 0"
+          align="center"
+          color="white"
+          scale="2 2 2"
+          rotation="0 90 0"
+        ></a-text>
+        <a-text
+          id="loading-text-right"
+          value="Cargando Escena..."
+          position="9.5 0 0"
+          align="center"
+          color="white"
+          scale="2 2 2"
+          rotation="0 -90 0"
+        ></a-text>
+      </a-entity>
+
+      <!-- Audio component -->
+      <a-sound
+        id="scene-sound"
+        src="#current-audio"
+        autoplay="true"
+        loop="true"
+        volume="0.5"
+      ></a-sound>
+
+      <!-- Skybox esférico -->
+      <a-sky id="scene-skybox" src="#current-skybox" rotation="0 -90 0"></a-sky>
+
+      <!-- Single floating screen that cycles through solar videos (Scene 1 only) -->
+      <a-plane
+        id="escena1-screen"
+        src="#solar-1-video"
+        position="100 80 20"
+        rotation="-20 90 0"
+        width="100"
+        height="50"
+        material="shader: flat; side: double"
+        visible="false"
+        solar-video-cycler
+      ></a-plane>
+
+      <!-- Single floating screen that cycles through petroleo images (Scene 2 only) -->
+      <a-plane
+        id="escena2-screen"
+        src="#petroleo-2-image"
+        position="100 150 20"
+        rotation="-30 90 0"
+        width="180"
+        height="100"
+        material="shader: flat; side: double"
+        visible="false"
+        petroleo-image-cycler
+      ></a-plane>
+
+      <!-- Single floating screen that cycles through plataforma images (Scene 3 only) -->
+      <a-plane
+        id="escena3-screen"
+        src="#plataforma-1-image"
+        position="-120 150 20"
+        rotation="30 90 0"
+        width="200"
+        height="120"
+        material="shader: flat; side: double"
+        visible="false"
+        plataforma-image-cycler
+      ></a-plane>
+
+      <a-plane
+        id="escena3B-screen"
+        src="#cpf-cupiagua-image"
+        position="120 150 20"
+        rotation="-30 90 0"
+        width="200"
+        height="120"
+        material="shader: flat; side: double"
+        visible="false"
+        cpf-image-cycler
+      ></a-plane>
+
+      <!-- Single floating screen that cycles through escena 4 images (Scene 4 only) -->
+      <a-plane
+        id="escena4-screen"
+        src="#escena4-1-image"
+        position="-120 150 20"
+        rotation="30 90 0"
+        width="160"
+        height="90"
+        material="shader: flat; side: double"
+        visible="false"
+        escena4-image-cycler
+      ></a-plane>
+
+      <a-plane
+        id="escena4B-screen"
+        src="#escena4B-1-image"
+        position="120 150 20"
+        rotation="-30 90 0"
+        width="160"
+        height="90"
+        material="shader: flat; side: double"
+        visible="false"
+        escena4b-image-cycler
+      ></a-plane>
+
+      <!-- Single floating screen that cycles through escena 5 images (Scene 5 only) -->
+      <a-plane
+        id="escena5-screen"
+        src="#escena5-1-image"
+        position="-120 150 20"
+        rotation="30 90 0"
+        width="160"
+        height="90"
+        material="shader: flat; side: double"
+        visible="false"
+        escena5-image-cycler
+      ></a-plane>
+
+      <a-plane
+        id="escena5B-screen"
+        src="#escena5B-1-image"
+        position="120 150 20"
+        rotation="-30 90 0"
+        width="160"
+        height="90"
+        material="shader: flat; side: double"
+        visible="false"
+        escena5b-image-cycler
+      ></a-plane>
+
+      <!-- Single floating screen that cycles through escena 6 images (Scene 6 only) -->
+      <a-plane
+        id="escena6-screen"
+        src="#escena6-1-image"
+        position="-120 150 20"
+        rotation="30 90 0"
+        width="170"
+        height="95"
+        material="shader: flat; side: double"
+        visible="false"
+        escena6-image-cycler
+      ></a-plane>
+
+      <a-plane
+        id="escena6B-screen"
+        src="#escena6B-1-image"
+        position="120 150 20"
+        rotation="-30 90 0"
+        width="170"
+        height="95"
+        material="shader: flat; side: double"
+        visible="false"
+        escena6b-image-cycler
+      ></a-plane>
+
+      <!-- Single floating screen that cycles through escena 7 images (Scene 7 only) -->
+      <a-plane
+        id="escena7-screen"
+        src="#escena7-1-image"
+        position="-120 150 20"
+        rotation="30 90 0"
+        width="180"
+        height="100"
+        material="shader: flat; side: double"
+        visible="false"
+        escena7-image-cycler
+      ></a-plane>
+
+      <a-plane
+        id="escena7B-screen"
+        src="#escena7B-1-image"
+        position="120 150 20"
+        rotation="-30 90 0"
+        width="180"
+        height="100"
+        material="shader: flat; side: double"
+        visible="false"
+        escena7b-image-cycler
+      ></a-plane>
+
+      <!-- Single floating screen that cycles through escena 8 images (Scene 8 only) -->
+      <a-plane
+        id="escena8-screen"
+        src="#escena8-1-image"
+        position="-120 150 20"
+        rotation="30 90 0"
+        width="180"
+        height="100"
+        material="shader: flat; side: double"
+        visible="false"
+        escena8-image-cycler
+      ></a-plane>
+
+      <a-plane
+        id="escena8B-screen"
+        src="#escena8B-1-image"
+        position="120 150 20"
+        rotation="-30 90 0"
+        width="180"
+        height="100"
+        material="shader: flat; side: double"
+        visible="false"
+        escena8b-image-cycler
+      ></a-plane>
+
+      <!-- Single floating screen that cycles through escena 9 images (Scene 9 only) -->
+      <a-plane
+        id="escena9-screen"
+        src="#escena9-1-image"
+        position="-200 150 -100"
+        rotation="30 90 0"
+        width="200"
+        height="110"
+        material="shader: flat; side: double"
+        visible="false"
+        escena9-image-cycler
+      ></a-plane>
+
+      <a-plane
+        id="escena9B-screen"
+        src="#escena9B-1-image"
+        position="200 150 -90"
+        rotation="-30 90 0"
+        width="200"
+        height="110"
+        material="shader: flat; side: double"
+        visible="false"
+        escena9b-image-cycler
+      ></a-plane>
+
+      <!-- Single floating screen that cycles through escena 10 images (Scene 10 only) -->
+      <a-plane
+        id="escena10-screen"
+        src="#escena10-1-image"
+        position="-120 150 80"
+        rotation="30 90 0"
+        width="200"
+        height="110"
+        material="shader: flat; side: double"
+        visible="false"
+        escena10-image-cycler
+      ></a-plane>
+
+      <a-plane
+        id="escena10B-screen"
+        src="#escena10B-1-image"
+        position="120 150 80"
+        rotation="-30 90 0"
+        width="200"
+        height="110"
+        material="shader: flat; side: double"
+        visible="false"
+        escena10b-image-cycler
+      ></a-plane>
+
+      <!-- Single floating screen that cycles through escena 11 images (Scene 11 only) -->
+      <a-plane
+        id="escena11-screen"
+        src="#escena11-1-image"
+        position="-200 150 20"
+        rotation="30 90 0"
+        width="220"
+        height="120"
+        material="shader: flat; side: double"
+        visible="false"
+        escena11-image-cycler
+      ></a-plane>
+
+      <a-plane
+        id="escena11B-screen"
+        src="#escena11B-1-image"
+        position="200 150 80"
+        rotation="-30 90 0"
+        width="220"
+        height="120"
+        material="shader: flat; side: double"
+        visible="false"
+        escena11b-image-cycler
+      ></a-plane>
+
+      <!-- Lighting system -->
+      <a-entity
+        id="ambient-light"
+        light="type: ambient; color: #ffffff; intensity: 0.7"
+      ></a-entity>
+
+      <a-entity
+        id="directional-light"
+        light="type: directional; color: #ffeeaa; intensity: 0.8"
+        position="0 1 1"
+      ></a-entity>
+
+      <!-- 3D Models container (empty for clean 360° view) -->
+      <a-entity id="scene-models">
+        <!-- Models will be loaded dynamically from scene config -->
+      </a-entity>
+
+      <!-- Cámara y controles VR -->
+      <a-entity
+        id="main-camera"
+        camera
+        look-controls
+        position="0 0 0"
+        rotation="0 0 0"
+      ></a-entity>
+
+      <script>
+        // VR Scene Management System
+        let vrClient = null;
+        let currentSceneId = "base"; // Default scene
+        let sceneManager = null;
+        let audioEnabled = false; // Track if audio has been enabled by user interaction
+
+        // Petroleo image cycler component for automatic image cycling
+        AFRAME.registerComponent("petroleo-image-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentImageIndex = 0;
+            this.images = [
+              "#petroleo-1-image",
+              "#petroleo-2-image",
+              "#petroleo-3-image",
+            ];
+            this.cycleInterval = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              this.startImageCycling();
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopImageCycling();
+            };
+
+            this.startImageCycling = () => {
+              this.showCurrentImage();
+              this.cycleInterval = setInterval(() => {
+                this.nextImage();
+              }, 3000); // Cambiar imagen cada 3 segundos
+            };
+
+            this.stopImageCycling = () => {
+              if (this.cycleInterval) {
+                clearInterval(this.cycleInterval);
+                this.cycleInterval = null;
+              }
+            };
+
+            this.showCurrentImage = () => {
+              const imageSrc = this.images[this.currentImageIndex];
+              this.el.setAttribute("src", imageSrc);
+            };
+
+            this.nextImage = () => {
+              this.currentImageIndex =
+                (this.currentImageIndex + 1) % this.images.length;
+              this.showCurrentImage();
+            };
+
+            this.setImage = (index) => {
+              if (index >= 0 && index < this.images.length) {
+                this.currentImageIndex = index;
+                this.showCurrentImage();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.petroleoImageCycler = this;
+          },
+
+          remove() {
+            this.stopImageCycling();
+          },
+        });
+
+        // Plataforma image cycler component for automatic image cycling
+        AFRAME.registerComponent("plataforma-image-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentImageIndex = 0;
+            this.images = [
+              "#plataforma-1-image",
+              "#plataforma-2-image",
+              "#plataforma-3-image",
+            ];
+            this.cycleInterval = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              this.startImageCycling();
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopImageCycling();
+            };
+
+            this.startImageCycling = () => {
+              this.showCurrentImage();
+              this.cycleInterval = setInterval(() => {
+                this.nextImage();
+              }, 3000); // Cambiar imagen cada 3 segundos
+            };
+
+            this.stopImageCycling = () => {
+              if (this.cycleInterval) {
+                clearInterval(this.cycleInterval);
+                this.cycleInterval = null;
+              }
+            };
+
+            this.showCurrentImage = () => {
+              const imageSrc = this.images[this.currentImageIndex];
+              this.el.setAttribute("src", imageSrc);
+            };
+
+            this.nextImage = () => {
+              this.currentImageIndex =
+                (this.currentImageIndex + 1) % this.images.length;
+              this.showCurrentImage();
+            };
+
+            this.setImage = (index) => {
+              if (index >= 0 && index < this.images.length) {
+                this.currentImageIndex = index;
+                this.showCurrentImage();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.plataformaImageCycler = this;
+          },
+
+          remove() {
+            this.stopImageCycling();
+          },
+        });
+
+        // CPF image cycler component for automatic image cycling
+        AFRAME.registerComponent("cpf-image-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentImageIndex = 0;
+            this.images = [
+              "#cpf-cupiagua-image",
+              "#cpf_cusiana-image",
+              "#cpf_florena-image",
+            ];
+            this.cycleInterval = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              this.startImageCycling();
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopImageCycling();
+            };
+
+            this.startImageCycling = () => {
+              this.showCurrentImage();
+              this.cycleInterval = setInterval(() => {
+                this.nextImage();
+              }, 3000); // Cambiar imagen cada 3 segundos
+            };
+
+            this.stopImageCycling = () => {
+              if (this.cycleInterval) {
+                clearInterval(this.cycleInterval);
+                this.cycleInterval = null;
+              }
+            };
+
+            this.showCurrentImage = () => {
+              const imageSrc = this.images[this.currentImageIndex];
+              this.el.setAttribute("src", imageSrc);
+            };
+
+            this.nextImage = () => {
+              this.currentImageIndex =
+                (this.currentImageIndex + 1) % this.images.length;
+              this.showCurrentImage();
+            };
+
+            this.setImage = (index) => {
+              if (index >= 0 && index < this.images.length) {
+                this.currentImageIndex = index;
+                this.showCurrentImage();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.cpfImageCycler = this;
+          },
+
+          remove() {
+            this.stopImageCycling();
+          },
+        });
+
+        // Escena 4 image cycler component for automatic image cycling
+        AFRAME.registerComponent("escena4-image-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentImageIndex = 0;
+            this.images = [
+              "#escena4-1-image",
+              "#escena4-2-image",
+              "#escena4-3-image",
+            ];
+            this.cycleInterval = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              this.startImageCycling();
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopImageCycling();
+            };
+
+            this.startImageCycling = () => {
+              this.showCurrentImage();
+              this.cycleInterval = setInterval(() => {
+                this.nextImage();
+              }, 3000); // Cambiar imagen cada 3 segundos
+            };
+
+            this.stopImageCycling = () => {
+              if (this.cycleInterval) {
+                clearInterval(this.cycleInterval);
+                this.cycleInterval = null;
+              }
+            };
+
+            this.showCurrentImage = () => {
+              const imageSrc = this.images[this.currentImageIndex];
+              this.el.setAttribute("src", imageSrc);
+            };
+
+            this.nextImage = () => {
+              this.currentImageIndex =
+                (this.currentImageIndex + 1) % this.images.length;
+              this.showCurrentImage();
+            };
+
+            this.setImage = (index) => {
+              if (index >= 0 && index < this.images.length) {
+                this.currentImageIndex = index;
+                this.showCurrentImage();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.escena4ImageCycler = this;
+          },
+
+          remove() {
+            this.stopImageCycling();
+          },
+        });
+
+        // Escena 5 image cycler component for automatic image cycling
+        AFRAME.registerComponent("escena5-image-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentImageIndex = 0;
+            this.images = [
+              "#escena5-1-image",
+              "#escena5-2-image",
+              "#escena5-3-image",
+            ];
+            this.cycleInterval = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              this.startImageCycling();
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopImageCycling();
+            };
+
+            this.startImageCycling = () => {
+              this.showCurrentImage();
+              this.cycleInterval = setInterval(() => {
+                this.nextImage();
+              }, 3000); // Cambiar imagen cada 3 segundos
+            };
+
+            this.stopImageCycling = () => {
+              if (this.cycleInterval) {
+                clearInterval(this.cycleInterval);
+                this.cycleInterval = null;
+              }
+            };
+
+            this.showCurrentImage = () => {
+              const imageSrc = this.images[this.currentImageIndex];
+              this.el.setAttribute("src", imageSrc);
+            };
+
+            this.nextImage = () => {
+              this.currentImageIndex =
+                (this.currentImageIndex + 1) % this.images.length;
+              this.showCurrentImage();
+            };
+
+            this.setImage = (index) => {
+              if (index >= 0 && index < this.images.length) {
+                this.currentImageIndex = index;
+                this.showCurrentImage();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.escena5ImageCycler = this;
+          },
+
+          remove() {
+            this.stopImageCycling();
+          },
+        });
+
+        // Escena 7 image cycler component for automatic image cycling
+        AFRAME.registerComponent("escena7-image-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentImageIndex = 0;
+            this.images = [
+              "#escena7-1-image",
+              "#escena7-2-image",
+              "#escena7-3-image",
+            ];
+            this.cycleInterval = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              this.startImageCycling();
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopImageCycling();
+            };
+
+            this.startImageCycling = () => {
+              this.showCurrentImage();
+              this.cycleInterval = setInterval(() => {
+                this.nextImage();
+              }, 3000); // Cambiar imagen cada 3 segundos
+            };
+
+            this.stopImageCycling = () => {
+              if (this.cycleInterval) {
+                clearInterval(this.cycleInterval);
+                this.cycleInterval = null;
+              }
+            };
+
+            this.showCurrentImage = () => {
+              const imageSrc = this.images[this.currentImageIndex];
+              this.el.setAttribute("src", imageSrc);
+            };
+
+            this.nextImage = () => {
+              this.currentImageIndex =
+                (this.currentImageIndex + 1) % this.images.length;
+              this.showCurrentImage();
+            };
+
+            this.setImage = (index) => {
+              if (index >= 0 && index < this.images.length) {
+                this.currentImageIndex = index;
+                this.showCurrentImage();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.escena7ImageCycler = this;
+          },
+
+          remove() {
+            this.stopImageCycling();
+          },
+        });
+
+        // Escena 8 image cycler component for automatic image cycling
+        AFRAME.registerComponent("escena8-image-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentImageIndex = 0;
+            this.images = [
+              "#escena8-1-image",
+              "#escena8-2-image",
+              "#escena8-3-image",
+            ];
+            this.cycleInterval = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              this.startImageCycling();
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopImageCycling();
+            };
+
+            this.startImageCycling = () => {
+              this.showCurrentImage();
+              this.cycleInterval = setInterval(() => {
+                this.nextImage();
+              }, 3000); // Cambiar imagen cada 3 segundos
+            };
+
+            this.stopImageCycling = () => {
+              if (this.cycleInterval) {
+                clearInterval(this.cycleInterval);
+                this.cycleInterval = null;
+              }
+            };
+
+            this.showCurrentImage = () => {
+              const imageSrc = this.images[this.currentImageIndex];
+              this.el.setAttribute("src", imageSrc);
+            };
+
+            this.nextImage = () => {
+              this.currentImageIndex =
+                (this.currentImageIndex + 1) % this.images.length;
+              this.showCurrentImage();
+            };
+
+            this.setImage = (index) => {
+              if (index >= 0 && index < this.images.length) {
+                this.currentImageIndex = index;
+                this.showCurrentImage();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.escena8ImageCycler = this;
+          },
+
+          remove() {
+            this.stopImageCycling();
+          },
+        });
+
+        // Escena 9 image cycler component for automatic image cycling
+        AFRAME.registerComponent("escena9-image-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentImageIndex = 0;
+            this.images = [
+              "#escena9-1-image",
+              "#escena9-2-image",
+              "#escena9-3-image",
+            ];
+            this.cycleInterval = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              this.startImageCycling();
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopImageCycling();
+            };
+
+            this.startImageCycling = () => {
+              this.showCurrentImage();
+              this.cycleInterval = setInterval(() => {
+                this.nextImage();
+              }, 3000); // Cambiar imagen cada 3 segundos
+            };
+
+            this.stopImageCycling = () => {
+              if (this.cycleInterval) {
+                clearInterval(this.cycleInterval);
+                this.cycleInterval = null;
+              }
+            };
+
+            this.showCurrentImage = () => {
+              const imageSrc = this.images[this.currentImageIndex];
+              this.el.setAttribute("src", imageSrc);
+            };
+
+            this.nextImage = () => {
+              this.currentImageIndex =
+                (this.currentImageIndex + 1) % this.images.length;
+              this.showCurrentImage();
+            };
+
+            this.setImage = (index) => {
+              if (index >= 0 && index < this.images.length) {
+                this.currentImageIndex = index;
+                this.showCurrentImage();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.escena9ImageCycler = this;
+          },
+
+          remove() {
+            this.stopImageCycling();
+          },
+        });
+
+        // Escena 10 image cycler component for automatic image cycling
+        AFRAME.registerComponent("escena10-image-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentImageIndex = 0;
+            this.images = [
+              "#escena10-1-image",
+              "#escena10-2-image",
+              "#escena10-3-image",
+            ];
+            this.cycleInterval = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              this.startImageCycling();
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopImageCycling();
+            };
+
+            this.startImageCycling = () => {
+              this.showCurrentImage();
+              this.cycleInterval = setInterval(() => {
+                this.nextImage();
+              }, 3000); // Cambiar imagen cada 3 segundos
+            };
+
+            this.stopImageCycling = () => {
+              if (this.cycleInterval) {
+                clearInterval(this.cycleInterval);
+                this.cycleInterval = null;
+              }
+            };
+
+            this.showCurrentImage = () => {
+              const imageSrc = this.images[this.currentImageIndex];
+              this.el.setAttribute("src", imageSrc);
+            };
+
+            this.nextImage = () => {
+              this.currentImageIndex =
+                (this.currentImageIndex + 1) % this.images.length;
+              this.showCurrentImage();
+            };
+
+            this.setImage = (index) => {
+              if (index >= 0 && index < this.images.length) {
+                this.currentImageIndex = index;
+                this.showCurrentImage();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.escena10ImageCycler = this;
+          },
+
+          remove() {
+            this.stopImageCycling();
+          },
+        });
+
+        // Escena 11 image cycler component for automatic image cycling
+        AFRAME.registerComponent("escena11-image-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentImageIndex = 0;
+            this.images = [
+              "#escena11-1-image",
+              "#escena11-2-image",
+              "#escena11-3-image",
+            ];
+            this.cycleInterval = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              this.startImageCycling();
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopImageCycling();
+            };
+
+            this.startImageCycling = () => {
+              this.showCurrentImage();
+              this.cycleInterval = setInterval(() => {
+                this.nextImage();
+              }, 3000); // Cambiar imagen cada 3 segundos
+            };
+
+            this.stopImageCycling = () => {
+              if (this.cycleInterval) {
+                clearInterval(this.cycleInterval);
+                this.cycleInterval = null;
+              }
+            };
+
+            this.showCurrentImage = () => {
+              const imageSrc = this.images[this.currentImageIndex];
+              this.el.setAttribute("src", imageSrc);
+            };
+
+            this.nextImage = () => {
+              this.currentImageIndex =
+                (this.currentImageIndex + 1) % this.images.length;
+              this.showCurrentImage();
+            };
+
+            this.setImage = (index) => {
+              if (index >= 0 && index < this.images.length) {
+                this.currentImageIndex = index;
+                this.showCurrentImage();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.escena11ImageCycler = this;
+          },
+
+          remove() {
+            this.stopImageCycling();
+          },
+        });
+
+        // Escena 4B image cycler component for automatic image cycling
+        AFRAME.registerComponent("escena4b-image-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentImageIndex = 0;
+            this.images = [
+              "#escena4B-1-image",
+              "#escena4B-2-image",
+              "#escena4B-3-image",
+            ];
+            this.cycleInterval = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              this.startImageCycling();
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopImageCycling();
+            };
+
+            this.startImageCycling = () => {
+              this.showCurrentImage();
+              this.cycleInterval = setInterval(() => {
+                this.nextImage();
+              }, 3000); // Cambiar imagen cada 3 segundos
+            };
+
+            this.stopImageCycling = () => {
+              if (this.cycleInterval) {
+                clearInterval(this.cycleInterval);
+                this.cycleInterval = null;
+              }
+            };
+
+            this.showCurrentImage = () => {
+              const imageSrc = this.images[this.currentImageIndex];
+              this.el.setAttribute("src", imageSrc);
+            };
+
+            this.nextImage = () => {
+              this.currentImageIndex =
+                (this.currentImageIndex + 1) % this.images.length;
+              this.showCurrentImage();
+            };
+
+            this.setImage = (index) => {
+              if (index >= 0 && index < this.images.length) {
+                this.currentImageIndex = index;
+                this.showCurrentImage();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.escena4BImageCycler = this;
+          },
+
+          remove() {
+            this.stopImageCycling();
+          },
+        });
+
+        // Escena 5B image cycler component for automatic image cycling
+        AFRAME.registerComponent("escena5b-image-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentImageIndex = 0;
+            this.images = [
+              "#escena5B-1-image",
+              "#escena5B-2-image",
+              "#escena5B-3-image",
+            ];
+            this.cycleInterval = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              this.startImageCycling();
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopImageCycling();
+            };
+
+            this.startImageCycling = () => {
+              this.showCurrentImage();
+              this.cycleInterval = setInterval(() => {
+                this.nextImage();
+              }, 3000); // Cambiar imagen cada 3 segundos
+            };
+
+            this.stopImageCycling = () => {
+              if (this.cycleInterval) {
+                clearInterval(this.cycleInterval);
+                this.cycleInterval = null;
+              }
+            };
+
+            this.showCurrentImage = () => {
+              const imageSrc = this.images[this.currentImageIndex];
+              this.el.setAttribute("src", imageSrc);
+            };
+
+            this.nextImage = () => {
+              this.currentImageIndex =
+                (this.currentImageIndex + 1) % this.images.length;
+              this.showCurrentImage();
+            };
+
+            this.setImage = (index) => {
+              if (index >= 0 && index < this.images.length) {
+                this.currentImageIndex = index;
+                this.showCurrentImage();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.escena5BImageCycler = this;
+          },
+
+          remove() {
+            this.stopImageCycling();
+          },
+        });
+
+        // Escena 6 image cycler component for automatic image cycling
+        AFRAME.registerComponent("escena6-image-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentImageIndex = 0;
+            this.images = [
+              "#escena6-1-image",
+              "#escena6-2-image",
+              "#escena6-3-image",
+            ];
+            this.cycleInterval = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              this.startImageCycling();
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopImageCycling();
+            };
+
+            this.startImageCycling = () => {
+              this.showCurrentImage();
+              this.cycleInterval = setInterval(() => {
+                this.nextImage();
+              }, 3000); // Cambiar imagen cada 3 segundos
+            };
+
+            this.stopImageCycling = () => {
+              if (this.cycleInterval) {
+                clearInterval(this.cycleInterval);
+                this.cycleInterval = null;
+              }
+            };
+
+            this.showCurrentImage = () => {
+              const imageSrc = this.images[this.currentImageIndex];
+              this.el.setAttribute("src", imageSrc);
+            };
+
+            this.nextImage = () => {
+              this.currentImageIndex =
+                (this.currentImageIndex + 1) % this.images.length;
+              this.showCurrentImage();
+            };
+
+            this.setImage = (index) => {
+              if (index >= 0 && index < this.images.length) {
+                this.currentImageIndex = index;
+                this.showCurrentImage();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.escena6ImageCycler = this;
+          },
+
+          remove() {
+            this.stopImageCycling();
+          },
+        });
+
+        // Escena 6B image cycler component for automatic image cycling
+        AFRAME.registerComponent("escena6b-image-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentImageIndex = 0;
+            this.images = [
+              "#escena6B-1-image",
+              "#escena6B-2-image",
+              "#escena6B-3-image",
+            ];
+            this.cycleInterval = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              this.startImageCycling();
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopImageCycling();
+            };
+
+            this.startImageCycling = () => {
+              this.showCurrentImage();
+              this.cycleInterval = setInterval(() => {
+                this.nextImage();
+              }, 3000); // Cambiar imagen cada 3 segundos
+            };
+
+            this.stopImageCycling = () => {
+              if (this.cycleInterval) {
+                clearInterval(this.cycleInterval);
+                this.cycleInterval = null;
+              }
+            };
+
+            this.showCurrentImage = () => {
+              const imageSrc = this.images[this.currentImageIndex];
+              this.el.setAttribute("src", imageSrc);
+            };
+
+            this.nextImage = () => {
+              this.currentImageIndex =
+                (this.currentImageIndex + 1) % this.images.length;
+              this.showCurrentImage();
+            };
+
+            this.setImage = (index) => {
+              if (index >= 0 && index < this.images.length) {
+                this.currentImageIndex = index;
+                this.showCurrentImage();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.escena6BImageCycler = this;
+          },
+
+          remove() {
+            this.stopImageCycling();
+          },
+        });
+
+        // Escena 7B image cycler component for automatic image cycling
+        AFRAME.registerComponent("escena7b-image-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentImageIndex = 0;
+            this.images = [
+              "#escena7B-1-image",
+              "#escena7B-2-image",
+              "#escena7B-3-image",
+            ];
+            this.cycleInterval = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              this.startImageCycling();
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopImageCycling();
+            };
+
+            this.startImageCycling = () => {
+              this.showCurrentImage();
+              this.cycleInterval = setInterval(() => {
+                this.nextImage();
+              }, 3000); // Cambiar imagen cada 3 segundos
+            };
+
+            this.stopImageCycling = () => {
+              if (this.cycleInterval) {
+                clearInterval(this.cycleInterval);
+                this.cycleInterval = null;
+              }
+            };
+
+            this.showCurrentImage = () => {
+              const imageSrc = this.images[this.currentImageIndex];
+              this.el.setAttribute("src", imageSrc);
+            };
+
+            this.nextImage = () => {
+              this.currentImageIndex =
+                (this.currentImageIndex + 1) % this.images.length;
+              this.showCurrentImage();
+            };
+
+            this.setImage = (index) => {
+              if (index >= 0 && index < this.images.length) {
+                this.currentImageIndex = index;
+                this.showCurrentImage();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.escena7BImageCycler = this;
+          },
+
+          remove() {
+            this.stopImageCycling();
+          },
+        });
+
+        // Escena 8B image cycler component for automatic image cycling
+        AFRAME.registerComponent("escena8b-image-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentImageIndex = 0;
+            this.images = [
+              "#escena8B-1-image",
+              "#escena8B-2-image",
+              "#escena8B-3-image",
+            ];
+            this.cycleInterval = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              this.startImageCycling();
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopImageCycling();
+            };
+
+            this.startImageCycling = () => {
+              this.showCurrentImage();
+              this.cycleInterval = setInterval(() => {
+                this.nextImage();
+              }, 3000); // Cambiar imagen cada 3 segundos
+            };
+
+            this.stopImageCycling = () => {
+              if (this.cycleInterval) {
+                clearInterval(this.cycleInterval);
+                this.cycleInterval = null;
+              }
+            };
+
+            this.showCurrentImage = () => {
+              const imageSrc = this.images[this.currentImageIndex];
+              this.el.setAttribute("src", imageSrc);
+            };
+
+            this.nextImage = () => {
+              this.currentImageIndex =
+                (this.currentImageIndex + 1) % this.images.length;
+              this.showCurrentImage();
+            };
+
+            this.setImage = (index) => {
+              if (index >= 0 && index < this.images.length) {
+                this.currentImageIndex = index;
+                this.showCurrentImage();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.escena8BImageCycler = this;
+          },
+
+          remove() {
+            this.stopImageCycling();
+          },
+        });
+
+        // Escena 9B image cycler component for automatic image cycling
+        AFRAME.registerComponent("escena9b-image-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentImageIndex = 0;
+            this.images = [
+              "#escena9B-1-image",
+              "#escena9B-2-image",
+              "#escena9B-3-image",
+            ];
+            this.cycleInterval = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              this.startImageCycling();
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopImageCycling();
+            };
+
+            this.startImageCycling = () => {
+              this.showCurrentImage();
+              this.cycleInterval = setInterval(() => {
+                this.nextImage();
+              }, 3000); // Cambiar imagen cada 3 segundos
+            };
+
+            this.stopImageCycling = () => {
+              if (this.cycleInterval) {
+                clearInterval(this.cycleInterval);
+                this.cycleInterval = null;
+              }
+            };
+
+            this.showCurrentImage = () => {
+              const imageSrc = this.images[this.currentImageIndex];
+              this.el.setAttribute("src", imageSrc);
+            };
+
+            this.nextImage = () => {
+              this.currentImageIndex =
+                (this.currentImageIndex + 1) % this.images.length;
+              this.showCurrentImage();
+            };
+
+            this.setImage = (index) => {
+              if (index >= 0 && index < this.images.length) {
+                this.currentImageIndex = index;
+                this.showCurrentImage();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.escena9BImageCycler = this;
+          },
+
+          remove() {
+            this.stopImageCycling();
+          },
+        });
+
+        // Escena 10B image cycler component for automatic image cycling
+        AFRAME.registerComponent("escena10b-image-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentImageIndex = 0;
+            this.images = [
+              "#escena10B-1-image",
+              "#escena10B-2-image",
+              "#escena10B-3-image",
+            ];
+            this.cycleInterval = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              this.startImageCycling();
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopImageCycling();
+            };
+
+            this.startImageCycling = () => {
+              this.showCurrentImage();
+              this.cycleInterval = setInterval(() => {
+                this.nextImage();
+              }, 3000); // Cambiar imagen cada 3 segundos
+            };
+
+            this.stopImageCycling = () => {
+              if (this.cycleInterval) {
+                clearInterval(this.cycleInterval);
+                this.cycleInterval = null;
+              }
+            };
+
+            this.showCurrentImage = () => {
+              const imageSrc = this.images[this.currentImageIndex];
+              this.el.setAttribute("src", imageSrc);
+            };
+
+            this.nextImage = () => {
+              this.currentImageIndex =
+                (this.currentImageIndex + 1) % this.images.length;
+              this.showCurrentImage();
+            };
+
+            this.setImage = (index) => {
+              if (index >= 0 && index < this.images.length) {
+                this.currentImageIndex = index;
+                this.showCurrentImage();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.escena10BImageCycler = this;
+          },
+
+          remove() {
+            this.stopImageCycling();
+          },
+        });
+
+        // Escena 11B image cycler component for automatic image cycling
+        AFRAME.registerComponent("escena11b-image-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentImageIndex = 0;
+            this.images = [
+              "#escena11B-1-image",
+              "#escena11B-2-image",
+              "#escena11B-3-image",
+            ];
+            this.cycleInterval = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              this.startImageCycling();
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopImageCycling();
+            };
+
+            this.startImageCycling = () => {
+              this.showCurrentImage();
+              this.cycleInterval = setInterval(() => {
+                this.nextImage();
+              }, 3000); // Cambiar imagen cada 3 segundos
+            };
+
+            this.stopImageCycling = () => {
+              if (this.cycleInterval) {
+                clearInterval(this.cycleInterval);
+                this.cycleInterval = null;
+              }
+            };
+
+            this.showCurrentImage = () => {
+              const imageSrc = this.images[this.currentImageIndex];
+              this.el.setAttribute("src", imageSrc);
+            };
+
+            this.nextImage = () => {
+              this.currentImageIndex =
+                (this.currentImageIndex + 1) % this.images.length;
+              this.showCurrentImage();
+            };
+
+            this.setImage = (index) => {
+              if (index >= 0 && index < this.images.length) {
+                this.currentImageIndex = index;
+                this.showCurrentImage();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.escena11BImageCycler = this;
+          },
+
+          remove() {
+            this.stopImageCycling();
+          },
+        });
+
+        // Solar video cycler component for automatic video cycling
+        AFRAME.registerComponent("solar-video-cycler", {
+          init() {
+            this.isVisible = false;
+            this.currentVideoIndex = 0;
+            this.videos = [
+              "#solar-1-video",
+              "#solar-2-video",
+              "#solar-3-video",
+            ];
+            this.currentVideo = null;
+
+            this.show = () => {
+              this.el.setAttribute("visible", "true");
+              this.isVisible = true;
+              // Small delay to ensure videos are loaded
+              setTimeout(() => {
+                this.startVideoPlayback();
+              }, 500);
+            };
+
+            this.hide = () => {
+              this.el.setAttribute("visible", "false");
+              this.isVisible = false;
+              this.stopVideoPlayback();
+            };
+
+            this.startVideoPlayback = () => {
+              this.playCurrentVideo();
+            };
+
+            this.stopVideoPlayback = () => {
+              if (this.currentVideo) {
+                this.currentVideo.pause();
+                this.currentVideo.currentTime = 0;
+              }
+            };
+
+            this.playCurrentVideo = () => {
+              const videoSrc = this.videos[this.currentVideoIndex];
+              this.el.setAttribute("src", videoSrc);
+
+              // Get the video element and set up event listeners
+              this.currentVideo = document.querySelector(videoSrc);
+              if (this.currentVideo) {
+                // Remove any existing event listeners
+                this.currentVideo.removeEventListener(
+                  "ended",
+                  this.onVideoEnded
+                );
+
+                // Add new event listener
+                this.onVideoEnded = () => {
+                  this.nextVideo();
+                };
+                this.currentVideo.addEventListener("ended", this.onVideoEnded);
+
+                // Wait for video to be ready before playing
+                const playVideo = () => {
+                  this.currentVideo.currentTime = 0;
+                  this.currentVideo.play().catch((error) => {
+                    // Video playback failed
+                    // Try to load the video again
+                    this.currentVideo.load();
+                    setTimeout(() => {
+                      this.currentVideo.play().catch((retryError) => {
+                        // Second attempt failed
+                      });
+                    }, 1000);
+                  });
+                };
+
+                // Check if video is ready
+                if (this.currentVideo.readyState >= 2) {
+                  playVideo();
+                } else {
+                  this.currentVideo.addEventListener("canplay", playVideo, {
+                    once: true,
+                  });
+                  this.currentVideo.load();
+                }
+              } else {
+                // Video element not found
+              }
+            };
+
+            this.nextVideo = () => {
+              this.currentVideoIndex =
+                (this.currentVideoIndex + 1) % this.videos.length;
+              this.playCurrentVideo();
+            };
+
+            this.setVideo = (index) => {
+              if (index >= 0 && index < this.videos.length) {
+                this.currentVideoIndex = index;
+                this.playCurrentVideo();
+              }
+            };
+
+            // Expose methods globally for easy access
+            window.solarVideoCycler = this;
+          },
+
+          remove() {
+            if (this.currentVideo && this.onVideoEnded) {
+              this.currentVideo.removeEventListener("ended", this.onVideoEnded);
+            }
+          },
+        });
+
+        // Audio initialization function
+        function enableAudio() {
+          if (audioEnabled) return Promise.resolve();
+
+          return new Promise((resolve) => {
+            try {
+              const audioElement = document.querySelector("#current-audio");
+              const soundComponent = document.querySelector("#scene-sound");
+
+              if (audioElement && soundComponent) {
+                // Try to play and immediately pause to unlock audio context
+                audioElement
+                  .play()
+                  .then(() => {
+                    audioElement.pause();
+                    audioElement.currentTime = 0;
+                    audioEnabled = true;
+                    // Audio context enabled
+                    resolve();
+                  })
+                  .catch((error) => {
+                    // Could not enable audio
+                    audioEnabled = false;
+                    resolve(); // Still resolve to continue
+                  });
+              } else {
+                // Audio elements not found
+                resolve();
+              }
+            } catch (error) {
+              // Error enabling audio
+              resolve();
+            }
+          });
+        }
+
+        // Scene Manager Class
+        class VRSceneManager {
+          constructor() {
+            this.currentScene = null;
+            this.isLoading = false;
+            this.elements = {};
+            this.initializeElements();
+          }
+
+          initializeElements() {
+            this.elements = {
+              skybox: document.querySelector("#scene-skybox"),
+              sound: document.querySelector("#scene-sound"),
+              ambientLight: document.querySelector("#ambient-light"),
+              directionalLight: document.querySelector("#directional-light"),
+              models: document.querySelector("#scene-models"),
+              overlay: document.querySelector("#scene-overlay"),
+              loadingTextFront: document.querySelector("#loading-text-front"),
+              loadingTextBack: document.querySelector("#loading-text-back"),
+              loadingTextLeft: document.querySelector("#loading-text-left"),
+              loadingTextRight: document.querySelector("#loading-text-right"),
+              escena1Screen: document.querySelector("#escena1-screen"),
+              escena2Screen: document.querySelector("#escena2-screen"),
+              escena3Screen: document.querySelector("#escena3-screen"),
+              escena3BScreen: document.querySelector("#escena3B-screen"),
+              escena4Screen: document.querySelector("#escena4-screen"),
+              escena4BScreen: document.querySelector("#escena4B-screen"),
+              escena5Screen: document.querySelector("#escena5-screen"),
+              escena5BScreen: document.querySelector("#escena5B-screen"),
+              escena6Screen: document.querySelector("#escena6-screen"),
+              escena6BScreen: document.querySelector("#escena6B-screen"),
+              escena7Screen: document.querySelector("#escena7-screen"),
+              escena7BScreen: document.querySelector("#escena7B-screen"),
+              escena8Screen: document.querySelector("#escena8-screen"),
+              escena8BScreen: document.querySelector("#escena8B-screen"),
+              escena9Screen: document.querySelector("#escena9-screen"),
+              escena9BScreen: document.querySelector("#escena9B-screen"),
+              escena10Screen: document.querySelector("#escena10-screen"),
+              escena10BScreen: document.querySelector("#escena10B-screen"),
+              escena11Screen: document.querySelector("#escena11-screen"),
+              escena11BScreen: document.querySelector("#escena11B-screen"),
+              assets: {
+                audio: document.querySelector("#current-audio"),
+                skybox: document.querySelector("#current-skybox"),
+              },
+            };
+          }
+
+          async loadScene(sceneId) {
+            if (this.isLoading) {
+              // Scene loading already in progress
+              return false;
+            }
+
+            if (!SCENES_CONFIG[sceneId]) {
+              // Scene not found
+              return false;
+            }
+
+            // Loading scene
+            this.isLoading = true;
+            this.showLoadingOverlay(sceneId);
+
+            const sceneConfig = SCENES_CONFIG[sceneId];
+
+            try {
+              // Enable audio if not already enabled
+              await enableAudio();
+
+              // Update assets
+              await this.updateAssets(sceneConfig);
+
+              // Update scene elements
+              this.updateSkybox(sceneConfig);
+              this.updateLighting(sceneConfig);
+              this.updateModels(sceneConfig);
+              this.updateAudio(sceneConfig);
+              this.updateFloatingScreens(sceneConfig);
+
+              this.currentScene = sceneConfig;
+              currentSceneId = sceneId;
+
+              // Notify server we're ready
+              if (vrClient && vrClient.isConnected) {
+                vrClient.sendReady(sceneId);
+              }
+
+              return true;
+            } catch (error) {
+              // Error loading scene
+              return false;
+            } finally {
+              this.isLoading = false;
+              // Add a small delay before hiding overlay to ensure scene is fully loaded
+              setTimeout(() => {
+                this.hideLoadingOverlay();
+              }, 300);
+            }
+          }
+
+          async updateAssets(sceneConfig) {
+            // Update audio asset
+            this.elements.assets.audio.setAttribute(
+              "src",
+              sceneConfig.assets.audio
+            );
+
+            // Update skybox asset
+            this.elements.assets.skybox.setAttribute(
+              "src",
+              sceneConfig.assets.skybox
+            );
+
+            // Wait for assets to load
+            return new Promise((resolve) => setTimeout(resolve, 500));
+          }
+
+          updateSkybox(sceneConfig) {
+            // Force A-Frame to reload the texture by temporarily removing and re-adding the src
+            this.elements.skybox.removeAttribute("src");
+
+            // Use a small delay to ensure the removal is processed
+            setTimeout(() => {
+              this.elements.skybox.setAttribute("src", "#current-skybox");
+            }, 100);
+          }
+
+          updateLighting(sceneConfig) {
+            const { ambient, directional } = sceneConfig.lighting;
+
+            this.elements.ambientLight.setAttribute("light", {
+              type: "ambient",
+              color: ambient.color,
+              intensity: ambient.intensity,
+            });
+
+            this.elements.directionalLight.setAttribute("light", {
+              type: "directional",
+              color: directional.color,
+              intensity: directional.intensity,
+            });
+          }
+
+          updateModels(sceneConfig) {
+            // Clear existing models
+            this.elements.models.innerHTML = "";
+
+            // Add models from config if any
+            if (
+              sceneConfig.assets.models &&
+              sceneConfig.assets.models.length > 0
+            ) {
+              sceneConfig.assets.models.forEach((model) => {
+                const modelEntity = document.createElement("a-entity");
+                modelEntity.setAttribute("id", model.id);
+                if (model.gltfModel) {
+                  modelEntity.setAttribute("gltf-model", model.gltfModel);
+                }
+                modelEntity.setAttribute("position", model.position || "0 0 0");
+                modelEntity.setAttribute("scale", model.scale || "1 1 1");
+                this.elements.models.appendChild(modelEntity);
+              });
+            }
+          }
+
+          updateAudio(sceneConfig) {
+            // Update the audio source
+            this.elements.sound.setAttribute("src", "#current-audio");
+
+            // Only attempt to play if audio is enabled
+            if (!audioEnabled) {
+              // Audio not enabled yet
+              return;
+            }
+
+            // Force audio to reload and play
+            setTimeout(() => {
+              try {
+                const audioComponent = this.elements.sound.components.sound;
+                if (audioComponent) {
+                  // Stop current audio if playing
+                  audioComponent.stopSound();
+
+                  // Small delay to ensure the asset is loaded
+                  setTimeout(() => {
+                    // Start playing the new audio
+                    audioComponent.playSound();
+                    // Audio started for scene
+                  }, 200);
+                } else {
+                  // Audio component not found
+                }
+              } catch (error) {
+                // Error playing audio
+                // Fallback: try to play directly from the audio element
+                try {
+                  const audioElement = document.querySelector("#current-audio");
+                  if (audioElement) {
+                    audioElement.currentTime = 0;
+                    audioElement.play().catch((playError) => {
+                      // Direct audio play failed
+                    });
+                  }
+                } catch (fallbackError) {
+                  // Fallback audio play failed
+                }
+              }
+            }, 100);
+          }
+
+          updateFloatingScreens(sceneConfig) {
+            // Hide all screens first
+            this.hideEscena1Screen();
+            this.hideEscena2Screen();
+            this.hideEscena3Screen();
+            this.hideEscena3BScreen();
+            this.hideEscena4Screen();
+            this.hideEscena4BScreen();
+            this.hideEscena5Screen();
+            this.hideEscena5BScreen();
+            this.hideEscena6Screen();
+            this.hideEscena6BScreen();
+            this.hideEscena7Screen();
+            this.hideEscena7BScreen();
+            this.hideEscena8Screen();
+            this.hideEscena8BScreen();
+            this.hideEscena9Screen();
+            this.hideEscena9BScreen();
+            this.hideEscena10Screen();
+            this.hideEscena10BScreen();
+            this.hideEscena11Screen();
+            this.hideEscena11BScreen();
+
+            // Show screens based on scene
+            if (sceneConfig.id === "escena-1") {
+              this.showEscena1Screen();
+            } else if (sceneConfig.id === "escena-2") {
+              this.showEscena2Screen();
+            } else if (sceneConfig.id === "escena-3") {
+              this.showEscena3Screen();
+              this.showEscena3BScreen();
+            } else if (sceneConfig.id === "escena-4") {
+              this.showEscena4Screen();
+              this.showEscena4BScreen();
+            } else if (sceneConfig.id === "escena-5") {
+              this.showEscena5Screen();
+              this.showEscena5BScreen();
+            } else if (sceneConfig.id === "escena-6") {
+              this.showEscena6Screen();
+              this.showEscena6BScreen();
+            } else if (sceneConfig.id === "escena-7") {
+              this.showEscena7Screen();
+              this.showEscena7BScreen();
+            } else if (sceneConfig.id === "escena-8") {
+              this.showEscena8Screen();
+              this.showEscena8BScreen();
+            } else if (sceneConfig.id === "escena-9") {
+              this.showEscena9Screen();
+              this.showEscena9BScreen();
+            } else if (sceneConfig.id === "escena-10") {
+              this.showEscena10Screen();
+              this.showEscena10BScreen();
+            } else if (sceneConfig.id === "escena-11") {
+              this.showEscena11Screen();
+              this.showEscena11BScreen();
+            }
+          }
+
+          // Escena 1 Screen Control Methods
+          showEscena1Screen() {
+            if (!this.elements.escena1Screen) {
+              // Screen reference not available
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena1Screen.components["solar-video-cycler"];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.escena1Screen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              // Error showing screen
+            }
+          }
+
+          hideEscena1Screen() {
+            if (!this.elements.escena1Screen) {
+              // Screen reference not available
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena1Screen.components["solar-video-cycler"];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.escena1Screen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              // Error hiding screen
+            }
+          }
+
+          // Escena 2 Screen Control Methods
+          showEscena2Screen() {
+            if (!this.elements.escena2Screen) {
+              // Screen reference not available
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena2Screen.components["petroleo-image-cycler"];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.escena2Screen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              // Error showing screen
+            }
+          }
+
+          hideEscena2Screen() {
+            if (!this.elements.escena2Screen) {
+              // Screen reference not available
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena2Screen.components["petroleo-image-cycler"];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.escena2Screen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              // Error hiding screen
+            }
+          }
+
+          // Escena 3 Screen Control Methods
+          showEscena3Screen() {
+            if (!this.elements.escena3Screen) {
+              // Screen reference not available
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena3Screen.components[
+                  "plataforma-image-cycler"
+                ];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.escena3Screen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              // Error showing screen
+            }
+          }
+
+          hideEscena3Screen() {
+            if (!this.elements.escena3Screen) {
+              // Screen reference not available
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena3Screen.components[
+                  "plataforma-image-cycler"
+                ];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.escena3Screen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              // Error hiding screen
+            }
+          }
+
+          // Escena 3B Screen Control Methods (CPF)
+          showEscena3BScreen() {
+            if (!this.elements.escena3BScreen) {
+              // Screen reference not available
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena3BScreen.components["cpf-image-cycler"];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.escena3BScreen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              // Error showing screen
+            }
+          }
+
+          hideEscena3BScreen() {
+            if (!this.elements.escena3BScreen) {
+              // Screen reference not available
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena3BScreen.components["cpf-image-cycler"];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.escena3BScreen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              // Error hiding screen
+            }
+          }
+
+          // Escena 4 Screen Control Methods
+          showEscena4Screen() {
+            if (!this.elements.escena4Screen) {
+              // Screen reference not available
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena4Screen.components["escena4-image-cycler"];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.escena4Screen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              // Error showing screen
+            }
+          }
+
+          hideEscena4Screen() {
+            if (!this.elements.escena4Screen) {
+              // Screen reference not available
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena4Screen.components["escena4-image-cycler"];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.escena4Screen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              // Error hiding screen
+            }
+          }
+
+          // Escena 5 Screen Control Methods
+          showEscena5Screen() {
+            if (!this.elements.escena5Screen) {
+              // Screen reference not available
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena5Screen.components["escena5-image-cycler"];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.escena5Screen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              // Error showing screen
+            }
+          }
+
+          hideEscena5Screen() {
+            if (!this.elements.escena5Screen) {
+              // Screen reference not available
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena5Screen.components["escena5-image-cycler"];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.escena5Screen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              // Error hiding screen
+            }
+          }
+
+          // Escena 7 Screen Control Methods
+          showEscena7Screen() {
+            if (!this.elements.escena7Screen) {
+              // Screen reference not available
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena7Screen.components["escena7-image-cycler"];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.escena7Screen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              // Error showing screen
+            }
+          }
+
+          hideEscena7Screen() {
+            if (!this.elements.escena7Screen) {
+              // Screen reference not available
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena7Screen.components["escena7-image-cycler"];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.escena7Screen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              // Error hiding screen
+            }
+          }
+
+          // Escena 8 Screen Control Methods
+          showEscena8Screen() {
+            if (!this.elements.escena8Screen) {
+              // Screen reference not available
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena8Screen.components["escena8-image-cycler"];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.escena8Screen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              // Error showing screen
+            }
+          }
+
+          hideEscena8Screen() {
+            if (!this.elements.escena8Screen) {
+              // Screen reference not available
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena8Screen.components["escena8-image-cycler"];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.escena8Screen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              // Error hiding screen
+            }
+          }
+
+          // Escena 9 Screen Control Methods
+          showEscena9Screen() {
+            if (!this.elements.escena9Screen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 9 no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena9Screen.components["escena9-image-cycler"];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.escena9Screen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              console.error("❌ Error mostrando pantalla de escena 9:", error);
+            }
+          }
+
+          hideEscena9Screen() {
+            if (!this.elements.escena9Screen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 9 no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena9Screen.components["escena9-image-cycler"];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.escena9Screen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              console.error("❌ Error ocultando pantalla de escena 9:", error);
+            }
+          }
+
+          // Escena 10 Screen Control Methods
+          showEscena10Screen() {
+            if (!this.elements.escena10Screen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 10 no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena10Screen.components[
+                  "escena10-image-cycler"
+                ];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.escena10Screen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              console.error("❌ Error mostrando pantalla de escena 10:", error);
+            }
+          }
+
+          hideEscena10Screen() {
+            if (!this.elements.escena10Screen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 10 no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena10Screen.components[
+                  "escena10-image-cycler"
+                ];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.escena10Screen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              console.error("❌ Error ocultando pantalla de escena 10:", error);
+            }
+          }
+
+          // Escena 11 Screen Control Methods
+          showEscena11Screen() {
+            if (!this.elements.escena11Screen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 11 no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena11Screen.components[
+                  "escena11-image-cycler"
+                ];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.escena11Screen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              console.error("❌ Error mostrando pantalla de escena 11:", error);
+            }
+          }
+
+          hideEscena11Screen() {
+            if (!this.elements.escena11Screen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 11 no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena11Screen.components[
+                  "escena11-image-cycler"
+                ];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.escena11Screen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              console.error("❌ Error ocultando pantalla de escena 11:", error);
+            }
+          }
+
+          // Escena 4B Screen Control Methods
+          showEscena4BScreen() {
+            if (!this.elements.escena4BScreen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 4B no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena4BScreen.components[
+                  "escena4b-image-cycler"
+                ];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.escena4BScreen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              console.error("❌ Error mostrando pantalla de escena 4B:", error);
+            }
+          }
+
+          hideEscena4BScreen() {
+            if (!this.elements.escena4BScreen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 4B no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena4BScreen.components[
+                  "escena4b-image-cycler"
+                ];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.escena4BScreen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              console.error("❌ Error ocultando pantalla de escena 4B:", error);
+            }
+          }
+
+          // Escena 5B Screen Control Methods
+          showEscena5BScreen() {
+            if (!this.elements.escena5BScreen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 5B no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena5BScreen.components[
+                  "escena5b-image-cycler"
+                ];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.escena5BScreen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              console.error("❌ Error mostrando pantalla de escena 5B:", error);
+            }
+          }
+
+          hideEscena5BScreen() {
+            if (!this.elements.escena5BScreen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 5B no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena5BScreen.components[
+                  "escena5b-image-cycler"
+                ];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.escena5BScreen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              console.error("❌ Error ocultando pantalla de escena 5B:", error);
+            }
+          }
+
+          // Escena 6 Screen Control Methods
+          showEscena6Screen() {
+            if (!this.elements.escena6Screen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 6 no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena6Screen.components["escena6-image-cycler"];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.escena6Screen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              console.error("❌ Error mostrando pantalla de escena 6:", error);
+            }
+          }
+
+          hideEscena6Screen() {
+            if (!this.elements.escena6Screen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 6 no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena6Screen.components["escena6-image-cycler"];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.escena6Screen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              console.error("❌ Error ocultando pantalla de escena 6:", error);
+            }
+          }
+
+          // Escena 6B Screen Control Methods
+          showEscena6BScreen() {
+            if (!this.elements.escena6BScreen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 6B no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena6BScreen.components[
+                  "escena6b-image-cycler"
+                ];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.escena6BScreen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              console.error("❌ Error mostrando pantalla de escena 6B:", error);
+            }
+          }
+
+          hideEscena6BScreen() {
+            if (!this.elements.escena6BScreen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 6B no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena6BScreen.components[
+                  "escena6b-image-cycler"
+                ];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.escena6BScreen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              console.error("❌ Error ocultando pantalla de escena 6B:", error);
+            }
+          }
+
+          // Escena 7B Screen Control Methods
+          showEscena7BScreen() {
+            if (!this.elements.escena7BScreen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 7B no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena7BScreen.components[
+                  "escena7b-image-cycler"
+                ];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.escena7BScreen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              console.error("❌ Error mostrando pantalla de escena 7B:", error);
+            }
+          }
+
+          hideEscena7BScreen() {
+            if (!this.elements.escena7BScreen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 7B no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena7BScreen.components[
+                  "escena7b-image-cycler"
+                ];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.escena7BScreen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              console.error("❌ Error ocultando pantalla de escena 7B:", error);
+            }
+          }
+
+          // Escena 8B Screen Control Methods
+          showEscena8BScreen() {
+            if (!this.elements.escena8BScreen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 8B no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena8BScreen.components[
+                  "escena8b-image-cycler"
+                ];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.escena8BScreen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              console.error("❌ Error mostrando pantalla de escena 8B:", error);
+            }
+          }
+
+          hideEscena8BScreen() {
+            if (!this.elements.escena8BScreen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 8B no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena8BScreen.components[
+                  "escena8b-image-cycler"
+                ];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.escena8BScreen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              console.error("❌ Error ocultando pantalla de escena 8B:", error);
+            }
+          }
+
+          // Escena 9B Screen Control Methods
+          showEscena9BScreen() {
+            if (!this.elements.escena9BScreen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 9B no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena9BScreen.components[
+                  "escena9b-image-cycler"
+                ];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.escena9BScreen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              console.error("❌ Error mostrando pantalla de escena 9B:", error);
+            }
+          }
+
+          hideEscena9BScreen() {
+            if (!this.elements.escena9BScreen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 9B no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena9BScreen.components[
+                  "escena9b-image-cycler"
+                ];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.escena9BScreen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              console.error("❌ Error ocultando pantalla de escena 9B:", error);
+            }
+          }
+
+          // Escena 10B Screen Control Methods
+          showEscena10BScreen() {
+            if (!this.elements.escena10BScreen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 10B no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena10BScreen.components[
+                  "escena10b-image-cycler"
+                ];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.escena10BScreen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              console.error(
+                "❌ Error mostrando pantalla de escena 10B:",
+                error
+              );
+            }
+          }
+
+          hideEscena10BScreen() {
+            if (!this.elements.escena10BScreen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 10B no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena10BScreen.components[
+                  "escena10b-image-cycler"
+                ];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.escena10BScreen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              console.error(
+                "❌ Error ocultando pantalla de escena 10B:",
+                error
+              );
+            }
+          }
+
+          // Escena 11B Screen Control Methods
+          showEscena11BScreen() {
+            if (!this.elements.escena11BScreen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 11B no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena11BScreen.components[
+                  "escena11b-image-cycler"
+                ];
+              if (component && component.show) {
+                component.show();
+              } else {
+                this.elements.escena11BScreen.setAttribute("visible", "true");
+              }
+            } catch (error) {
+              console.error(
+                "❌ Error mostrando pantalla de escena 11B:",
+                error
+              );
+            }
+          }
+
+          hideEscena11BScreen() {
+            if (!this.elements.escena11BScreen) {
+              console.warn(
+                "⚠️ Referencia de pantalla de escena 11B no disponible"
+              );
+              return;
+            }
+
+            try {
+              const component =
+                this.elements.escena11BScreen.components[
+                  "escena11b-image-cycler"
+                ];
+              if (component && component.hide) {
+                component.hide();
+              } else {
+                this.elements.escena11BScreen.setAttribute("visible", "false");
+              }
+            } catch (error) {
+              console.error(
+                "❌ Error ocultando pantalla de escena 11B:",
+                error
+              );
+            }
+          }
+
+          showLoadingOverlay(sceneId = null) {
+            this.elements.overlay.setAttribute("visible", "true");
+
+            // Update loading text with scene name for all directions
+            let loadingMessage = "Cargando Escena...";
+            if (sceneId && SCENES_CONFIG[sceneId]) {
+              const sceneName = SCENES_CONFIG[sceneId].name || sceneId;
+              loadingMessage = `Cargando ${sceneName}...`;
+            }
+
+            // Update all text elements
+            this.elements.loadingTextFront.setAttribute(
+              "value",
+              loadingMessage
+            );
+            this.elements.loadingTextBack.setAttribute("value", loadingMessage);
+            this.elements.loadingTextLeft.setAttribute("value", loadingMessage);
+            this.elements.loadingTextRight.setAttribute(
+              "value",
+              loadingMessage
+            );
+
+            // Fade in animation
+            let opacity = 0;
+            const fadeInInterval = setInterval(() => {
+              opacity += 0.05;
+              this.elements.overlay.setAttribute(
+                "material",
+                "opacity",
+                opacity
+              );
+
+              if (opacity >= 1.0) {
+                clearInterval(fadeInInterval);
+                this.elements.overlay.setAttribute("material", "opacity", 1.0);
+              }
+            }, 20); // 20ms intervals for smooth animation
+          }
+
+          hideLoadingOverlay() {
+            // Fade out animation
+            let opacity = 1.0;
+            const fadeOutInterval = setInterval(() => {
+              opacity -= 0.05;
+              this.elements.overlay.setAttribute(
+                "material",
+                "opacity",
+                opacity
+              );
+
+              if (opacity <= 0) {
+                clearInterval(fadeOutInterval);
+                this.elements.overlay.setAttribute("material", "opacity", 0);
+                this.elements.overlay.setAttribute("visible", "false");
+              }
+            }, 20); // 20ms intervals for smooth animation
+          }
+        }
+
+        // Initialize WebSocket client after DOM loads
+        document.addEventListener("DOMContentLoaded", function () {
+          // Initialize Scene Manager
+          sceneManager = new VRSceneManager();
+
+          // Determine server URL based on current host
+          const currentHost = window.location.hostname;
+          const protocol =
+            window.location.protocol === "https:" ? "wss:" : "ws:";
+          const serverPort =
+            window.location.protocol === "https:" ? "8081" : "8081";
+          const serverUrl = `${protocol}//${currentHost}:${serverPort}/ws`;
+
+          console.log("🔗 Conectando al servidor WebSocket:", serverUrl);
+
+          // Initialize WebSocket client
+          vrClient = new VRWebSocketClient({
+            serverUrl: serverUrl,
+            deviceId: `clientevanilla-${Date.now()}`,
+            onConnect: () => {
+              console.log("🎮 VR Client connected to server");
+              console.log("🔍 Current scene ID on connect:", currentSceneId);
+              // Send ready signal for current scene
+              setTimeout(() => {
+                console.log(
+                  "📤 Sending READY signal for scene:",
+                  currentSceneId
+                );
+                vrClient.sendReady(currentSceneId);
+              }, 1000);
+            },
+            onDisconnect: () => {
+              console.log("🔌 VR Client disconnected from server");
+            },
+            onCommand: (command) => {
+              console.log("📨 Received command from server:", command);
+              handleServerCommand(command);
+            },
+            onError: (error) => {
+              console.error("🚨 VR Client error:", error);
+            },
+          });
+
+          // Connect to server
+          vrClient.connect();
+
+          // Add event listeners for user interaction to enable audio
+          const enableAudioOnInteraction = () => {
+            if (!audioEnabled) {
+              enableAudio().then(() => {
+                if (audioEnabled && sceneManager && sceneManager.currentScene) {
+                  // Try to start audio for current scene
+                  sceneManager.updateAudio(sceneManager.currentScene);
+                }
+              });
+            }
+          };
+
+          // Listen for various user interactions
+          document.addEventListener("click", enableAudioOnInteraction, {
+            once: true,
+          });
+          document.addEventListener("touchstart", enableAudioOnInteraction, {
+            once: true,
+          });
+          document.addEventListener("keydown", enableAudioOnInteraction, {
+            once: true,
+          });
+
+          function sendStateUpdate() {
+            // Send state update to server
+            if (vrClient && vrClient.isConnected) {
+              vrClient.sendState(currentSceneId, 0, true, 100);
+            }
+          }
+
+          function handleServerCommand(command) {
+            switch (command.commandType) {
+              case "LOAD":
+                const newSceneId = command.sceneId;
+                console.log("🎬 Cargando escena desde servidor:", newSceneId);
+
+                // Load the scene using scene manager
+                if (sceneManager) {
+                  sceneManager
+                    .loadScene(newSceneId)
+                    .then((success) => {
+                      if (success) {
+                        console.log("✅ Escena cargada desde dashboard");
+                      } else {
+                        console.error("❌ Failed to load scene from dashboard");
+                      }
+                    })
+                    .catch((error) => {
+                      console.error("💥 Error in loadScene promise:", error);
+                    });
+                } else {
+                  console.error("❌ Scene manager not initialized");
+                }
+                break;
+
+              case "START_AT":
+                console.log("▶️ Iniciando experiencia VR");
+                // Start the experience
+                break;
+
+              case "PAUSE":
+                console.log("⏸️ Pausando experiencia VR");
+                // Pause audio and timeline
+                const audioEl = document.querySelector("#scene-sound");
+                if (audioEl) {
+                  audioEl.components.sound.pauseSound();
+                }
+                break;
+
+              case "RESUME":
+                console.log("▶️ Reanudando experiencia VR");
+                // Resume audio and timeline
+                const resumeAudioEl = document.querySelector("#scene-sound");
+                if (resumeAudioEl) {
+                  resumeAudioEl.components.sound.playSound();
+                }
+                break;
+
+              case "SEEK":
+                console.log("⏭️ Seeking command received");
+                // No timeline to seek anymore
+                break;
+
+              case "SHOW_SCREEN":
+                handleShowScreenCommand(command.screenType);
+                break;
+
+              case "HIDE_SCREEN":
+                handleHideScreenCommand(command.screenType);
+                break;
+
+              case "HIDE_ALL_SCREENS":
+                handleHideAllScreensCommand();
+                break;
+
+              case "SHOW_ALL_SCREENS":
+                handleShowAllScreensCommand();
+                break;
+
+              case "TOGGLE_SCREEN":
+                handleToggleScreenCommand(command.screenType);
+                break;
+
+              default:
+                console.log("🤷 Unknown command:", command.commandType);
+            }
+          }
+
+          // Screen control command handlers
+          function handleShowScreenCommand(screenType) {
+            if (!sceneManager) {
+              console.warn("⚠️ SceneManager no disponible");
+              return;
+            }
+
+            switch (screenType) {
+              case "escena1":
+                sceneManager.showEscena1Screen();
+                break;
+              case "escena2":
+                sceneManager.showEscena2Screen();
+                break;
+              case "escena3":
+                sceneManager.showEscena3Screen();
+                break;
+              case "escena3B":
+                sceneManager.showEscena3BScreen();
+                break;
+              case "escena4":
+                sceneManager.showEscena4Screen();
+                break;
+              case "escena4B":
+                sceneManager.showEscena4BScreen();
+                break;
+              case "escena5":
+                sceneManager.showEscena5Screen();
+                break;
+              case "escena5B":
+                sceneManager.showEscena5BScreen();
+                break;
+              case "escena6":
+                sceneManager.showEscena6Screen();
+                break;
+              case "escena6B":
+                sceneManager.showEscena6BScreen();
+                break;
+              case "escena7":
+                sceneManager.showEscena7Screen();
+                break;
+              case "escena7B":
+                sceneManager.showEscena7BScreen();
+                break;
+              case "escena8":
+                sceneManager.showEscena8Screen();
+                break;
+              case "escena8B":
+                sceneManager.showEscena8BScreen();
+                break;
+              case "escena9":
+                sceneManager.showEscena9Screen();
+                break;
+              case "escena9B":
+                sceneManager.showEscena9BScreen();
+                break;
+              case "escena10":
+                sceneManager.showEscena10Screen();
+                break;
+              case "escena10B":
+                sceneManager.showEscena10BScreen();
+                break;
+              case "escena11":
+                sceneManager.showEscena11Screen();
+                break;
+              case "escena11B":
+                sceneManager.showEscena11BScreen();
+                break;
+              default:
+                console.warn("⚠️ Tipo de pantalla no reconocido:", screenType);
+            }
+          }
+
+          function handleHideScreenCommand(screenType) {
+            if (!sceneManager) {
+              console.warn("⚠️ SceneManager no disponible");
+              return;
+            }
+
+            switch (screenType) {
+              case "escena1":
+                sceneManager.hideEscena1Screen();
+                break;
+              case "escena2":
+                sceneManager.hideEscena2Screen();
+                break;
+              case "escena3":
+                sceneManager.hideEscena3Screen();
+                break;
+              case "escena3B":
+                sceneManager.hideEscena3BScreen();
+                break;
+              case "escena4":
+                sceneManager.hideEscena4Screen();
+                break;
+              case "escena4B":
+                sceneManager.hideEscena4BScreen();
+                break;
+              case "escena5":
+                sceneManager.hideEscena5Screen();
+                break;
+              case "escena5B":
+                sceneManager.hideEscena5BScreen();
+                break;
+              case "escena6":
+                sceneManager.hideEscena6Screen();
+                break;
+              case "escena6B":
+                sceneManager.hideEscena6BScreen();
+                break;
+              case "escena7":
+                sceneManager.hideEscena7Screen();
+                break;
+              case "escena7B":
+                sceneManager.hideEscena7BScreen();
+                break;
+              case "escena8":
+                sceneManager.hideEscena8Screen();
+                break;
+              case "escena8B":
+                sceneManager.hideEscena8BScreen();
+                break;
+              case "escena9":
+                sceneManager.hideEscena9Screen();
+                break;
+              case "escena9B":
+                sceneManager.hideEscena9BScreen();
+                break;
+              case "escena10":
+                sceneManager.hideEscena10Screen();
+                break;
+              case "escena10B":
+                sceneManager.hideEscena10BScreen();
+                break;
+              case "escena11":
+                sceneManager.hideEscena11Screen();
+                break;
+              case "escena11B":
+                sceneManager.hideEscena11BScreen();
+                break;
+              default:
+                console.warn("⚠️ Tipo de pantalla no reconocido:", screenType);
+            }
+          }
+
+          function handleHideAllScreensCommand() {
+            if (!sceneManager) {
+              console.warn("⚠️ SceneManager no disponible");
+              return;
+            }
+
+            sceneManager.hideEscena1Screen();
+            sceneManager.hideEscena2Screen();
+            sceneManager.hideEscena3Screen();
+            sceneManager.hideEscena3BScreen();
+            sceneManager.hideEscena4Screen();
+            sceneManager.hideEscena4BScreen();
+            sceneManager.hideEscena5Screen();
+            sceneManager.hideEscena5BScreen();
+            sceneManager.hideEscena6Screen();
+            sceneManager.hideEscena6BScreen();
+            sceneManager.hideEscena7Screen();
+            sceneManager.hideEscena7BScreen();
+            sceneManager.hideEscena8Screen();
+            sceneManager.hideEscena8BScreen();
+            sceneManager.hideEscena9Screen();
+            sceneManager.hideEscena9BScreen();
+            sceneManager.hideEscena10Screen();
+            sceneManager.hideEscena10BScreen();
+            sceneManager.hideEscena11Screen();
+            sceneManager.hideEscena11BScreen();
+          }
+
+          function handleShowAllScreensCommand() {
+            if (!sceneManager) {
+              console.warn("⚠️ SceneManager no disponible");
+              return;
+            }
+
+            // Mostrar solo las pantallas correspondientes a la escena actual
+            switch (currentSceneId) {
+              case "escena-1":
+                sceneManager.showEscena1Screen();
+                break;
+              case "escena-2":
+                sceneManager.showEscena2Screen();
+                break;
+              case "escena-3":
+                sceneManager.showEscena3Screen();
+                sceneManager.showEscena3BScreen();
+                break;
+              case "escena-4":
+                sceneManager.showEscena4Screen();
+                sceneManager.showEscena4BScreen();
+                break;
+              case "escena-5":
+                sceneManager.showEscena5Screen();
+                sceneManager.showEscena5BScreen();
+                break;
+              case "escena-6":
+                sceneManager.showEscena6Screen();
+                sceneManager.showEscena6BScreen();
+                break;
+              case "escena-7":
+                sceneManager.showEscena7Screen();
+                sceneManager.showEscena7BScreen();
+                break;
+              case "escena-8":
+                sceneManager.showEscena8Screen();
+                sceneManager.showEscena8BScreen();
+                break;
+              case "escena-9":
+                sceneManager.showEscena9Screen();
+                sceneManager.showEscena9BScreen();
+                break;
+              case "escena-10":
+                sceneManager.showEscena10Screen();
+                sceneManager.showEscena10BScreen();
+                break;
+              case "escena-11":
+                sceneManager.showEscena11Screen();
+                sceneManager.showEscena11BScreen();
+                break;
+              default:
+            }
+          }
+
+          function handleToggleScreenCommand(screenType) {
+            if (!sceneManager) {
+              console.warn("⚠️ SceneManager no disponible");
+              return;
+            }
+
+            switch (screenType) {
+              case "escena1":
+                const escena1Screen = document.querySelector("#escena1-screen");
+                if (
+                  escena1Screen &&
+                  escena1Screen.getAttribute("visible") === "true"
+                ) {
+                  sceneManager.hideEscena1Screen();
+                } else {
+                  sceneManager.showEscena1Screen();
+                }
+                break;
+              case "escena2":
+                const escena2Screen = document.querySelector("#escena2-screen");
+                if (
+                  escena2Screen &&
+                  escena2Screen.getAttribute("visible") === "true"
+                ) {
+                  sceneManager.hideEscena2Screen();
+                } else {
+                  sceneManager.showEscena2Screen();
+                }
+                break;
+              case "escena3":
+                const escena3Screen = document.querySelector("#escena3-screen");
+                if (
+                  escena3Screen &&
+                  escena3Screen.getAttribute("visible") === "true"
+                ) {
+                  sceneManager.hideEscena3Screen();
+                } else {
+                  sceneManager.showEscena3Screen();
+                }
+                break;
+              case "escena3B":
+                const escena3BScreen =
+                  document.querySelector("#escena3B-screen");
+                if (
+                  escena3BScreen &&
+                  escena3BScreen.getAttribute("visible") === "true"
+                ) {
+                  sceneManager.hideEscena3BScreen();
+                } else {
+                  sceneManager.showEscena3BScreen();
+                }
+                break;
+              case "escena4":
+                const escena4Screen = document.querySelector("#escena4-screen");
+                if (
+                  escena4Screen &&
+                  escena4Screen.getAttribute("visible") === "true"
+                ) {
+                  sceneManager.hideEscena4Screen();
+                } else {
+                  sceneManager.showEscena4Screen();
+                }
+                break;
+              case "escena4B":
+                const escena4BScreen =
+                  document.querySelector("#escena4B-screen");
+                if (
+                  escena4BScreen &&
+                  escena4BScreen.getAttribute("visible") === "true"
+                ) {
+                  sceneManager.hideEscena4BScreen();
+                } else {
+                  sceneManager.showEscena4BScreen();
+                }
+                break;
+              case "escena5":
+                const escena5Screen = document.querySelector("#escena5-screen");
+                if (
+                  escena5Screen &&
+                  escena5Screen.getAttribute("visible") === "true"
+                ) {
+                  sceneManager.hideEscena5Screen();
+                } else {
+                  sceneManager.showEscena5Screen();
+                }
+                break;
+              case "escena5B":
+                const escena5BScreen =
+                  document.querySelector("#escena5B-screen");
+                if (
+                  escena5BScreen &&
+                  escena5BScreen.getAttribute("visible") === "true"
+                ) {
+                  sceneManager.hideEscena5BScreen();
+                } else {
+                  sceneManager.showEscena5BScreen();
+                }
+                break;
+              case "escena6":
+                const escena6Screen = document.querySelector("#escena6-screen");
+                if (
+                  escena6Screen &&
+                  escena6Screen.getAttribute("visible") === "true"
+                ) {
+                  sceneManager.hideEscena6Screen();
+                } else {
+                  sceneManager.showEscena6Screen();
+                }
+                break;
+              case "escena6B":
+                const escena6BScreen =
+                  document.querySelector("#escena6B-screen");
+                if (
+                  escena6BScreen &&
+                  escena6BScreen.getAttribute("visible") === "true"
+                ) {
+                  sceneManager.hideEscena6BScreen();
+                } else {
+                  sceneManager.showEscena6BScreen();
+                }
+                break;
+              case "escena7":
+                const escena7Screen = document.querySelector("#escena7-screen");
+                if (
+                  escena7Screen &&
+                  escena7Screen.getAttribute("visible") === "true"
+                ) {
+                  sceneManager.hideEscena7Screen();
+                } else {
+                  sceneManager.showEscena7Screen();
+                }
+                break;
+              case "escena7B":
+                const escena7BScreen =
+                  document.querySelector("#escena7B-screen");
+                if (
+                  escena7BScreen &&
+                  escena7BScreen.getAttribute("visible") === "true"
+                ) {
+                  sceneManager.hideEscena7BScreen();
+                } else {
+                  sceneManager.showEscena7BScreen();
+                }
+                break;
+              case "escena8":
+                const escena8Screen = document.querySelector("#escena8-screen");
+                if (
+                  escena8Screen &&
+                  escena8Screen.getAttribute("visible") === "true"
+                ) {
+                  sceneManager.hideEscena8Screen();
+                } else {
+                  sceneManager.showEscena8Screen();
+                }
+                break;
+              case "escena8B":
+                const escena8BScreen =
+                  document.querySelector("#escena8B-screen");
+                if (
+                  escena8BScreen &&
+                  escena8BScreen.getAttribute("visible") === "true"
+                ) {
+                  sceneManager.hideEscena8BScreen();
+                } else {
+                  sceneManager.showEscena8BScreen();
+                }
+                break;
+              case "escena9":
+                const escena9Screen = document.querySelector("#escena9-screen");
+                if (
+                  escena9Screen &&
+                  escena9Screen.getAttribute("visible") === "true"
+                ) {
+                  sceneManager.hideEscena9Screen();
+                } else {
+                  sceneManager.showEscena9Screen();
+                }
+                break;
+              case "escena9B":
+                const escena9BScreen =
+                  document.querySelector("#escena9B-screen");
+                if (
+                  escena9BScreen &&
+                  escena9BScreen.getAttribute("visible") === "true"
+                ) {
+                  sceneManager.hideEscena9BScreen();
+                } else {
+                  sceneManager.showEscena9BScreen();
+                }
+                break;
+              case "escena10":
+                const escena10Screen =
+                  document.querySelector("#escena10-screen");
+                if (
+                  escena10Screen &&
+                  escena10Screen.getAttribute("visible") === "true"
+                ) {
+                  sceneManager.hideEscena10Screen();
+                } else {
+                  sceneManager.showEscena10Screen();
+                }
+                break;
+              case "escena10B":
+                const escena10BScreen =
+                  document.querySelector("#escena10B-screen");
+                if (
+                  escena10BScreen &&
+                  escena10BScreen.getAttribute("visible") === "true"
+                ) {
+                  sceneManager.hideEscena10BScreen();
+                } else {
+                  sceneManager.showEscena10BScreen();
+                }
+                break;
+              case "escena11":
+                const escena11Screen =
+                  document.querySelector("#escena11-screen");
+                if (
+                  escena11Screen &&
+                  escena11Screen.getAttribute("visible") === "true"
+                ) {
+                  sceneManager.hideEscena11Screen();
+                } else {
+                  sceneManager.showEscena11Screen();
+                }
+                break;
+              case "escena11B":
+                const escena11BScreen =
+                  document.querySelector("#escena11B-screen");
+                if (
+                  escena11BScreen &&
+                  escena11BScreen.getAttribute("visible") === "true"
+                ) {
+                  sceneManager.hideEscena11BScreen();
+                } else {
+                  sceneManager.showEscena11BScreen();
+                }
+                break;
+              default:
+                console.warn("⚠️ Tipo de pantalla no reconocido:", screenType);
+            }
+          }
+
+          // Expose to global scope for debugging
+          window.vrClient = vrClient;
+          window.sceneManager = sceneManager;
+          window.handleServerCommand = handleServerCommand;
+          window.SCENES_CONFIG = SCENES_CONFIG;
+
+          // Expose screen command handlers for testing
+          window.handleShowScreenCommand = handleShowScreenCommand;
+          window.handleHideScreenCommand = handleHideScreenCommand;
+          window.handleHideAllScreensCommand = handleHideAllScreensCommand;
+          window.handleShowAllScreensCommand = handleShowAllScreensCommand;
+          window.handleToggleScreenCommand = handleToggleScreenCommand;
+
+          // Universal Screen Controls System for all scenes (1-11)
+          window.screenControls = {
+            // Get screen element by scene and screen type
+            getScreen: (sceneNumber, screenType = "A") => {
+              const screenId =
+                screenType === "A"
+                  ? `escena${sceneNumber}-screen`
+                  : `escena${sceneNumber}${screenType}-screen`;
+              return document.querySelector(`#${screenId}`);
+            },
+
+            // Get cycler component by scene and screen type
+            getCycler: (sceneNumber, screenType = "A") => {
+              const cyclerName =
+                screenType === "A"
+                  ? `escena${sceneNumber}ImageCycler`
+                  : `escena${sceneNumber}${screenType}ImageCycler`;
+              return window[cyclerName];
+            },
+
+            // Show screen
+            show: (sceneNumber, screenType = "A") => {
+              const methodName =
+                screenType === "A"
+                  ? `showEscena${sceneNumber}Screen`
+                  : `showEscena${sceneNumber}${screenType}Screen`;
+              if (sceneManager && sceneManager[methodName]) {
+                sceneManager[methodName]();
+              }
+            },
+
+            // Hide screen
+            hide: (sceneNumber, screenType = "A") => {
+              const methodName =
+                screenType === "A"
+                  ? `hideEscena${sceneNumber}Screen`
+                  : `hideEscena${sceneNumber}${screenType}Screen`;
+              if (sceneManager && sceneManager[methodName]) {
+                sceneManager[methodName]();
+              }
+            },
+
+            // Move screen
+            move: (sceneNumber, x, y, z, screenType = "A") => {
+              const screen = screenControls.getScreen(sceneNumber, screenType);
+              if (screen) {
+                screen.setAttribute("position", `${x} ${y} ${z}`);
+              }
+            },
+
+            // Rotate screen
+            rotate: (sceneNumber, x, y, z, screenType = "A") => {
+              const screen = screenControls.getScreen(sceneNumber, screenType);
+              if (screen) {
+                screen.setAttribute("rotation", `${x} ${y} ${z}`);
+              }
+            },
+
+            // Resize screen
+            resize: (sceneNumber, width, height, screenType = "A") => {
+              const screen = screenControls.getScreen(sceneNumber, screenType);
+              if (screen) {
+                screen.setAttribute("width", width.toString());
+                screen.setAttribute("height", height.toString());
+              }
+            },
+
+            // Next image/video
+            next: (sceneNumber, screenType = "A") => {
+              const cycler = screenControls.getCycler(sceneNumber, screenType);
+              if (cycler && cycler.nextImage) {
+                cycler.nextImage();
+              } else if (cycler && cycler.nextVideo) {
+                cycler.nextVideo();
+              }
+            },
+
+            // Set specific image/video
+            set: (sceneNumber, index, screenType = "A") => {
+              const cycler = screenControls.getCycler(sceneNumber, screenType);
+              if (cycler && cycler.setImage) {
+                cycler.setImage(index);
+              } else if (cycler && cycler.setVideo) {
+                cycler.setVideo(index);
+              }
+            },
+
+            // Play/pause for video screens
+            play: (sceneNumber, screenType = "A") => {
+              const cycler = screenControls.getCycler(sceneNumber, screenType);
+              if (cycler && cycler.currentVideo) {
+                cycler.currentVideo.play();
+              }
+            },
+
+            pause: (sceneNumber, screenType = "A") => {
+              const cycler = screenControls.getCycler(sceneNumber, screenType);
+              if (cycler && cycler.currentVideo) {
+                cycler.currentVideo.pause();
+              }
+            },
+
+            // Get screen info
+            info: (sceneNumber, screenType = "A") => {
+              const screen = screenControls.getScreen(sceneNumber, screenType);
+              if (!screen) return null;
+
+              const cycler = screenControls.getCycler(sceneNumber, screenType);
+              const isVideo = cycler && cycler.videos;
+              const isImage = cycler && cycler.images;
+
+              return {
+                scene: sceneNumber,
+                screen: screenType,
+                visible: screen.getAttribute("visible") === "true",
+                position: screen.getAttribute("position"),
+                rotation: screen.getAttribute("rotation"),
+                size: {
+                  width: screen.getAttribute("width"),
+                  height: screen.getAttribute("height"),
+                },
+                currentIndex: cycler
+                  ? (cycler.currentImageIndex ||
+                      cycler.currentVideoIndex ||
+                      0) + 1
+                  : 0,
+                totalItems: cycler
+                  ? cycler.images?.length || cycler.videos?.length || 0
+                  : 0,
+                type: isVideo ? "video" : isImage ? "image" : "unknown",
+                playing:
+                  cycler && cycler.currentVideo
+                    ? !cycler.currentVideo.paused
+                    : false,
+                currentTime:
+                  cycler && cycler.currentVideo
+                    ? cycler.currentVideo.currentTime
+                    : 0,
+                duration:
+                  cycler && cycler.currentVideo
+                    ? cycler.currentVideo.duration
+                    : 0,
+              };
+            },
+
+            // Debug info
+            debug: (sceneNumber, screenType = "A") => {
+              const info = screenControls.info(sceneNumber, screenType);
+              if (!info) return null;
+
+              return {
+                scene: `${sceneNumber}${screenType}`,
+                visible: info.visible,
+                position: info.position,
+                rotation: info.rotation,
+                size: `${info.size.width}x${info.size.height}`,
+                current: `${info.currentIndex}/${info.totalItems}`,
+                type: info.type,
+                playing: info.playing,
+              };
+            },
+
+            // List all available screens
+            list: () => {
+              const screens = [];
+              for (let scene = 1; scene <= 11; scene++) {
+                if (scene === 1) {
+                  screens.push({
+                    scene: 1,
+                    screen: "A",
+                    id: "escena1-screen",
+                    type: "video",
+                  });
+                } else if (scene === 2) {
+                  screens.push({
+                    scene: 2,
+                    screen: "A",
+                    id: "escena2-screen",
+                    type: "image",
+                  });
+                } else if (scene === 3) {
+                  screens.push({
+                    scene: 3,
+                    screen: "A",
+                    id: "escena3-screen",
+                    type: "image",
+                  });
+                  screens.push({
+                    scene: 3,
+                    screen: "B",
+                    id: "escena3B-screen",
+                    type: "image",
+                  });
+                } else {
+                  screens.push({
+                    scene: scene,
+                    screen: "A",
+                    id: `escena${scene}-screen`,
+                    type: "image",
+                  });
+                  screens.push({
+                    scene: scene,
+                    screen: "B",
+                    id: `escena${scene}B-screen`,
+                    type: "image",
+                  });
+                }
+              }
+              return screens;
+            },
+
+            // Show all screens for a scene
+            showScene: (sceneNumber) => {
+              if (sceneNumber === 1) {
+                screenControls.show(1, "A");
+              } else if (sceneNumber === 2) {
+                screenControls.show(2, "A");
+              } else if (sceneNumber === 3) {
+                screenControls.show(3, "A");
+                screenControls.show(3, "B");
+              } else {
+                screenControls.show(sceneNumber, "A");
+                screenControls.show(sceneNumber, "B");
+              }
+            },
+
+            // Hide all screens for a scene
+            hideScene: (sceneNumber) => {
+              if (sceneNumber === 1) {
+                screenControls.hide(1, "A");
+              } else if (sceneNumber === 2) {
+                screenControls.hide(2, "A");
+              } else if (sceneNumber === 3) {
+                screenControls.hide(3, "A");
+                screenControls.hide(3, "B");
+              } else {
+                screenControls.hide(sceneNumber, "A");
+                screenControls.hide(sceneNumber, "B");
+              }
+            },
+          };
+
+          // Universal Camera Controls System
+          window.cameraControls = {
+            // Get camera element
+            getCamera: () => {
+              return (
+                document.querySelector("#main-camera") ||
+                document.querySelector("a-entity[camera][look-controls]") ||
+                document.querySelector("a-camera")
+              );
+            },
+
+            // Get current position
+            getPosition: () => {
+              const camera = cameraControls.getCamera();
+              if (!camera) return null;
+              const pos = camera.getAttribute("position");
+              return {
+                x: parseFloat(pos.x),
+                y: parseFloat(pos.y),
+                z: parseFloat(pos.z),
+              };
+            },
+
+            // Get current rotation
+            getRotation: () => {
+              const camera = cameraControls.getCamera();
+              if (!camera) return null;
+              const rot = camera.getAttribute("rotation");
+              return {
+                x: parseFloat(rot.x),
+                y: parseFloat(rot.y),
+                z: parseFloat(rot.z),
+              };
+            },
+
+            // Set position
+            setPosition: (x, y, z) => {
+              const camera = cameraControls.getCamera();
+              if (camera) {
+                camera.setAttribute("position", `${x} ${y} ${z}`);
+                console.log(`📍 Cámara movida a: ${x}, ${y}, ${z}`);
+              }
+            },
+
+            // Set rotation
+            setRotation: (x, y, z) => {
+              const camera = cameraControls.getCamera();
+              if (camera) {
+                camera.setAttribute("rotation", `${x} ${y} ${z}`);
+                console.log(`🔄 Cámara rotada a: ${x}°, ${y}°, ${z}°`);
+              }
+            },
+
+            // Move camera relative to current position
+            move: (deltaX, deltaY, deltaZ) => {
+              const pos = cameraControls.getPosition();
+              if (pos) {
+                cameraControls.setPosition(
+                  pos.x + deltaX,
+                  pos.y + deltaY,
+                  pos.z + deltaZ
+                );
+              }
+            },
+
+            // Rotate camera relative to current rotation
+            rotate: (deltaX, deltaY, deltaZ) => {
+              const rot = cameraControls.getRotation();
+              if (rot) {
+                cameraControls.setRotation(
+                  rot.x + deltaX,
+                  rot.y + deltaY,
+                  rot.z + deltaZ
+                );
+              }
+            },
+
+            // Get complete camera info
+            info: () => {
+              const camera = cameraControls.getCamera();
+              if (!camera) return null;
+
+              const pos = cameraControls.getPosition();
+              const rot = cameraControls.getRotation();
+
+              return {
+                element: camera,
+                position: pos,
+                rotation: rot,
+                scale: camera.getAttribute("scale"),
+                visible: camera.getAttribute("visible"),
+                active: camera.getAttribute("camera")?.active !== false,
+                lookControls: camera.getAttribute("look-controls"),
+                wasdControls: camera.getAttribute("wasd-controls"),
+              };
+            },
+
+            // Debug info
+            debug: () => {
+              const info = cameraControls.info();
+              if (!info) return null;
+
+              return {
+                position: `${info.position.x}, ${info.position.y}, ${info.position.z}`,
+                rotation: `${info.rotation.x}°, ${info.rotation.y}°, ${info.rotation.z}°`,
+                active: info.active,
+                visible: info.visible,
+                hasLookControls: !!info.lookControls,
+                hasWasdControls: !!info.wasdControls,
+              };
+            },
+
+            // Reset to default position
+            reset: () => {
+              cameraControls.setPosition(0, 0, 0);
+              cameraControls.setRotation(0, 0, 0);
+              console.log("🔄 Cámara reseteada a posición por defecto");
+            },
+
+            // Common camera positions
+            positions: {
+              front: () => cameraControls.setPosition(0, 0, 0),
+              back: () => cameraControls.setPosition(0, 0, -10),
+              left: () => cameraControls.setPosition(-5, 0, 0),
+              right: () => cameraControls.setPosition(5, 0, 0),
+              up: () => cameraControls.setPosition(0, 5, 0),
+              down: () => cameraControls.setPosition(0, -5, 0),
+              center: () => cameraControls.setPosition(0, 0, 0),
+            },
+
+            // Common camera rotations
+            rotations: {
+              front: () => cameraControls.setRotation(0, 0, 0),
+              back: () => cameraControls.setRotation(0, 180, 0),
+              left: () => cameraControls.setRotation(0, -90, 0),
+              right: () => cameraControls.setRotation(0, 90, 0),
+              up: () => cameraControls.setRotation(-90, 0, 0),
+              down: () => cameraControls.setRotation(90, 0, 0),
+            },
+
+            // Copy position/rotation to clipboard
+            copy: () => {
+              const pos = cameraControls.getPosition();
+              const rot = cameraControls.getRotation();
+              if (pos && rot) {
+                const copyText = `position="${pos.x} ${pos.y} ${pos.z}" rotation="${rot.x} ${rot.y} ${rot.z}"`;
+                navigator.clipboard
+                  .writeText(copyText)
+                  .then(() => {
+                    console.log("✅ Copiado al portapapeles:", copyText);
+                  })
+                  .catch(() => {
+                    console.log("📋 Copia manual:", copyText);
+                  });
+                return copyText;
+              }
+              return null;
+            },
+
+            // Monitor camera changes in real time
+            monitor: (interval = 1000) => {
+              return setInterval(() => {
+                const pos = cameraControls.getPosition();
+                const rot = cameraControls.getRotation();
+                if (pos && rot) {
+                  console.log(
+                    `📍 Pos: ${pos.x}, ${pos.y}, ${pos.z} | 🔄 Rot: ${rot.x}°, ${rot.y}°, ${rot.z}°`
+                  );
+                }
+              }, interval);
+            },
+
+            // Stop monitoring
+            stopMonitor: (intervalId) => {
+              if (intervalId) {
+                clearInterval(intervalId);
+                console.log("⏹️ Monitoreo de cámara detenido");
+              }
+            },
+          };
+
+          // Test scene loading functions for development
+          window.loadScene = (sceneId) => {
+            if (sceneManager) {
+              return sceneManager.loadScene(sceneId);
+            } else {
+              console.error("Scene manager not initialized");
+              return false;
+            }
+          };
+
+          // Add a simple scene toggle function
+          window.toggleScene = () => {
+            if (sceneManager) {
+              let newScene;
+              if (currentSceneId === "base") {
+                newScene = "escena-1";
+              } else if (currentSceneId === "escena-1") {
+                newScene = "escena-2";
+              } else if (currentSceneId === "escena-2") {
+                newScene = "escena-3";
+              } else if (currentSceneId === "escena-3") {
+                newScene = "escena-4";
+              } else if (currentSceneId === "escena-4") {
+                newScene = "escena-5";
+              } else if (currentSceneId === "escena-5") {
+                newScene = "escena-7";
+              } else if (currentSceneId === "escena-7") {
+                newScene = "escena-8";
+              } else if (currentSceneId === "escena-8") {
+                newScene = "escena-9";
+              } else if (currentSceneId === "escena-9") {
+                newScene = "escena-10";
+              } else if (currentSceneId === "escena-10") {
+                newScene = "escena-11";
+              } else {
+                newScene = "base";
+              }
+              sceneManager.loadScene(newScene);
+            }
+          };
+        });
+      </script>
+    </a-scene>
+  </body>
+</html>

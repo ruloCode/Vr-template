@@ -1,118 +1,104 @@
-import { defineConfig } from 'vite';
-import { VitePWA } from 'vite-plugin-pwa';
-import path from 'path';
+import { defineConfig } from "vite";
+import { VitePWA } from "vite-plugin-pwa";
+import path from "path";
 
 export default defineConfig({
   plugins: [
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: "autoUpdate",
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,jpg,jpeg,webp,svg,mp3,wav,gltf,bin}'],
+        globPatterns: [
+          "**/*.{js,css,html,ico,png,jpg,jpeg,webp,svg,mp3,wav,gltf,bin}",
+        ],
         maximumFileSizeToCacheInBytes: 50 * 1024 * 1024, // 50MB para assets 360
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: 'CacheFirst',
+            handler: "CacheFirst",
             options: {
-              cacheName: 'google-fonts-cache',
+              cacheName: "google-fonts-cache",
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 año
-              }
-            }
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 año
+              },
+            },
           },
           {
             urlPattern: /\.(?:png|jpg|jpeg|svg|webp)$/i,
-            handler: 'CacheFirst',
+            handler: "CacheFirst",
             options: {
-              cacheName: 'images-cache',
+              cacheName: "images-cache",
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 días
-              }
-            }
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 días
+              },
+            },
           },
           {
             urlPattern: /\.(?:mp3|wav|ogg)$/i,
-            handler: 'CacheFirst',
+            handler: "CacheFirst",
             options: {
-              cacheName: 'audio-cache',
+              cacheName: "audio-cache",
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 días
-              }
-            }
-          }
-        ]
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 días
+              },
+            },
+          },
+        ],
       },
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+      includeAssets: ["favicon.ico", "apple-touch-icon.png", "masked-icon.svg"],
+      filename: "manifest.webmanifest",
       manifest: {
-        name: 'VR Ecopetrol - Experiencia 360°',
-        short_name: 'VR Ecopetrol',
-        description: 'Experiencia de realidad virtual 360° sincronizada de Ecopetrol',
-        theme_color: '#1976d2',
-        background_color: '#ffffff',
-        display: 'fullscreen',
-        orientation: 'landscape',
-        start_url: '/',
-        scope: '/',
-        icons: [
-          {
-            src: 'pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png'
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable'
-          }
-        ]
+        name: "VR Ecopetrol - Experiencia 360°",
+        short_name: "VR Ecopetrol",
+        description:
+          "Experiencia de realidad virtual 360° sincronizada de Ecopetrol",
+        theme_color: "#1976d2",
+        background_color: "#ffffff",
+        display: "fullscreen",
+        orientation: "landscape",
+        start_url: "/",
+        scope: "/",
+        icons: [],
       },
       devOptions: {
-        enabled: true
-      }
-    })
+        enabled: true,
+      },
+    }),
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@/components': path.resolve(__dirname, './src/components'),
-      '@/store': path.resolve(__dirname, './src/store'),
-      '@/utils': path.resolve(__dirname, './src/utils'),
-      '@/types': path.resolve(__dirname, './src/types')
-    }
+      "@": path.resolve(__dirname, "./src"),
+      "@/components": path.resolve(__dirname, "./src/components"),
+      "@/store": path.resolve(__dirname, "./src/store"),
+      "@/utils": path.resolve(__dirname, "./src/utils"),
+      "@/types": path.resolve(__dirname, "./src/types"),
+    },
   },
   define: {
-    __VR_VERSION__: JSON.stringify(process.env.npm_package_version || '1.0.0'),
-    __BUILD_TIME__: JSON.stringify(new Date().toISOString())
+    __VR_VERSION__: JSON.stringify(process.env.npm_package_version || "1.0.0"),
+    __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
   },
   build: {
-    target: 'esnext',
+    target: "esnext",
     rollupOptions: {
       output: {
         manualChunks: {
-          aframe: ['aframe'],
-          store: ['zustand']
-        }
-      }
-    }
+          aframe: ["aframe"],
+          store: ["zustand"],
+        },
+      },
+    },
   },
   server: {
-    port: 5173,
-    host: true, // Para acceso desde LAN
-    cors: true
+    port: 3000,
+    host: "0.0.0.0", // Permite acceso desde cualquier IP de la red
+    cors: true,
+    strictPort: false, // Permite usar otro puerto si 3000 está ocupado
   },
   preview: {
-    port: 4173,
-    host: true
-  }
+    port: 3001,
+    host: "0.0.0.0",
+  },
 });
-
-

@@ -1,8 +1,10 @@
-import { logger } from './logger';
+import { logger } from "./logger";
 
 export class PWAManager {
   private registration: ServiceWorkerRegistration | null = null;
   private updateAvailable = false;
+  private updateNotificationShown = false;
+  private lastUpdateCheck = 0;
 
   constructor() {
     this.setupServiceWorker();
@@ -10,25 +12,40 @@ export class PWAManager {
   }
 
   private async setupServiceWorker(): Promise<void> {
-    if (!('serviceWorker' in navigator)) {
-      logger.warn('⚠️ Service Worker no soportado');
+    if (!("serviceWorker" in navigator)) {
+      logger.warn("⚠️ Service Worker no soportado");
+      return;
+    }
+
+    // Verificar si estamos en HTTPS o localhost
+    const isSecureContext =
+      window.isSecureContext ||
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1";
+
+    if (!isSecureContext) {
+      logger.warn("⚠️ Service Worker requiere HTTPS o localhost");
       return;
     }
 
     try {
-      // Register service worker
-      this.registration = await navigator.serviceWorker.register('/sw.js', {
-        scope: '/'
+      // Register service worker con configuración mejorada
+      this.registration = await navigator.serviceWorker.register("/sw.js", {
+        scope: "/",
+        updateViaCache: "none", // Siempre verificar actualizaciones
       });
 
-      logger.info('✅ Service Worker registrado');
+      logger.info("✅ Service Worker registrado");
 
       // Check for updates
-      this.registration.addEventListener('updatefound', () => {
+      this.registration.addEventListener("updatefound", () => {
         const newWorker = this.registration!.installing;
         if (newWorker) {
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          newWorker.addEventListener("statechange", () => {
+            if (
+              newWorker.state === "installed" &&
+              navigator.serviceWorker.controller
+            ) {
               this.updateAvailable = true;
               this.notifyUpdateAvailable();
             }
@@ -43,33 +60,40 @@ export class PWAManager {
       }
 
       // Listen for controlling service worker change
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        logger.info('🔄 Nueva versión del Service Worker activa');
-        window.location.reload();
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        logger.info("🔄 Nueva versión del Service Worker activa");
+        // Don't auto-reload, let user decide when to update
+        this.notifyUpdateAvailable();
       });
 
-      // Periodic update check
+      // Listen for messages from service worker
+      navigator.serviceWorker.addEventListener("message", (event) => {
+        if (event.data && event.data.type === "SW_ACTIVATED") {
+          logger.info("✅ Service Worker activado:", event.data.message);
+        }
+      });
+
+      // Periodic update check (less frequent to avoid constant reloads)
       setInterval(() => {
         this.checkForUpdates();
-      }, 60000); // Check every minute
-
+      }, 300000); // Check every 5 minutes instead of every minute
     } catch (error) {
-      logger.error('❌ Error registrando Service Worker:', error);
+      logger.error("❌ Error registrando Service Worker:", error);
     }
   }
 
   private setupInstallPrompt(): void {
     let deferredPrompt: any = null;
 
-    window.addEventListener('beforeinstallprompt', (e) => {
+    window.addEventListener("beforeinstallprompt", (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      logger.info('📱 PWA installation prompt available');
+      logger.info("📱 PWA installation prompt available");
       this.showInstallBanner();
     });
 
-    window.addEventListener('appinstalled', () => {
-      logger.info('📱 PWA instalada exitosamente');
+    window.addEventListener("appinstalled", () => {
+      logger.info("📱 PWA instalada exitosamente");
       deferredPrompt = null;
       this.hideInstallBanner();
     });
@@ -79,10 +103,10 @@ export class PWAManager {
       if (deferredPrompt) {
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then((choiceResult: any) => {
-          if (choiceResult.outcome === 'accepted') {
-            logger.info('👍 Usuario aceptó instalar PWA');
+          if (choiceResult.outcome === "accepted") {
+            logger.info("👍 Usuario aceptó instalar PWA");
           } else {
-            logger.info('👎 Usuario rechazó instalar PWA');
+            logger.info("👎 Usuario rechazó instalar PWA");
           }
           deferredPrompt = null;
         });
@@ -91,96 +115,150 @@ export class PWAManager {
   }
 
   private async checkForUpdates(): Promise<void> {
-    if (this.registration) {
+    const now = Date.now();
+
+    // Evitar verificaciones demasiado frecuentes (mínimo 30 segundos entre verificaciones)
+    if (now - this.lastUpdateCheck < 30000) {
+      return;
+    }
+
+    this.lastUpdateCheck = now;
+
+    if (
+      this.registration &&
+      !this.updateAvailable &&
+      !this.updateNotificationShown
+    ) {
       try {
         await this.registration.update();
+        logger.debug("🔄 Verificando actualizaciones...");
       } catch (error) {
-        logger.debug('🔄 No hay actualizaciones disponibles');
+        logger.debug("🔄 No hay actualizaciones disponibles");
       }
     }
   }
 
   private notifyUpdateAvailable(): void {
-    logger.info('🆕 Actualización disponible');
-    
+    logger.info("🆕 Actualización disponible");
+
+    // No mostrar múltiples notificaciones
+    if (
+      document.getElementById("pwa-update-notification") ||
+      this.updateNotificationShown
+    ) {
+      return;
+    }
+
+    // Marcar que ya se mostró la notificación
+    this.updateNotificationShown = true;
+
     // Create update notification
-    const notification = document.createElement('div');
-    notification.id = 'pwa-update-notification';
+    const notification = document.createElement("div");
+    notification.id = "pwa-update-notification";
     notification.innerHTML = `
       <div style="
         position: fixed;
         top: 20px;
         right: 20px;
-        background: #007bff;
+        background: linear-gradient(135deg, #28a745, #20c997);
         color: white;
-        padding: 1rem;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
         z-index: 10001;
-        max-width: 300px;
+        max-width: 350px;
         font-family: system-ui, sans-serif;
+        animation: slideIn 0.3s ease-out;
       ">
-        <div style="margin-bottom: 0.5rem; font-weight: bold;">
+        <div style="margin-bottom: 0.75rem; font-weight: bold; font-size: 1.1rem;">
           🆕 Actualización Disponible
         </div>
-        <div style="margin-bottom: 1rem; font-size: 0.9rem;">
-          Una nueva versión está lista. Reinicia para aplicar.
+        <div style="margin-bottom: 1.25rem; font-size: 0.95rem; line-height: 1.4;">
+          Una nueva versión está lista. Haz clic en "Actualizar" para aplicar los cambios.
         </div>
-        <div style="display: flex; gap: 0.5rem;">
-          <button onclick="window.applyPWAUpdate()" style="
+        <div style="display: flex; gap: 0.75rem;">
+          <button id="pwa-update-btn" style="
             background: white;
-            color: #007bff;
+            color: #28a745;
             border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: bold;
+            transition: all 0.2s ease;
+            flex: 1;
           ">
-            Actualizar
+            🔄 Actualizar
           </button>
-          <button onclick="window.dismissPWAUpdate()" style="
+          <button id="pwa-dismiss-btn" style="
             background: transparent;
             color: white;
-            border: 1px solid white;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
+            border: 2px solid white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
           ">
             Después
           </button>
         </div>
       </div>
+      <style>
+        @keyframes slideIn {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        #pwa-update-btn:hover {
+          background: #f8f9fa !important;
+          transform: translateY(-1px);
+        }
+        #pwa-dismiss-btn:hover {
+          background: rgba(255,255,255,0.1) !important;
+        }
+      </style>
     `;
 
     document.body.appendChild(notification);
 
-    // Expose update functions
-    (window as any).applyPWAUpdate = () => {
+    // Add event listeners
+    const updateBtn = document.getElementById("pwa-update-btn");
+    const dismissBtn = document.getElementById("pwa-dismiss-btn");
+
+    updateBtn?.addEventListener("click", () => {
+      logger.info("🔄 Usuario iniciando actualización PWA");
+      updateBtn.textContent = "🔄 Actualizando...";
+      (updateBtn as HTMLButtonElement).disabled = true;
       this.applyUpdate();
-    };
+    });
 
-    (window as any).dismissPWAUpdate = () => {
+    dismissBtn?.addEventListener("click", () => {
+      logger.info("👋 Usuario posponiendo actualización PWA");
       notification.remove();
-    };
+      // Resetear el estado para permitir futuras notificaciones
+      this.updateNotificationShown = false;
+    });
 
-    // Auto-dismiss after 30 seconds
+    // Auto-dismiss after 60 seconds (más tiempo para que el usuario decida)
     setTimeout(() => {
-      if (document.getElementById('pwa-update-notification')) {
+      if (document.getElementById("pwa-update-notification")) {
+        logger.info("⏰ Notificación de actualización auto-dismissed");
         notification.remove();
+        // Resetear el estado para permitir futuras notificaciones
+        this.updateNotificationShown = false;
       }
-    }, 30000);
+    }, 60000);
   }
 
   private showInstallBanner(): void {
     // Check if already installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
+    if (window.matchMedia("(display-mode: standalone)").matches) {
       return;
     }
 
-    const banner = document.createElement('div');
-    banner.id = 'pwa-install-banner';
+    const banner = document.createElement("div");
+    banner.id = "pwa-install-banner";
     banner.innerHTML = `
       <div style="
         position: fixed;
@@ -237,33 +315,51 @@ export class PWAManager {
 
     (window as any).dismissInstallBanner = () => {
       banner.remove();
-      localStorage.setItem('pwa-install-dismissed', 'true');
+      localStorage.setItem("pwa-install-dismissed", "true");
     };
 
     // Don't show again if previously dismissed
-    if (localStorage.getItem('pwa-install-dismissed')) {
+    if (localStorage.getItem("pwa-install-dismissed")) {
       banner.remove();
       return;
     }
 
     // Auto-dismiss after 1 minute
     setTimeout(() => {
-      if (document.getElementById('pwa-install-banner')) {
+      if (document.getElementById("pwa-install-banner")) {
         banner.remove();
       }
     }, 60000);
   }
 
   private hideInstallBanner(): void {
-    const banner = document.getElementById('pwa-install-banner');
+    const banner = document.getElementById("pwa-install-banner");
     if (banner) {
       banner.remove();
     }
   }
 
   private applyUpdate(): void {
+    logger.info("🔄 Aplicando actualización PWA...");
+
+    // Resetear el estado de notificación
+    this.updateNotificationShown = false;
+    this.updateAvailable = false;
+
     if (this.registration && this.registration.waiting) {
-      this.registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+      // Enviar mensaje al service worker para activar la nueva versión
+      this.registration.waiting.postMessage({ type: "SKIP_WAITING" });
+
+      // Escuchar cuando el nuevo service worker tome control
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        logger.info("✅ Nueva versión activada, recargando página...");
+        // Recargar la página para aplicar la actualización
+        window.location.reload();
+      });
+    } else {
+      logger.warn("⚠️ No hay service worker esperando para actualizar");
+      // Si no hay service worker esperando, simplemente recargar
+      window.location.reload();
     }
   }
 
@@ -274,17 +370,16 @@ export class PWAManager {
 
     return new Promise((resolve) => {
       const channel = new MessageChannel();
-      
+
       channel.port1.onmessage = (event) => {
-        if (event.data.type === 'CACHE_SIZE_RESULT') {
+        if (event.data.type === "CACHE_SIZE_RESULT") {
           resolve(event.data.cacheInfo);
         }
       };
 
-      this.registration!.active!.postMessage(
-        { type: 'GET_CACHE_SIZE' },
-        [channel.port2]
-      );
+      this.registration!.active!.postMessage({ type: "GET_CACHE_SIZE" }, [
+        channel.port2,
+      ]);
 
       // Timeout after 5 seconds
       setTimeout(() => resolve(null), 5000);
@@ -292,18 +387,20 @@ export class PWAManager {
   }
 
   public async clearCache(): Promise<void> {
-    if ('caches' in window) {
+    if ("caches" in window) {
       const cacheNames = await caches.keys();
       await Promise.all(
-        cacheNames.map(cacheName => caches.delete(cacheName))
+        cacheNames.map((cacheName) => caches.delete(cacheName))
       );
-      logger.info('🧹 Caché PWA limpiado');
+      logger.info("🧹 Caché PWA limpiado");
     }
   }
 
   public isInstalled(): boolean {
-    return window.matchMedia('(display-mode: standalone)').matches ||
-           (window.navigator as any).standalone === true;
+    return (
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as any).standalone === true
+    );
   }
 
   public isUpdateAvailable(): boolean {
@@ -313,5 +410,3 @@ export class PWAManager {
 
 // Initialize PWA manager
 export const pwaManager = new PWAManager();
-
-

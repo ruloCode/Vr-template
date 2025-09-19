@@ -1,41 +1,45 @@
-import 'aframe';
-import { logger, captureError } from '@/utils/logger';
-import { VRApp } from '@/components/VRApp';
-import { useAppStore } from '@/store/appStore';
-import { pwaManager } from '@/utils/pwa';
+import "aframe";
+import { logger, captureError } from "@/utils/logger";
+import { VRApp } from "@/components/VRApp";
+import { useAppStore } from "@/store/appStore";
+import { pwaManager } from "@/utils/pwa";
 
 // Initialize the VR application
 async function initializeApp() {
   try {
-    logger.info('🚀 Iniciando VR Ecopetrol App');
-    logger.info('📱 User Agent:', navigator.userAgent);
-    logger.info('🌐 URL:', window.location.href);
-    logger.info('📦 Version:', __VR_VERSION__);
-    logger.info('🏗️ Build Time:', __BUILD_TIME__);
-    logger.info('📲 PWA Installed:', pwaManager.isInstalled());
-    logger.info('🔄 PWA Update Available:', pwaManager.isUpdateAvailable());
+    logger.info("🚀 Iniciando VR Ecopetrol App");
+    logger.info("📱 User Agent:", navigator.userAgent);
+    logger.info("🌐 URL:", window.location.href);
+    logger.info("📦 Version:", __VR_VERSION__);
+    logger.info("🏗️ Build Time:", __BUILD_TIME__);
+    logger.info("📲 PWA Installed:", pwaManager.isInstalled());
+    logger.info("🔄 PWA Update Available:", pwaManager.isUpdateAvailable());
 
     // Check for required browser features
     if (!checkBrowserSupport()) {
-      throw new Error('Browser no soportado para experiencia VR');
+      throw new Error("Browser no soportado para experiencia VR");
     }
 
     // Initialize the VR App
     const app = new VRApp();
     await app.initialize();
 
+    // Expose app globally for debugging
+    if (import.meta.env.DEV) {
+      (window as any).VR_APP = app;
+    }
+
     // Hide initial loader
-    const loader = document.getElementById('initial-loader');
+    const loader = document.getElementById("initial-loader");
     if (loader) {
-      loader.style.opacity = '0';
+      loader.style.opacity = "0";
       setTimeout(() => loader.remove(), 500);
     }
 
-    logger.info('✅ VR App inicializada exitosamente');
-
+    logger.info("✅ VR App inicializada exitosamente");
   } catch (error) {
-    logger.error('❌ Error inicializando la aplicación:', error);
-    captureError(error as Error, 'app-initialization');
+    logger.error("❌ Error inicializando la aplicación:", error);
+    captureError(error as Error, "app-initialization");
     showError(error as Error);
   }
 }
@@ -50,51 +54,61 @@ function checkBrowserSupport(): boolean {
     promisesSupport: !!window.Promise,
     localStorageSupport: (() => {
       try {
-        localStorage.setItem('test', 'test');
-        localStorage.removeItem('test');
+        localStorage.setItem("test", "test");
+        localStorage.removeItem("test");
         return true;
       } catch {
         return false;
       }
     })(),
-    deviceOrientationSupport: 'DeviceOrientationEvent' in window,
+    deviceOrientationSupport: "DeviceOrientationEvent" in window,
     fullscreenSupport: !!(
       document.fullscreenEnabled ||
       (document as any).webkitFullscreenEnabled ||
       (document as any).mozFullScreenEnabled ||
       (document as any).msFullscreenEnabled
-    )
+    ),
   };
 
-  logger.info('🔍 Browser Support Check:', checks);
+  logger.info("🔍 Browser Support Check:", checks);
 
   // Critical features
-  const critical = ['webgl', 'webAudio', 'webSocket', 'fetch', 'promisesSupport'];
-  const missingCritical = critical.filter(feature => !checks[feature as keyof typeof checks]);
+  const critical = [
+    "webgl",
+    "webAudio",
+    "webSocket",
+    "fetch",
+    "promisesSupport",
+  ];
+  const missingCritical = critical.filter(
+    (feature) => !checks[feature as keyof typeof checks]
+  );
 
   if (missingCritical.length > 0) {
-    logger.error('❌ Características críticas no soportadas:', missingCritical);
+    logger.error("❌ Características críticas no soportadas:", missingCritical);
     return false;
   }
 
   // Warnings for non-critical features
   if (!checks.webgl2) {
-    logger.warn('⚠️ WebGL2 no disponible, usando WebGL1');
+    logger.warn("⚠️ WebGL2 no disponible, usando WebGL1");
   }
-  
+
   if (!checks.deviceOrientationSupport) {
-    logger.warn('⚠️ Device Orientation no disponible');
+    logger.info(
+      "ℹ️ Device Orientation no disponible - usando controles alternativos"
+    );
   }
 
   if (!checks.fullscreenSupport) {
-    logger.warn('⚠️ Fullscreen API no disponible');
+    logger.warn("⚠️ Fullscreen API no disponible");
   }
 
   return true;
 }
 
 function showError(error: Error) {
-  const app = document.getElementById('app');
+  const app = document.getElementById("app");
   if (!app) return;
 
   const errorHtml = `
@@ -117,7 +131,7 @@ function showError(error: Error) {
   `;
 
   // Hide loader and show error
-  const loader = document.getElementById('initial-loader');
+  const loader = document.getElementById("initial-loader");
   if (loader) {
     loader.remove();
   }
@@ -126,36 +140,45 @@ function showError(error: Error) {
 }
 
 // Global error handlers
-window.addEventListener('error', (event) => {
-  logger.error('💥 Error global:', {
+window.addEventListener("error", (event) => {
+  logger.error("💥 Error global:", {
     message: event.message,
     filename: event.filename,
     lineno: event.lineno,
     colno: event.colno,
-    error: event.error
+    error: event.error,
   });
-  captureError(event.error || new Error(event.message), 'global-error');
+  captureError(event.error || new Error(event.message), "global-error");
 });
 
-window.addEventListener('unhandledrejection', (event) => {
-  logger.error('💥 Promesa rechazada no manejada:', event.reason);
+window.addEventListener("unhandledrejection", (event) => {
+  logger.error("💥 Promesa rechazada no manejada:", event.reason);
   captureError(
-    event.reason instanceof Error ? event.reason : new Error(String(event.reason)),
-    'unhandled-rejection'
+    event.reason instanceof Error
+      ? event.reason
+      : new Error(String(event.reason)),
+    "unhandled-rejection"
   );
 });
 
 // Performance monitoring
-if ('performance' in window) {
-  window.addEventListener('load', () => {
+if ("performance" in window) {
+  window.addEventListener("load", () => {
     setTimeout(() => {
-      const perfData = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+      const perfData = performance.getEntriesByType(
+        "navigation"
+      )[0] as PerformanceNavigationTiming;
       const navigationStart = perfData.fetchStart; // Use fetchStart instead of navigationStart
-      logger.info('📊 Performance timing:', {
-        domContentLoaded: Math.round(perfData.domContentLoadedEventEnd - navigationStart),
+      logger.info("📊 Performance timing:", {
+        domContentLoaded: Math.round(
+          perfData.domContentLoadedEventEnd - navigationStart
+        ),
         loadComplete: Math.round(perfData.loadEventEnd - navigationStart),
-        firstPaint: performance.getEntriesByName('first-paint')[0]?.startTime || 0,
-        firstContentfulPaint: performance.getEntriesByName('first-contentful-paint')[0]?.startTime || 0
+        firstPaint:
+          performance.getEntriesByName("first-paint")[0]?.startTime || 0,
+        firstContentfulPaint:
+          performance.getEntriesByName("first-contentful-paint")[0]
+            ?.startTime || 0,
       });
     }, 1000);
   });
@@ -167,10 +190,31 @@ if (import.meta.env.DEV) {
     logger,
     store: useAppStore,
     version: __VR_VERSION__,
-    buildTime: __BUILD_TIME__
+    buildTime: __BUILD_TIME__,
+    reconnectSocket: () => {
+      // Función global para reconectar manualmente
+      const app = (window as any).VR_APP;
+      if (app && app.reconnectWebSocket) {
+        app.reconnectWebSocket().catch(console.error);
+      } else {
+        console.warn("VR App no está disponible para reconexión");
+      }
+    },
+    resetSceneTransition: () => {
+      // Función global para resetear el estado de transición de escenas
+      const app = (window as any).VR_APP;
+      if (app && app.sceneManager && app.sceneManager.resetTransitionState) {
+        app.sceneManager.resetTransitionState();
+        console.log("✅ Estado de transición de escena reseteado");
+      } else {
+        console.warn("SceneManager no está disponible");
+      }
+    },
   };
-  
-  logger.info('🔧 Debug mode enabled. Use window.VR_DEBUG for debugging tools.');
+
+  logger.info(
+    "🔧 Debug mode enabled. Use window.VR_DEBUG for debugging tools."
+  );
 }
 
 // Start the application

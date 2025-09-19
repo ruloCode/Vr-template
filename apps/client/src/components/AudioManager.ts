@@ -1,6 +1,6 @@
-import { logger, captureError } from '@/utils/logger';
-import { config } from '@/utils/config';
-import { useAppStore } from '@/store/appStore';
+import { logger, captureError } from "@/utils/logger";
+import { config } from "@/utils/config";
+import { useAppStore } from "@/store/appStore";
 
 export class AudioManager {
   private context: AudioContext | null = null;
@@ -9,7 +9,7 @@ export class AudioManager {
   private currentBuffer: AudioBuffer | null = null;
   private audioCache: Map<string, ArrayBuffer>;
   private decodedCache = new Map<string, AudioBuffer>();
-  
+
   // Playback state
   private isPlaying = false;
   private isPaused = false;
@@ -17,62 +17,82 @@ export class AudioManager {
   private pauseTime = 0;
   private currentPosition = 0;
 
-  
   // Crossfade state
   private fadeOutGain: GainNode | null = null;
 
   constructor(audioCache: Map<string, ArrayBuffer>) {
     this.audioCache = audioCache;
-    logger.info('🎵 AudioManager inicializado');
+    logger.info("🎵 AudioManager inicializado");
   }
 
   public async unlock(): Promise<void> {
     try {
       if (this.context) {
-        logger.warn('⚠️ AudioContext ya está desbloqueado');
+        logger.warn("⚠️ AudioContext ya está desbloqueado");
         return;
       }
 
       // Create AudioContext
-      const ContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const ContextClass =
+        window.AudioContext || (window as any).webkitAudioContext;
       this.context = new ContextClass();
-      
+
       // Create master gain node
       this.gainNode = this.context.createGain();
       this.gainNode.connect(this.context.destination);
       this.gainNode.gain.value = 1.0;
 
-      // Resume if suspended (required on some browsers)
-      if (this.context.state === 'suspended') {
-        await this.context.resume();
+      // Try to resume if suspended (required on some browsers)
+      if (this.context.state === "suspended") {
+        try {
+          await this.context.resume();
+          logger.info("🔓 AudioContext resumido exitosamente");
+        } catch (resumeError) {
+          logger.warn(
+            "⚠️ AudioContext requiere interacción del usuario:",
+            resumeError
+          );
+          // This is normal - user interaction is required
+          // The context is created but needs user gesture to resume
+        }
       }
 
-      logger.info('🔓 AudioContext desbloqueado:', {
+      logger.info("🔓 AudioContext desbloqueado:", {
         sampleRate: this.context.sampleRate,
         state: this.context.state,
-        baseLatency: this.context.baseLatency || 'unknown'
+        baseLatency: this.context.baseLatency || "unknown",
       });
 
       // Update store
       useAppStore.getState().initializeAudioState(this.context);
-
     } catch (error) {
-      logger.error('❌ Error desbloqueando audio:', error);
-      captureError(error as Error, 'audio-unlock');
+      logger.error("❌ Error desbloqueando audio:", error);
+      captureError(error as Error, "audio-unlock");
       throw error;
     }
   }
 
   public async loadAudio(audioSrc: string): Promise<void> {
     if (!this.context) {
-      throw new Error('AudioContext not initialized. Call unlock() first.');
+      throw new Error("AudioContext not initialized. Call unlock() first.");
+    }
+
+    // Ensure context is running
+    if (this.context.state === "suspended") {
+      try {
+        await this.context.resume();
+        logger.info("🔓 AudioContext resumido durante carga de audio");
+      } catch (error) {
+        logger.warn("⚠️ No se pudo resumir AudioContext:", error);
+        // Continue anyway - might work when user interacts
+      }
     }
 
     try {
       // Check if already decoded
       if (this.decodedCache.has(audioSrc)) {
         this.currentBuffer = this.decodedCache.get(audioSrc)!;
-        logger.debug('🎵 Audio ya decodificado:', audioSrc);
+        logger.debug("🎵 Audio ya decodificado:", audioSrc);
         return;
       }
 
@@ -82,33 +102,48 @@ export class AudioManager {
         throw new Error(`Audio not found in cache: ${audioSrc}`);
       }
 
-      logger.info('🎵 Decodificando audio:', audioSrc);
-      
+      logger.info("🎵 Decodificando audio:", audioSrc);
+
       // Decode audio
-      const audioBuffer = await this.context.decodeAudioData(arrayBuffer.slice(0));
-      
+      const audioBuffer = await this.context.decodeAudioData(
+        arrayBuffer.slice(0)
+      );
+
       // Cache decoded buffer
       this.decodedCache.set(audioSrc, audioBuffer);
       this.currentBuffer = audioBuffer;
-      
-      logger.info('✅ Audio decodificado:', {
+
+      logger.info("✅ Audio decodificado:", {
         src: audioSrc,
         duration: audioBuffer.duration,
         channels: audioBuffer.numberOfChannels,
-        sampleRate: audioBuffer.sampleRate
+        sampleRate: audioBuffer.sampleRate,
       });
-
     } catch (error) {
-      logger.error('❌ Error cargando audio:', audioSrc, error);
-      captureError(error as Error, 'audio-load');
+      logger.error("❌ Error cargando audio:", audioSrc, error);
+      captureError(error as Error, "audio-load");
       throw error;
     }
   }
 
-  public play(startTime?: number): void {
+  public async play(startTime?: number): Promise<void> {
     if (!this.context || !this.currentBuffer || !this.gainNode) {
-      logger.error('❌ AudioContext, buffer o gainNode no inicializados');
+      logger.error("❌ AudioContext, buffer o gainNode no inicializados");
       return;
+    }
+
+    // Ensure context is running
+    if (this.context.state === "suspended") {
+      try {
+        await this.context.resume();
+        logger.info("🔓 AudioContext resumido durante reproducción");
+      } catch (error) {
+        logger.error(
+          "❌ No se pudo resumir AudioContext para reproducción:",
+          error
+        );
+        return;
+      }
     }
 
     try {
@@ -123,26 +158,26 @@ export class AudioManager {
       // Calculate start position
       const startOffset = startTime || this.currentPosition;
       const when = this.context.currentTime;
-      
+
       // Start playback
       this.currentSource.start(when, startOffset);
-      
+
       // Update state
       this.isPlaying = true;
       this.isPaused = false;
       this.startTime = this.context.currentTime - startOffset;
       // Schedule start time tracked internally
-      
-      logger.info('▶️ Audio iniciado:', {
+
+      logger.info("▶️ Audio iniciado:", {
         startOffset,
         when,
-        duration: this.currentBuffer.duration
+        duration: this.currentBuffer.duration,
       });
 
       // Handle source end
       this.currentSource.onended = () => {
         if (this.isPlaying) {
-          logger.info('🔚 Audio terminado naturalmente');
+          logger.info("🔚 Audio terminado naturalmente");
           this.isPlaying = false;
         }
       };
@@ -151,12 +186,11 @@ export class AudioManager {
       useAppStore.getState().updateAudioState({
         isPlaying: true,
         startTime: this.startTime,
-        currentSource: this.currentSource
+        currentSource: this.currentSource,
       });
-
     } catch (error) {
-      logger.error('❌ Error reproduciendo audio:', error);
-      captureError(error as Error, 'audio-play');
+      logger.error("❌ Error reproduciendo audio:", error);
+      captureError(error as Error, "audio-play");
     }
   }
 
@@ -169,28 +203,27 @@ export class AudioManager {
       // Calculate current position
       this.currentPosition = this.context.currentTime - this.startTime;
       this.pauseTime = this.context.currentTime;
-      
+
       // Stop current source
       if (this.currentSource) {
         this.currentSource.stop();
         this.currentSource = null;
       }
-      
+
       // Update state
       this.isPlaying = false;
       this.isPaused = true;
-      
-      logger.info('⏸️ Audio pausado en posición:', this.currentPosition);
+
+      logger.info("⏸️ Audio pausado en posición:", this.currentPosition);
 
       // Update store
       useAppStore.getState().updateAudioState({
         isPlaying: false,
-        pauseTime: this.pauseTime
+        pauseTime: this.pauseTime,
       });
-
     } catch (error) {
-      logger.error('❌ Error pausando audio:', error);
-      captureError(error as Error, 'audio-pause');
+      logger.error("❌ Error pausando audio:", error);
+      captureError(error as Error, "audio-pause");
     }
   }
 
@@ -201,8 +234,8 @@ export class AudioManager {
 
     this.play(this.currentPosition);
     this.isPaused = false;
-    
-    logger.info('▶️ Audio reanudado desde posición:', this.currentPosition);
+
+    logger.info("▶️ Audio reanudado desde posición:", this.currentPosition);
   }
 
   public stop(): void {
@@ -218,8 +251,8 @@ export class AudioManager {
     this.isPlaying = false;
     this.isPaused = false;
     this.currentPosition = 0;
-    
-    logger.debug('⏹️ Audio detenido');
+
+    logger.debug("⏹️ Audio detenido");
   }
 
   public seek(deltaMs: number): void {
@@ -228,12 +261,12 @@ export class AudioManager {
     }
 
     const deltaSec = deltaMs / 1000;
-    const newPosition = Math.max(0, Math.min(
-      this.getCurrentTime() + deltaSec,
-      this.currentBuffer.duration
-    ));
+    const newPosition = Math.max(
+      0,
+      Math.min(this.getCurrentTime() + deltaSec, this.currentBuffer.duration)
+    );
 
-    logger.info('⏩ Seeking to:', newPosition, 'seconds');
+    logger.info("⏩ Seeking to:", newPosition, "seconds");
 
     if (this.isPlaying) {
       this.play(newPosition);
@@ -246,11 +279,13 @@ export class AudioManager {
     if (this.gainNode) {
       const clampedVolume = Math.max(0, Math.min(1, volume));
       this.gainNode.gain.value = clampedVolume;
-      logger.debug('🔊 Volumen ajustado:', clampedVolume);
+      logger.debug("🔊 Volumen ajustado:", clampedVolume);
     }
   }
 
-  public fadeOut(duration: number = config.audio.fadeOutDuration): Promise<void> {
+  public fadeOut(
+    duration: number = config.audio.fadeOutDuration
+  ): Promise<void> {
     return new Promise((resolve) => {
       if (!this.context || !this.gainNode) {
         resolve();
@@ -259,11 +294,11 @@ export class AudioManager {
 
       const currentTime = this.context.currentTime;
       const endTime = currentTime + duration;
-      
+
       this.gainNode.gain.cancelScheduledValues(currentTime);
       this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, currentTime);
       this.gainNode.gain.linearRampToValueAtTime(0, endTime);
-      
+
       setTimeout(() => {
         this.stop();
         if (this.gainNode) {
@@ -271,8 +306,8 @@ export class AudioManager {
         }
         resolve();
       }, duration * 1000);
-      
-      logger.debug('🔇 Fade out iniciado:', duration + 's');
+
+      logger.debug("🔇 Fade out iniciado:", duration + "s");
     });
   }
 
@@ -283,21 +318,21 @@ export class AudioManager {
 
     const currentTime = this.context.currentTime;
     const endTime = currentTime + duration;
-    
+
     this.gainNode.gain.cancelScheduledValues(currentTime);
     this.gainNode.gain.setValueAtTime(0, currentTime);
     this.gainNode.gain.linearRampToValueAtTime(1.0, endTime);
-    
-    logger.debug('🔊 Fade in iniciado:', duration + 's');
+
+    logger.debug("🔊 Fade in iniciado:", duration + "s");
   }
 
   public async crossfadeTo(newAudioSrc: string): Promise<void> {
     if (!this.context) {
-      throw new Error('AudioContext not initialized');
+      throw new Error("AudioContext not initialized");
     }
 
     try {
-      logger.info('🔄 Crossfade a:', newAudioSrc);
+      logger.info("🔄 Crossfade a:", newAudioSrc);
 
       // Load new audio
       await this.loadAudio(newAudioSrc);
@@ -310,7 +345,10 @@ export class AudioManager {
         this.fadeOutGain = this.gainNode;
         this.fadeOutGain.gain.cancelScheduledValues(currentTime);
         this.fadeOutGain.gain.setValueAtTime(1.0, currentTime);
-        this.fadeOutGain.gain.linearRampToValueAtTime(0, currentTime + fadeDuration);
+        this.fadeOutGain.gain.linearRampToValueAtTime(
+          0,
+          currentTime + fadeDuration
+        );
       }
 
       // Create new gain node for fade in
@@ -323,23 +361,25 @@ export class AudioManager {
       this.fadeIn(fadeDuration);
 
       // Clean up old source after fade
-      setTimeout(() => {
-        if (this.fadeOutGain) {
-          this.fadeOutGain.disconnect();
-          this.fadeOutGain = null;
-        }
-      }, fadeDuration * 1000 + 100);
-
+      setTimeout(
+        () => {
+          if (this.fadeOutGain) {
+            this.fadeOutGain.disconnect();
+            this.fadeOutGain = null;
+          }
+        },
+        fadeDuration * 1000 + 100
+      );
     } catch (error) {
-      logger.error('❌ Error en crossfade:', error);
+      logger.error("❌ Error en crossfade:", error);
       throw error;
     }
   }
 
   // Sync methods
-  public startAtServerTime(serverEpochMs: number): void {
+  public async startAtServerTime(serverEpochMs: number): Promise<void> {
     if (!this.context) {
-      logger.error('❌ AudioContext no inicializado para sync');
+      logger.error("❌ AudioContext no inicializado para sync");
       return;
     }
 
@@ -347,58 +387,71 @@ export class AudioManager {
     const localTime = Date.now();
     const serverTime = serverEpochMs - store.clientOffset;
     const delayMs = serverTime - localTime;
-    
+
     if (delayMs <= 0) {
       // Start immediately
-      this.play();
-      logger.info('▶️ Audio iniciado inmediatamente (sync)');
+      await this.play();
+      logger.info("▶️ Audio iniciado inmediatamente (sync)");
     } else {
       // Schedule start
       const delaySeconds = delayMs / 1000;
       const when = this.context.currentTime + delaySeconds;
-      
+
       if (this.currentBuffer && this.gainNode) {
         this.stop();
         this.currentSource = this.context.createBufferSource();
         this.currentSource.buffer = this.currentBuffer;
         this.currentSource.connect(this.gainNode);
         this.currentSource.start(when);
-        
+
         this.isPlaying = true;
         this.startTime = when;
         // Schedule start time tracked internally
-        
-        logger.info('⏰ Audio programado para:', new Date(serverTime).toISOString(), `(+${delayMs}ms)`);
+
+        logger.info(
+          "⏰ Audio programado para:",
+          new Date(serverTime).toISOString(),
+          `(+${delayMs}ms)`
+        );
       }
     }
   }
 
-  public correctDrift(driftMs: number): void {
-    if (Math.abs(driftMs) < config.audio.syncTolerance || !this.isPlaying || !this.currentBuffer) {
+  public async correctDrift(driftMs: number): Promise<void> {
+    if (
+      Math.abs(driftMs) < config.audio.syncTolerance ||
+      !this.isPlaying ||
+      !this.currentBuffer
+    ) {
       return;
     }
 
-    logger.warn('🔧 Corrigiendo drift de audio:', driftMs + 'ms');
+    logger.warn("🔧 Corrigiendo drift de audio:", driftMs + "ms");
 
     const correctionSeconds = driftMs / 1000;
-    const newPosition = Math.max(0, Math.min(
-      this.getCurrentTime() - correctionSeconds,
-      this.currentBuffer.duration
-    ));
+    const newPosition = Math.max(
+      0,
+      Math.min(
+        this.getCurrentTime() - correctionSeconds,
+        this.currentBuffer.duration
+      )
+    );
 
     // Restart at corrected position
-    this.play(newPosition);
+    await this.play(newPosition);
   }
 
   public getCurrentTime(): number {
     if (!this.context) return 0;
-    
+
     if (this.isPlaying) {
-      return this.context.currentTime - this.startTime;
+      const currentTime = this.context.currentTime - this.startTime;
+      // Ensure we never return negative time
+      return Math.max(0, currentTime);
     } else if (this.isPaused) {
       return this.currentPosition;
     }
-    
+
     return 0;
   }
 
@@ -412,24 +465,22 @@ export class AudioManager {
       isPaused: this.isPaused,
       currentTime: this.getCurrentTime(),
       duration: this.getDuration(),
-      volume: this.gainNode?.gain.value || 0
+      volume: this.gainNode?.gain.value || 0,
     };
   }
 
   public destroy(): void {
-    logger.info('🧹 Destruyendo AudioManager');
-    
+    logger.info("🧹 Destruyendo AudioManager");
+
     this.stop();
-    
+
     if (this.context) {
       this.context.close();
       this.context = null;
     }
-    
+
     this.decodedCache.clear();
     this.gainNode = null;
     this.currentBuffer = null;
   }
 }
-
-

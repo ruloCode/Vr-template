@@ -1,5 +1,5 @@
-import { logger } from '@/utils/logger';
-import { useAppStore } from '@/store/appStore';
+import { logger } from "@/utils/logger";
+import { useAppStore } from "@/store/appStore";
 
 export class UIManager {
   private overlayElement: HTMLElement | null = null;
@@ -9,21 +9,21 @@ export class UIManager {
   private debugUpdateInterval: number | null = null;
 
   constructor() {
-    logger.info('🎨 UIManager inicializado');
+    logger.info("🎨 UIManager inicializado");
   }
 
   public async initialize(): Promise<void> {
     this.createOverlayStructure();
     this.setupEventListeners();
     this.setupStoreSubscriptions();
-    
-    logger.info('✅ UIManager inicializado completamente');
+
+    logger.info("✅ UIManager inicializado completamente");
   }
 
   private createOverlayStructure(): void {
-    const app = document.getElementById('app');
+    const app = document.getElementById("app");
     if (!app) {
-      throw new Error('App container not found');
+      throw new Error("App container not found");
     }
 
     const overlayHTML = `
@@ -47,6 +47,20 @@ export class UIManager {
               <h4>⚠️ Advertencias:</h4>
               <ul id="error-list"></ul>
             </div>
+            
+            <div id="connection-error" class="connection-error" style="display: none;">
+              <h4>❌ Error de Conexión Crítica</h4>
+              <p>No se pudo conectar al servidor después de múltiples intentos.</p>
+              <p><strong>La aplicación requiere conexión al servidor para funcionar.</strong></p>
+              <div class="error-actions">
+                <button id="retry-connection-btn" class="btn btn-primary">
+                  🔄 Reintentar Conexión
+                </button>
+                <button id="refresh-page-btn" class="btn btn-secondary">
+                  🔄 Recargar Página
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -55,6 +69,9 @@ export class UIManager {
           <div class="status-indicator">
             <div id="status-dot" class="status-dot"></div>
             <span id="status-text">Desconectado</span>
+            <button id="reconnect-btn" class="btn-reconnect" style="display: none;" title="Reconectar">
+              🔄
+            </button>
           </div>
         </div>
 
@@ -74,22 +91,37 @@ export class UIManager {
         <div id="ready-state" class="ready-state" style="display: none;">
           <div class="ready-content">
             <div class="status-icon">✅</div>
-            <h2>Sistema Listo</h2>
+            <h2>VR Ecopetrol - Dispositivo Conectado</h2>
             <p id="ready-message">Esperando comandos del dashboard...</p>
             
+            <div class="waiting-indicator">
+              <div class="pulse-animation"></div>
+              <p class="waiting-text">Dispositivo listo para recibir experiencias 360°</p>
+            </div>
+
             <div class="device-info">
               <div class="info-item">
-                <span class="label">Dispositivo:</span>
+                <span class="label">ID del Dispositivo:</span>
                 <span id="device-id">-</span>
               </div>
               <div class="info-item">
-                <span class="label">Conexión:</span>
+                <span class="label">Estado de Conexión:</span>
                 <span id="connection-state">-</span>
               </div>
               <div class="info-item" id="battery-info" style="display: none;">
-                <span class="label">Batería:</span>
+                <span class="label">Nivel de Batería:</span>
                 <span id="battery-level">-</span>
               </div>
+            </div>
+
+            <div class="instructions">
+              <h4>📋 Instrucciones</h4>
+              <ul>
+                <li>El dispositivo está conectado y listo</li>
+                <li>Las escenas se cargarán automáticamente desde el dashboard</li>
+                <li>Mantén el dispositivo en posición horizontal</li>
+                <li>Asegúrate de tener suficiente batería</li>
+              </ul>
             </div>
 
             <div class="manual-controls" style="display: none;">
@@ -101,8 +133,27 @@ export class UIManager {
                 <button id="manual-start" class="btn btn-secondary" disabled>
                   ▶️ Iniciar Manual
                 </button>
+                <button id="return-model" class="btn btn-primary">
+                  🎭 Volver al Modelo
+                </button>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- Scene Loading -->
+        <div id="scene-loading" class="scene-loading" style="display: none;">
+          <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h2>Cargando Experiencia</h2>
+            <p id="loading-scene-name">Preparando escena...</p>
+            <div class="loading-progress">
+              <div class="loading-bar">
+                <div id="scene-progress-fill" class="loading-fill"></div>
+              </div>
+              <span id="scene-progress-text">0%</span>
+            </div>
+            <p class="loading-instruction">Mantén el dispositivo estable</p>
           </div>
         </div>
 
@@ -134,20 +185,20 @@ export class UIManager {
     `;
 
     // Add overlay to app
-    app.insertAdjacentHTML('beforeend', overlayHTML);
-    
+    app.insertAdjacentHTML("beforeend", overlayHTML);
+
     // Get references
-    this.overlayElement = document.getElementById('vr-overlay');
-    this.progressContainer = document.getElementById('preload-container');
-    this.debugPanel = document.getElementById('debug-panel');
-    this.controlsPanel = document.getElementById('controls-panel');
+    this.overlayElement = document.getElementById("vr-overlay");
+    this.progressContainer = document.getElementById("preload-container");
+    this.debugPanel = document.getElementById("debug-panel");
+    this.controlsPanel = document.getElementById("controls-panel");
 
     // Add CSS
     this.injectStyles();
   }
 
   private injectStyles(): void {
-    const style = document.createElement('style');
+    const style = document.createElement("style");
     style.textContent = `
       .vr-overlay {
         position: fixed;
@@ -241,6 +292,42 @@ export class UIManager {
         font-size: 0.9rem;
       }
 
+      .connection-error {
+        background: rgba(220, 53, 69, 0.1);
+        border: 1px solid rgba(220, 53, 69, 0.3);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-align: center;
+        margin-top: 1rem;
+      }
+
+      .connection-error h4 {
+        color: #dc3545;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+      }
+
+      .connection-error p {
+        margin-bottom: 0.5rem;
+        opacity: 0.9;
+      }
+
+      .connection-error p strong {
+        color: #dc3545;
+        font-weight: bold;
+      }
+
+      .error-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 1.5rem;
+      }
+
+      .error-actions .btn {
+        min-width: 150px;
+      }
+
       .connection-status {
         position: absolute;
         top: 20px;
@@ -255,6 +342,27 @@ export class UIManager {
         display: flex;
         align-items: center;
         gap: 0.5rem;
+      }
+
+      .btn-reconnect {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1rem;
+        cursor: pointer;
+        padding: 0.25rem;
+        border-radius: 50%;
+        width: 1.5rem;
+        height: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .btn-reconnect:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: rotate(180deg);
       }
 
       .status-dot {
@@ -308,7 +416,7 @@ export class UIManager {
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.8);
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -316,17 +424,145 @@ export class UIManager {
 
       .ready-content {
         text-align: center;
-        max-width: 500px;
-        padding: 2rem;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 15px;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        max-width: 600px;
+        padding: 2.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
       }
 
       .status-icon {
         font-size: 4rem;
         margin-bottom: 1rem;
+        animation: pulse 2s infinite;
+      }
+
+      .waiting-indicator {
+        margin: 2rem 0;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .pulse-animation {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1rem;
+        background: linear-gradient(45deg, #00d4aa, #00b4d8);
+        border-radius: 50%;
+        animation: pulse-glow 2s infinite;
+      }
+
+      .waiting-text {
+        font-size: 1.2rem;
+        color: #e0e6ed;
+        margin: 0;
+        font-weight: 500;
+      }
+
+      .instructions {
+        margin: 2rem 0;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        text-align: left;
+      }
+
+      .instructions h4 {
+        margin-bottom: 1rem;
+        color: #00d4aa;
+        font-size: 1.1rem;
+      }
+
+      .instructions ul {
+        margin: 0;
+        padding-left: 1.5rem;
+      }
+
+      .instructions li {
+        margin-bottom: 0.5rem;
+        color: #e0e6ed;
+        font-size: 0.95rem;
+        line-height: 1.4;
+      }
+
+      .scene-loading {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #2d1b69 0%, #11998e 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      }
+
+      .loading-content {
+        text-align: center;
+        max-width: 450px;
+        padding: 2.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      .loading-spinner {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 1.5rem;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid #00d4aa;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      .loading-content h2 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        color: white;
+      }
+
+      .loading-content p {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+        color: #e0e6ed;
+      }
+
+      .loading-progress {
+        margin: 2rem 0;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .loading-bar {
+        flex: 1;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .loading-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #00d4aa, #00b4d8);
+        border-radius: 4px;
+        transition: width 0.3s ease;
+        width: 0%;
+      }
+
+      .loading-instruction {
+        font-size: 0.9rem;
+        color: #b8c6db;
+        margin-top: 1rem;
+        font-style: italic;
       }
 
       .device-info {
@@ -487,6 +723,24 @@ export class UIManager {
         50% { opacity: 0.7; transform: scale(0.95); }
       }
 
+      @keyframes pulse-glow {
+        0%, 100% { 
+          opacity: 1; 
+          transform: scale(1);
+          box-shadow: 0 0 20px rgba(0, 212, 170, 0.5);
+        }
+        50% { 
+          opacity: 0.8; 
+          transform: scale(1.1);
+          box-shadow: 0 0 30px rgba(0, 212, 170, 0.8);
+        }
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
       @media (max-width: 768px) {
         .preload-content {
           padding: 1rem;
@@ -503,33 +757,45 @@ export class UIManager {
         }
       }
     `;
-    
+
     document.head.appendChild(style);
   }
 
   private setupEventListeners(): void {
     // Audio unlock button
-    const unlockBtn = document.getElementById('unlock-audio-btn');
-    unlockBtn?.addEventListener('click', async () => {
+    const unlockBtn = document.getElementById("unlock-audio-btn");
+    unlockBtn?.addEventListener("click", async () => {
       try {
-        logger.info('🔊 Usuario activando audio...');
-        const event = new CustomEvent('audio-unlock-requested');
+        logger.info("🔊 Usuario activando audio...");
+        const event = new CustomEvent("audio-unlock-requested");
         window.dispatchEvent(event);
       } catch (error) {
-        logger.error('❌ Error activando audio:', error);
+        logger.error("❌ Error activando audio:", error);
       }
     });
 
     // Debug panel controls
-    const debugClose = document.getElementById('debug-close');
-    debugClose?.addEventListener('click', () => {
+    const debugClose = document.getElementById("debug-close");
+    debugClose?.addEventListener("click", () => {
       useAppStore.getState().setDebugMode(false);
     });
 
     // Controls panel
-    const controlsClose = document.getElementById('controls-close');
-    controlsClose?.addEventListener('click', () => {
+    const controlsClose = document.getElementById("controls-close");
+    controlsClose?.addEventListener("click", () => {
       useAppStore.getState().setControlsVisible(false);
+    });
+
+    // Reconnect button
+    const reconnectBtn = document.getElementById("reconnect-btn");
+    reconnectBtn?.addEventListener("click", async () => {
+      try {
+        logger.info("🔄 Usuario solicitando reconexión manual...");
+        const event = new CustomEvent("reconnect-websocket");
+        window.dispatchEvent(event);
+      } catch (error) {
+        logger.error("❌ Error en reconexión manual:", error);
+      }
     });
 
     // Control buttons
@@ -538,32 +804,45 @@ export class UIManager {
     // Manual controls
     this.setupManualControls();
 
+    // Connection error buttons
+    const retryConnectionBtn = document.getElementById("retry-connection-btn");
+    const refreshPageBtn = document.getElementById("refresh-page-btn");
+
+    retryConnectionBtn?.addEventListener("click", () => {
+      const event = new CustomEvent("retry-connection");
+      window.dispatchEvent(event);
+    });
+
+    refreshPageBtn?.addEventListener("click", () => {
+      window.location.reload();
+    });
+
     // Keyboard shortcuts
     this.setupKeyboardShortcuts();
   }
 
   private setupControlButtons(): void {
-    const vrToggle = document.getElementById('vr-toggle');
-    const resetCamera = document.getElementById('reset-camera');
-    const debugToggle = document.getElementById('debug-toggle');
-    const fullscreenToggle = document.getElementById('fullscreen-toggle');
+    const vrToggle = document.getElementById("vr-toggle");
+    const resetCamera = document.getElementById("reset-camera");
+    const debugToggle = document.getElementById("debug-toggle");
+    const fullscreenToggle = document.getElementById("fullscreen-toggle");
 
-    vrToggle?.addEventListener('click', () => {
-      const event = new CustomEvent('vr-toggle');
+    vrToggle?.addEventListener("click", () => {
+      const event = new CustomEvent("vr-toggle");
       window.dispatchEvent(event);
     });
 
-    resetCamera?.addEventListener('click', () => {
-      const event = new CustomEvent('camera-reset');
+    resetCamera?.addEventListener("click", () => {
+      const event = new CustomEvent("camera-reset");
       window.dispatchEvent(event);
     });
 
-    debugToggle?.addEventListener('click', () => {
+    debugToggle?.addEventListener("click", () => {
       const store = useAppStore.getState();
       store.setDebugMode(!store.showDebug);
     });
 
-    fullscreenToggle?.addEventListener('click', () => {
+    fullscreenToggle?.addEventListener("click", () => {
       if (document.fullscreenElement) {
         document.exitFullscreen();
       } else {
@@ -573,39 +852,49 @@ export class UIManager {
   }
 
   private setupManualControls(): void {
-    const sceneSelector = document.getElementById('scene-selector') as HTMLSelectElement;
-    const manualStart = document.getElementById('manual-start');
+    const sceneSelector = document.getElementById(
+      "scene-selector"
+    ) as HTMLSelectElement;
+    const manualStart = document.getElementById("manual-start");
+    const returnModel = document.getElementById("return-model");
 
-    sceneSelector?.addEventListener('change', () => {
+    sceneSelector?.addEventListener("change", () => {
       const startBtn = manualStart as HTMLButtonElement;
       startBtn.disabled = !sceneSelector.value;
     });
 
-    manualStart?.addEventListener('click', () => {
+    manualStart?.addEventListener("click", () => {
       const sceneId = sceneSelector?.value;
       if (sceneId) {
-        const event = new CustomEvent('manual-scene-start', { detail: { sceneId } });
+        const event = new CustomEvent("manual-scene-start", {
+          detail: { sceneId },
+        });
         window.dispatchEvent(event);
       }
+    });
+
+    returnModel?.addEventListener("click", () => {
+      const event = new CustomEvent("return-to-model");
+      window.dispatchEvent(event);
     });
   }
 
   private setupKeyboardShortcuts(): void {
-    document.addEventListener('keydown', (e) => {
+    document.addEventListener("keydown", (e) => {
       if (e.ctrlKey || e.metaKey) return;
 
       switch (e.key) {
-        case 'F12':
+        case "F12":
           e.preventDefault();
           const store = useAppStore.getState();
           store.setDebugMode(!store.showDebug);
           break;
-        case 'c':
-        case 'C':
+        case "c":
+        case "C":
           e.preventDefault();
           useAppStore.getState().setControlsVisible(true);
           break;
-        case 'Escape':
+        case "Escape":
           e.preventDefault();
           useAppStore.getState().setControlsVisible(false);
           useAppStore.getState().setDebugMode(false);
@@ -642,11 +931,11 @@ export class UIManager {
   }
 
   private updatePreloadProgress(progress: any): void {
-    const fillElement = document.getElementById('progress-fill');
-    const textElement = document.getElementById('progress-text');
-    const detailElement = document.getElementById('progress-detail');
-    const errorsContainer = document.getElementById('preload-errors');
-    const errorsList = document.getElementById('error-list');
+    const fillElement = document.getElementById("progress-fill");
+    const textElement = document.getElementById("progress-text");
+    const detailElement = document.getElementById("progress-detail");
+    const errorsContainer = document.getElementById("preload-errors");
+    const errorsList = document.getElementById("error-list");
 
     if (fillElement) {
       fillElement.style.width = `${progress.percentage}%`;
@@ -657,41 +946,65 @@ export class UIManager {
     }
 
     if (detailElement) {
-      detailElement.textContent = progress.currentAsset || 'Procesando...';
+      detailElement.textContent = progress.currentAsset || "Procesando...";
+
+      // Cambiar color del texto si está conectando
+      if (
+        progress.currentAsset &&
+        progress.currentAsset.includes("Conectando")
+      ) {
+        detailElement.style.color = "#ffc107"; // Amarillo para conexión
+      } else {
+        detailElement.style.color = ""; // Color por defecto
+      }
     }
 
     // Show errors if any
-    if (progress.errors && progress.errors.length > 0 && errorsContainer && errorsList) {
-      errorsContainer.style.display = 'block';
-      errorsList.innerHTML = progress.errors.map((error: string) => `<li>${error}</li>`).join('');
+    if (
+      progress.errors &&
+      progress.errors.length > 0 &&
+      errorsContainer &&
+      errorsList
+    ) {
+      errorsContainer.style.display = "block";
+      errorsList.innerHTML = progress.errors
+        .map((error: string) => `<li>${error}</li>`)
+        .join("");
     }
   }
 
   private updateConnectionStatus(status: string, _isConnected: boolean): void {
-    const statusElement = document.getElementById('connection-status');
-    const dotElement = document.getElementById('status-dot');
-    const textElement = document.getElementById('status-text');
+    const statusElement = document.getElementById("connection-status");
+    const dotElement = document.getElementById("status-dot");
+    const textElement = document.getElementById("status-text");
+    const reconnectBtn = document.getElementById("reconnect-btn");
 
     if (!statusElement || !dotElement || !textElement) return;
 
     const statusMap = {
-      'disconnected': { text: 'Desconectado', class: 'disconnected' },
-      'connecting': { text: 'Conectando...', class: 'connecting' },
-      'connected': { text: 'Conectado', class: 'connected' },
-      'error': { text: 'Error', class: 'error' }
+      disconnected: { text: "Desconectado", class: "disconnected" },
+      connecting: { text: "Conectando...", class: "connecting" },
+      connected: { text: "Conectado", class: "connected" },
+      error: { text: "Error", class: "error" },
     };
 
-    const statusInfo = statusMap[status as keyof typeof statusMap] || statusMap.disconnected;
-    
+    const statusInfo =
+      statusMap[status as keyof typeof statusMap] || statusMap.disconnected;
+
     dotElement.className = `status-dot ${statusInfo.class}`;
     textElement.textContent = statusInfo.text;
-    statusElement.style.display = 'block';
+    statusElement.style.display = "block";
+
+    // Mostrar botón de reconexión solo cuando no esté conectado
+    if (reconnectBtn) {
+      reconnectBtn.style.display = status === "connected" ? "none" : "flex";
+    }
   }
 
   private toggleDebugPanel(show: boolean): void {
     if (this.debugPanel) {
-      this.debugPanel.style.display = show ? 'block' : 'none';
-      
+      this.debugPanel.style.display = show ? "block" : "none";
+
       if (show && !this.debugUpdateInterval) {
         this.startDebugUpdates();
       } else if (!show && this.debugUpdateInterval) {
@@ -702,19 +1015,21 @@ export class UIManager {
 
   private toggleControlsPanel(show: boolean): void {
     if (this.controlsPanel) {
-      this.controlsPanel.style.display = show ? 'block' : 'none';
+      this.controlsPanel.style.display = show ? "block" : "none";
     }
   }
 
   private updateSceneSelector(scenes: any[]): void {
-    const selector = document.getElementById('scene-selector') as HTMLSelectElement;
+    const selector = document.getElementById(
+      "scene-selector"
+    ) as HTMLSelectElement;
     if (!selector) return;
 
     // Clear existing options except first
     selector.innerHTML = '<option value="">Seleccionar escena...</option>';
-    
-    scenes.forEach(scene => {
-      const option = document.createElement('option');
+
+    scenes.forEach((scene) => {
+      const option = document.createElement("option");
       option.value = scene.id;
       option.textContent = `${scene.title} (${scene.durationSec}s)`;
       selector.appendChild(option);
@@ -735,94 +1050,106 @@ export class UIManager {
   }
 
   private updateDebugInfo(): void {
-    const debugContent = document.getElementById('debug-content');
+    const debugContent = document.getElementById("debug-content");
     if (!debugContent) return;
 
     const store = useAppStore.getState();
     const now = new Date();
-    
+
     const debugData = {
-      'Timestamp': now.toLocaleTimeString(),
-      'Connection': store.connectionStatus,
-      'Latency': store.latency + 'ms',
-      'Client Offset': store.clientOffset + 'ms',
-      'Device ID': store.deviceId.substring(0, 12) + '...',
-      'Audio Unlocked': store.audioUnlocked ? 'Yes' : 'No',
-      'Current Scene': store.currentScene?.id || 'None',
-      'Preload Complete': store.preloadComplete ? 'Yes' : 'No',
-      'Battery': store.battery ? store.battery + '%' : 'N/A'
+      Timestamp: now.toLocaleTimeString(),
+      Connection: store.connectionStatus,
+      Latency: store.latency + "ms",
+      "Client Offset": store.clientOffset + "ms",
+      "Device ID": store.deviceId.substring(0, 12) + "...",
+      "Audio Unlocked": store.audioUnlocked ? "Yes" : "No",
+      "Current Scene": store.currentScene?.id || "None",
+      "Preload Complete": store.preloadComplete ? "Yes" : "No",
+      Battery: store.battery ? store.battery + "%" : "N/A",
     };
 
     debugContent.innerHTML = Object.entries(debugData)
       .map(([key, value]) => `<div><strong>${key}:</strong> ${value}</div>`)
-      .join('');
+      .join("");
   }
 
   // Public methods
   public showPreloader(): void {
     if (this.progressContainer) {
-      this.progressContainer.style.display = 'flex';
+      this.progressContainer.style.display = "flex";
     }
   }
 
   public hidePreloader(): void {
     if (this.progressContainer) {
-      this.progressContainer.style.display = 'none';
+      this.progressContainer.style.display = "none";
     }
   }
 
   public showAudioUnlock(): void {
-    const audioUnlock = document.getElementById('audio-unlock');
+    const audioUnlock = document.getElementById("audio-unlock");
     if (audioUnlock) {
-      audioUnlock.style.display = 'flex';
+      audioUnlock.style.display = "flex";
     }
   }
 
   public hideAudioUnlock(): void {
-    const audioUnlock = document.getElementById('audio-unlock');
+    const audioUnlock = document.getElementById("audio-unlock");
     if (audioUnlock) {
-      audioUnlock.style.display = 'none';
+      audioUnlock.style.display = "none";
     }
   }
 
   public showMainInterface(): void {
-    const readyState = document.getElementById('ready-state');
+    const readyState = document.getElementById("ready-state");
     const store = useAppStore.getState();
-    
+    console.log(store);
+
     if (readyState) {
       // Update device info
       this.updateDeviceInfo();
-      
-      // Show manual controls if offline
-      const manualControls = readyState.querySelector('.manual-controls') as HTMLElement;
-      if (manualControls) {
-        manualControls.style.display = store.connectionStatus === 'connected' ? 'none' : 'block';
+
+      // Update ready message - solo mostrar si está conectado
+      const readyMessage = readyState.querySelector(
+        "#ready-message"
+      ) as HTMLElement;
+      if (readyMessage) {
+        readyMessage.textContent =
+          "Conectado al servidor - Esperando comandos del dashboard...";
       }
-      
-      readyState.style.display = 'flex';
+
+      // Ocultar controles manuales ya que no están disponibles sin servidor
+      const manualControls = readyState.querySelector(
+        ".manual-controls"
+      ) as HTMLElement;
+      if (manualControls) {
+        manualControls.style.display = "none";
+      }
+
+      readyState.style.display = "flex";
     }
-    
+
     this.hidePreloader();
     this.hideAudioUnlock();
   }
 
   public hideMainInterface(): void {
-    const readyState = document.getElementById('ready-state');
+    const readyState = document.getElementById("ready-state");
     if (readyState) {
-      readyState.style.display = 'none';
+      readyState.style.display = "none";
     }
   }
 
   private updateDeviceInfo(): void {
     const store = useAppStore.getState();
-    
-    const deviceIdElement = document.getElementById('device-id');
-    const connectionElement = document.getElementById('connection-state');
-    const batteryInfo = document.getElementById('battery-info');
-    const batteryLevel = document.getElementById('battery-level');
+
+    const deviceIdElement = document.getElementById("device-id");
+    const connectionElement = document.getElementById("connection-state");
+    const batteryInfo = document.getElementById("battery-info");
+    const batteryLevel = document.getElementById("battery-level");
 
     if (deviceIdElement) {
-      deviceIdElement.textContent = store.deviceId.substring(0, 12) + '...';
+      deviceIdElement.textContent = store.deviceId.substring(0, 12) + "...";
     }
 
     if (connectionElement) {
@@ -830,8 +1157,8 @@ export class UIManager {
     }
 
     if (store.battery && batteryInfo && batteryLevel) {
-      batteryInfo.style.display = 'flex';
-      batteryLevel.textContent = store.battery + '%';
+      batteryInfo.style.display = "flex";
+      batteryLevel.textContent = store.battery + "%";
     }
   }
 
@@ -839,15 +1166,62 @@ export class UIManager {
     this.toggleDebugPanel(enabled);
   }
 
+  public showConnectionError(): void {
+    const connectionError = document.getElementById("connection-error");
+    if (connectionError) {
+      connectionError.style.display = "block";
+    }
+  }
+
+  public hideConnectionError(): void {
+    const connectionError = document.getElementById("connection-error");
+    if (connectionError) {
+      connectionError.style.display = "none";
+    }
+  }
+
+  public showSceneLoading(sceneName?: string): void {
+    const sceneLoading = document.getElementById("scene-loading");
+    const sceneNameElement = document.getElementById("loading-scene-name");
+    
+    if (sceneLoading) {
+      sceneLoading.style.display = "flex";
+      
+      if (sceneNameElement && sceneName) {
+        sceneNameElement.textContent = `Cargando: ${sceneName}`;
+      }
+    }
+    
+    this.hideMainInterface();
+  }
+
+  public hideSceneLoading(): void {
+    const sceneLoading = document.getElementById("scene-loading");
+    if (sceneLoading) {
+      sceneLoading.style.display = "none";
+    }
+  }
+
+  public updateSceneLoadingProgress(percentage: number): void {
+    const fillElement = document.getElementById("scene-progress-fill");
+    const textElement = document.getElementById("scene-progress-text");
+    
+    if (fillElement) {
+      fillElement.style.width = `${percentage}%`;
+    }
+    
+    if (textElement) {
+      textElement.textContent = `${percentage}%`;
+    }
+  }
+
   public destroy(): void {
-    logger.info('🧹 Destruyendo UIManager');
-    
+    logger.info("🧹 Destruyendo UIManager");
+
     this.stopDebugUpdates();
-    
+
     if (this.overlayElement) {
       this.overlayElement.remove();
     }
   }
 }
-
-

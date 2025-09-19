@@ -1,9 +1,9 @@
-import { logger } from '@/utils/logger';
-import { config } from '@/utils/config';
-import { AudioManager } from './AudioManager';
-import { SceneManager } from './SceneManager';
-import { VRWebSocketClient } from '@/utils/websocket';
-import { useAppStore } from '@/store/appStore';
+import { logger } from "@/utils/logger";
+import { config } from "@/utils/config";
+import { AudioManager } from "./AudioManager";
+import { SceneManager } from "./SceneManager";
+import { VRWebSocketClient } from "@/utils/websocket";
+import { useAppStore } from "@/store/appStore";
 
 export class SyncManager {
   private audioManager: AudioManager;
@@ -20,51 +20,61 @@ export class SyncManager {
     this.audioManager = audioManager;
     this.sceneManager = sceneManager;
     this.wsClient = wsClient;
-    
+
     this.startStateReporting();
     this.startDriftChecking();
-    
-    logger.info('🔄 SyncManager inicializado');
+
+    logger.info("🔄 SyncManager inicializado");
   }
 
-  public startSyncedPlayback(serverEpochMs: number): void {
-    logger.info('⏰ Iniciando reproducción sincronizada:', new Date(serverEpochMs).toISOString());
-    
+  public async startSyncedPlayback(serverEpochMs: number): Promise<void> {
+    logger.info(
+      "⏰ Iniciando reproducción sincronizada:",
+      new Date(serverEpochMs).toISOString()
+    );
+
     const store = useAppStore.getState();
+
+    // Check if audio is unlocked
+    if (!store.audioUnlocked) {
+      logger.error("❌ AudioContext no inicializado para sync");
+      return;
+    }
+
     const now = Date.now();
     const adjustedServerTime = serverEpochMs - store.clientOffset;
     const delayMs = adjustedServerTime - now;
-    
-    logger.debug('🎯 Sync timing:', {
+
+    logger.debug("🎯 Sync timing:", {
       serverTime: serverEpochMs,
       clientOffset: store.clientOffset,
       adjustedServerTime,
       localTime: now,
-      delayMs
+      delayMs,
     });
 
     if (delayMs <= 0) {
       // Start immediately if we're already past the start time
-      this.audioManager.play();
-      logger.info('▶️ Iniciado inmediatamente (sin retraso)');
+      await this.audioManager.play();
+      logger.info("▶️ Iniciado inmediatamente (sin retraso)");
     } else if (delayMs > 10000) {
       // If delay is too large, something might be wrong
-      logger.warn('⚠️ Retraso muy grande para sync:', delayMs + 'ms');
-      this.audioManager.play();
+      logger.warn("⚠️ Retraso muy grande para sync:", delayMs + "ms");
+      await this.audioManager.play();
     } else {
       // Use precise audio scheduling
-      this.audioManager.startAtServerTime(serverEpochMs);
+      await this.audioManager.startAtServerTime(serverEpochMs);
     }
   }
 
   public seek(deltaMs: number): void {
-    logger.info('⏩ Seeking:', deltaMs + 'ms');
+    logger.info("⏩ Seeking:", deltaMs + "ms");
     this.audioManager.seek(deltaMs);
   }
 
   private startStateReporting(): void {
     if (!this.wsClient) {
-      logger.debug('📊 No WebSocket, omitiendo reporte de estado');
+      logger.debug("📊 No WebSocket, omitiendo reporte de estado");
       return;
     }
 
@@ -78,23 +88,26 @@ export class SyncManager {
 
     const currentScene = this.sceneManager.getCurrentScene();
     const audioState = this.audioManager.getPlaybackState();
-    
+
     if (!currentScene) return;
 
+    // Ensure currentTime is never negative
+    const currentTime = Math.max(0, audioState.currentTime);
+
     this.wsClient.send({
-      type: 'STATE',
+      type: "STATE",
       payload: {
         sceneId: currentScene.id,
-        currentTime: audioState.currentTime,
+        currentTime: currentTime,
         playing: audioState.isPlaying,
-        buffered: 100 // Assume fully buffered since we preload
-      }
+        buffered: 100, // Assume fully buffered since we preload
+      },
     });
 
-    logger.debug('📊 Estado reportado:', {
+    logger.debug("📊 Estado reportado:", {
       scene: currentScene.id,
-      time: audioState.currentTime.toFixed(2) + 's',
-      playing: audioState.isPlaying
+      time: currentTime.toFixed(2) + "s",
+      playing: audioState.isPlaying,
     });
   }
 
@@ -107,7 +120,7 @@ export class SyncManager {
   private checkAndCorrectDrift(): void {
     const store = useAppStore.getState();
     const audioState = this.audioManager.getPlaybackState();
-    
+
     if (!audioState.isPlaying || !this.wsClient) {
       return;
     }
@@ -116,25 +129,28 @@ export class SyncManager {
     const now = Date.now();
     const serverTime = now + store.clientOffset;
     const audioStartTime = this.calculateAudioStartTime();
-    
+
     if (audioStartTime === 0) return;
-    
+
     const expectedAudioTime = (serverTime - audioStartTime) / 1000;
     const actualAudioTime = audioState.currentTime;
     const driftMs = (actualAudioTime - expectedAudioTime) * 1000;
-    
+
     if (Math.abs(driftMs) > config.audio.syncTolerance) {
-      logger.warn('🔧 Drift detectado:', {
-        expected: expectedAudioTime.toFixed(2) + 's',
-        actual: actualAudioTime.toFixed(2) + 's',
-        drift: driftMs.toFixed(0) + 'ms'
+      logger.warn("🔧 Drift detectado:", {
+        expected: expectedAudioTime.toFixed(2) + "s",
+        actual: actualAudioTime.toFixed(2) + "s",
+        drift: driftMs.toFixed(0) + "ms",
       });
-      
+
       // Apply correction if drift is significant but not too large
       if (Math.abs(driftMs) < config.audio.maxDriftCorrection) {
         this.audioManager.correctDrift(driftMs);
       } else {
-        logger.error('❌ Drift demasiado grande para corregir:', driftMs + 'ms');
+        logger.error(
+          "❌ Drift demasiado grande para corregir:",
+          driftMs + "ms"
+        );
       }
     }
   }
@@ -162,7 +178,7 @@ export class SyncManager {
     const audioState = this.audioManager.getPlaybackState();
     const currentScene = this.sceneManager.getCurrentScene();
     const store = useAppStore.getState();
-    
+
     return {
       scene: currentScene?.id || null,
       isPlaying: audioState.isPlaying,
@@ -171,23 +187,21 @@ export class SyncManager {
       volume: audioState.volume,
       connectionStatus: store.connectionStatus,
       latency: store.latency,
-      clientOffset: store.clientOffset
+      clientOffset: store.clientOffset,
     };
   }
 
   public destroy(): void {
-    logger.info('🧹 Destruyendo SyncManager');
-    
+    logger.info("🧹 Destruyendo SyncManager");
+
     if (this.stateReportTimer) {
       clearInterval(this.stateReportTimer);
       this.stateReportTimer = null;
     }
-    
+
     if (this.driftCheckTimer) {
       clearInterval(this.driftCheckTimer);
       this.driftCheckTimer = null;
     }
   }
 }
-
-

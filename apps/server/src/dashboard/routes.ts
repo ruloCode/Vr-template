@@ -1,91 +1,157 @@
-import { Router, Request, Response } from 'express';
-import { WebSocketManager } from '../websocket/manager.js';
-import { logger } from '../utils/logger.js';
+import { Router, Request, Response } from "express";
+import { WebSocketManager } from "../websocket/manager.js";
+import { logger } from "../utils/logger.js";
 
 export function createDashboardRoutes(wsManager: WebSocketManager): Router {
   const router = Router();
 
   // Servir la interfaz del dashboard
-  router.get('/', (req: Request, res: Response) => {
+  router.get("/", (req: Request, res: Response) => {
     res.send(generateDashboardHTML());
   });
 
   // API para obtener estado del room
-  router.get('/api/room', (req: Request, res: Response) => {
+  router.get("/api/room", (req: Request, res: Response) => {
     try {
       const room = wsManager.getRoom();
       res.json(room);
     } catch (error) {
-      logger.error('Error getting room state:', error);
-      res.status(500).json({ error: 'Error obteniendo estado del room' });
+      logger.error("Error getting room state:", error);
+      res.status(500).json({ error: "Error obteniendo estado del room" });
     }
   });
 
   // API para enviar comandos
-  router.post('/api/command', (req: Request, res: Response) => {
+  router.post("/api/command", (req: Request, res: Response) => {
     try {
       const { commandType, ...payload } = req.body;
-      
+
       if (!commandType) {
-        return res.status(400).json({ error: 'commandType es requerido' });
+        return res.status(400).json({ error: "commandType es requerido" });
       }
 
       let command;
-      
+
       switch (commandType) {
-        case 'LOAD':
+        case "LOAD":
           if (!payload.sceneId) {
-            return res.status(400).json({ error: 'sceneId es requerido para LOAD' });
+            return res
+              .status(400)
+              .json({ error: "sceneId es requerido para LOAD" });
           }
           command = {
-            type: 'COMMAND' as const,
-            payload: { commandType: 'LOAD' as const, sceneId: payload.sceneId }
+            type: "COMMAND" as const,
+            payload: { commandType: "LOAD" as const, sceneId: payload.sceneId },
           };
           break;
-          
-        case 'START_AT':
-          const epochMs = payload.epochMs || Date.now() + (payload.delayMs || 3000);
+
+        case "START_AT":
+          const epochMs =
+            payload.epochMs || Date.now() + (payload.delayMs || 3000);
           command = {
-            type: 'COMMAND' as const,
-            payload: { commandType: 'START_AT' as const, epochMs }
+            type: "COMMAND" as const,
+            payload: { commandType: "START_AT" as const, epochMs },
           };
           break;
-          
-        case 'PAUSE':
+
+        case "PAUSE":
           command = {
-            type: 'COMMAND' as const,
-            payload: { commandType: 'PAUSE' as const }
+            type: "COMMAND" as const,
+            payload: { commandType: "PAUSE" as const },
           };
           break;
-          
-        case 'RESUME':
+
+        case "RESUME":
           command = {
-            type: 'COMMAND' as const,
-            payload: { commandType: 'RESUME' as const }
+            type: "COMMAND" as const,
+            payload: { commandType: "RESUME" as const },
           };
           break;
-          
-        case 'SEEK':
-          if (typeof payload.deltaMs !== 'number') {
-            return res.status(400).json({ error: 'deltaMs es requerido para SEEK' });
+
+        case "SEEK":
+          if (typeof payload.deltaMs !== "number") {
+            return res
+              .status(400)
+              .json({ error: "deltaMs es requerido para SEEK" });
           }
           command = {
-            type: 'COMMAND' as const,
-            payload: { commandType: 'SEEK' as const, deltaMs: payload.deltaMs }
+            type: "COMMAND" as const,
+            payload: { commandType: "SEEK" as const, deltaMs: payload.deltaMs },
           };
           break;
-          
+
+        case "SHOW_SCREEN":
+          if (!payload.screenType) {
+            return res
+              .status(400)
+              .json({ error: "screenType es requerido para SHOW_SCREEN" });
+          }
+          command = {
+            type: "COMMAND" as const,
+            payload: {
+              commandType: "SHOW_SCREEN" as const,
+              screenType: payload.screenType,
+            },
+          };
+          break;
+
+        case "HIDE_SCREEN":
+          if (!payload.screenType) {
+            return res
+              .status(400)
+              .json({ error: "screenType es requerido para HIDE_SCREEN" });
+          }
+          command = {
+            type: "COMMAND" as const,
+            payload: {
+              commandType: "HIDE_SCREEN" as const,
+              screenType: payload.screenType,
+            },
+          };
+          break;
+
+        case "HIDE_ALL_SCREENS":
+          command = {
+            type: "COMMAND" as const,
+            payload: { commandType: "HIDE_ALL_SCREENS" as const },
+          };
+          break;
+
+        case "SHOW_ALL_SCREENS":
+          command = {
+            type: "COMMAND" as const,
+            payload: { commandType: "SHOW_ALL_SCREENS" as const },
+          };
+          break;
+
+        case "TOGGLE_SCREEN":
+          if (!payload.screenType) {
+            return res
+              .status(400)
+              .json({ error: "screenType es requerido para TOGGLE_SCREEN" });
+          }
+          command = {
+            type: "COMMAND" as const,
+            payload: {
+              commandType: "TOGGLE_SCREEN" as const,
+              screenType: payload.screenType,
+            },
+          };
+          break;
+
         default:
-          return res.status(400).json({ error: `Comando ${commandType} no reconocido` });
+          return res
+            .status(400)
+            .json({ error: `Comando ${commandType} no reconocido` });
       }
 
       wsManager.broadcastCommand(command);
-      logger.info(`Comando ${commandType} enviado desde dashboard`);
-      
-      res.json({ success: true, command: commandType });
+      // Command sent from dashboard
+
+      return res.json({ success: true, command: commandType });
     } catch (error) {
-      logger.error('Error sending command:', error);
-      res.status(500).json({ error: 'Error enviando comando' });
+      logger.error("Error sending command:", error);
+      return res.status(500).json({ error: "Error enviando comando" });
     }
   });
 
@@ -303,6 +369,19 @@ function generateDashboardHTML(): string {
             font-size: 0.9rem;
             color: #6c757d;
         }
+        
+        .screen-info {
+            margin-top: 10px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .screen-info small {
+            color: #495057;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -327,7 +406,7 @@ function generateDashboardHTML(): string {
             </div>
             <div class="stat-card">
                 <span class="stat-number" id="current-scene">-</span>
-                <div class="stat-label">Escena Actual</div>
+                <div class="stat-label">Toma Actual</div>
             </div>
         </div>
         
@@ -336,9 +415,18 @@ function generateDashboardHTML(): string {
                 <h3>🎬 Control de Escenas</h3>
                 <div class="input-group">
                     <select id="scene-select">
-                        <option value="escena-1">Escena 1: Riqueza Natural</option>
-                        <option value="escena-2">Escena 2: Dinámica del País</option>
-                        <option value="escena-3">Escena 3: Exploración On/Offshore</option>
+                        <option value="base">Escena Base: Vista por Defecto</option>
+                        <option value="escena-1">Escena 1: Energías Renovables (Solar y Eólica)</option>
+                        <option value="escena-2">Escena 2: Operaciones Petroleras</option>
+                        <option value="escena-3">Escena 3: Operaciones de Plataforma</option>
+                        <option value="escena-4">Escena 4: Entorno Natural</option>
+                        <option value="escena-5">Escena 5: Vista Panorámica</option>
+                        <option value="escena-6">Escena 6: Operaciones Especializadas</option>
+                        <option value="escena-7">Escena 7: Vista Industrial Avanzada</option>
+                        <option value="escena-8">Escena 8: Operaciones Industriales</option>
+                        <option value="escena-9">Escena 9: Instalaciones Avanzadas</option>
+                        <option value="escena-10">Escena 10: Operaciones Especializadas</option>
+                        <option value="escena-11">Escena 11: Infraestructura Completa</option>
                     </select>
                     <button class="btn btn-primary" onclick="loadScene()">Cargar Escena</button>
                 </div>
@@ -363,6 +451,17 @@ function generateDashboardHTML(): string {
                 <div class="input-group">
                     <input type="number" id="custom-delay" placeholder="Milisegundos" value="3000">
                     <button class="btn btn-success" onclick="startInCustom()">START Custom</button>
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <h3>📺 Control de Pantallas Flotantes</h3>
+                <div class="button-group">
+                    <button class="btn btn-success" onclick="showAllScreens()">📺 Mostrar Pantalla Actual</button>
+                    <button class="btn btn-warning" onclick="hideAllScreens()">📺 Ocultar Todas</button>
+                </div>
+                <div class="screen-info">
+                    <small id="screen-status">Pantallas: <span id="current-screen-info">-</span></small>
                 </div>
             </div>
         </div>
@@ -428,6 +527,9 @@ function generateDashboardHTML(): string {
             document.getElementById('avg-latency').textContent = avgLatency + 'ms';
             
             document.getElementById('current-scene').textContent = currentRoom.currentScene || '-';
+            
+            // Actualizar información de pantalla
+            updateScreenInfo();
         }
         
         function updateClientsTable() {
@@ -507,10 +609,66 @@ function generateDashboardHTML(): string {
         function seek(deltaMs) {
             sendCommand('SEEK', { deltaMs });
         }
+        
+        function showAllScreens() {
+            sendCommand('SHOW_ALL_SCREENS');
+        }
+        
+        function hideAllScreens() {
+            sendCommand('HIDE_ALL_SCREENS');
+        }
+        
+        function updateScreenInfo() {
+            const currentScene = document.getElementById('current-scene').textContent;
+            const screenInfoElement = document.getElementById('current-screen-info');
+            
+            let screenInfo = '-';
+            
+            switch (currentScene) {
+                case 'base':
+                    screenInfo = '🏠 Escena Base - Sin pantallas flotantes';
+                    break;
+                case 'escena-1':
+                    screenInfo = '☀️ Energías Renovables disponible';
+                    break;
+                case 'escena-2':
+                    screenInfo = '🛢️ Operaciones Petroleras disponible';
+                    break;
+                case 'escena-3':
+                    screenInfo = '🏗️ Operaciones de Plataforma disponible';
+                    break;
+                case 'escena-4':
+                    screenInfo = '🌿 Entorno Natural disponible';
+                    break;
+                case 'escena-5':
+                    screenInfo = '🌅 Vista Panorámica disponible';
+                    break;
+                case 'escena-6':
+                    screenInfo = '⚙️ Operaciones Especializadas disponible';
+                    break;
+                case 'escena-7':
+                    screenInfo = '🏭 Vista Industrial Avanzada disponible';
+                    break;
+                case 'escena-8':
+                    screenInfo = '🏭 Operaciones Industriales disponible';
+                    break;
+                case 'escena-9':
+                    screenInfo = '🏗️ Instalaciones Avanzadas disponible';
+                    break;
+                case 'escena-10':
+                    screenInfo = '⚙️ Operaciones Especializadas disponible';
+                    break;
+                case 'escena-11':
+                    screenInfo = '🏢 Infraestructura Completa disponible';
+                    break;
+                default:
+                    screenInfo = 'Sin pantallas flotantes';
+            }
+            
+            screenInfoElement.textContent = screenInfo;
+        }
     </script>
 </body>
 </html>
   `;
 }
-
-
