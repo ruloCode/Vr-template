@@ -92,6 +92,54 @@ export const ServerCommandSchema = z.object({
       commandType: z.literal("TOGGLE_SCREEN"),
       screenType: z.enum(["solar", "petroleo", "plataforma"]),
     }),
+    // New sequence automation commands
+    z.object({
+      commandType: z.literal("START_SEQUENCE"),
+      sequenceId: z.string().min(1).max(50),
+      config: z.object({
+        autoLoop: z.boolean().default(false),
+        showScreensAutomatically: z.boolean().default(true),
+      }).optional(),
+    }),
+    z.object({
+      commandType: z.literal("STOP_SEQUENCE"),
+    }),
+    z.object({
+      commandType: z.literal("PAUSE_SEQUENCE"),
+    }),
+    z.object({
+      commandType: z.literal("RESUME_SEQUENCE"),
+    }),
+    z.object({
+      commandType: z.literal("NEXT_SCENE"),
+    }),
+    z.object({
+      commandType: z.literal("PREVIOUS_SCENE"),
+    }),
+    z.object({
+      commandType: z.literal("JUMP_TO_SCENE"),
+      sceneIndex: z.number().int().min(0),
+    }),
+    z.object({
+      commandType: z.literal("UPDATE_SEQUENCE"),
+      sequenceId: z.string().min(1).max(50),
+      scenes: z.array(z.object({
+        sceneId: z.string().min(1).max(50),
+        duration: z.number().int().positive(),
+        name: z.string().optional(),
+        showScreens: z.boolean().default(true),
+        screenDelay: z.number().int().min(0).default(5000),
+      })),
+      config: z.object({
+        autoLoop: z.boolean().default(false),
+        showScreensAutomatically: z.boolean().default(true),
+        transitions: z.object({
+          fadeOutTime: z.number().int().positive().default(1000),
+          loadTime: z.number().int().positive().default(2000),
+          fadeInTime: z.number().int().positive().default(1000),
+        }).optional(),
+      }).optional(),
+    }),
   ]),
 });
 
@@ -117,6 +165,43 @@ export const ClientStatusSchema = z.object({
   lastStateUpdate: z.number().int().positive(),
 });
 
+// Sequence state schemas
+export const SequenceSceneSchema = z.object({
+  sceneId: z.string().min(1).max(50),
+  duration: z.number().int().positive(),
+  name: z.string().optional(),
+  showScreens: z.boolean().default(true),
+  screenDelay: z.number().int().min(0).default(5000),
+});
+
+export const SequenceConfigSchema = z.object({
+  id: z.string().min(1).max(50),
+  name: z.string().min(1).max(100),
+  description: z.string().optional(),
+  scenes: z.array(SequenceSceneSchema),
+  totalDuration: z.number().int().positive(),
+  autoLoop: z.boolean().default(false),
+  showScreensAutomatically: z.boolean().default(true),
+  transitions: z.object({
+    fadeOutTime: z.number().int().positive().default(1000),
+    loadTime: z.number().int().positive().default(2000),
+    fadeInTime: z.number().int().positive().default(1000),
+  }),
+  editable: z.boolean().default(false),
+});
+
+export const SequenceStateSchema = z.object({
+  isActive: z.boolean(),
+  isPaused: z.boolean(),
+  currentSequence: SequenceConfigSchema.optional(),
+  currentSceneIndex: z.number().int().min(0).default(0),
+  sceneStartTime: z.number().int().positive().optional(),
+  sequenceStartTime: z.number().int().positive().optional(),
+  remainingTime: z.number().int().min(0).optional(),
+  progress: z.number().min(0).max(1).default(0),
+  autoLoop: z.boolean().default(false),
+});
+
 // Room state
 export const RoomStateSchema = z.object({
   id: z.string(),
@@ -126,6 +211,8 @@ export const RoomStateSchema = z.object({
   startedAt: z.number().int().optional(),
   pausedAt: z.number().int().optional(),
   seekOffset: z.number().default(0),
+  // Add sequence state to room
+  sequenceState: SequenceStateSchema.optional(),
 });
 
 // Tipos derivados
@@ -140,6 +227,11 @@ export type ServerCommand = z.infer<typeof ServerCommandSchema>;
 
 export type ClientStatus = z.infer<typeof ClientStatusSchema>;
 export type RoomState = z.infer<typeof RoomStateSchema>;
+
+// New sequence-related types
+export type SequenceScene = z.infer<typeof SequenceSceneSchema>;
+export type SequenceConfig = z.infer<typeof SequenceConfigSchema>;
+export type SequenceState = z.infer<typeof SequenceStateSchema>;
 
 // Union types para todos los mensajes
 export const ClientMessageSchema = z.discriminatedUnion("type", [
@@ -160,9 +252,22 @@ export type ClientMessage = z.infer<typeof ClientMessageSchema>;
 export type ServerMessage = z.infer<typeof ServerMessageSchema>;
 
 // Constantes del protocolo
-export const PROTOCOL_VERSION = "1.0.0";
+export const PROTOCOL_VERSION = "1.1.0"; // Updated for sequence support
 export const MAX_LATENCY_MS = 5000;
 export const HEARTBEAT_INTERVAL_MS = 30000;
 export const CLIENT_TIMEOUT_MS = 60000;
 export const SYNC_TOLERANCE_MS = 120; // Máximo desvío antes de corrección
 export const PING_INTERVAL_MS = 5000;
+
+// Sequence-related constants
+export const SEQUENCE_TIMING = {
+  MIN_SCENE_DURATION_MS: 15000,    // Minimum 15 seconds per scene
+  MAX_SCENE_DURATION_MS: 300000,   // Maximum 5 minutes per scene
+  DEFAULT_SCENE_DURATION_MS: 45000, // Default 45 seconds per scene
+  MIN_TRANSITION_TIME_MS: 500,     // Minimum transition time
+  MAX_TRANSITION_TIME_MS: 5000,    // Maximum transition time
+  DEFAULT_FADE_TIME_MS: 1000,      // Default fade in/out time
+  DEFAULT_LOAD_TIME_MS: 2000,      // Default scene loading time
+  SCREEN_DELAY_DEFAULT_MS: 5000,   // Default delay before showing screens
+  PROGRESS_UPDATE_INTERVAL_MS: 1000, // How often to broadcast progress updates
+} as const;

@@ -7,6 +7,7 @@ import {
   ServerMessage,
   ClientStatus,
   RoomState,
+  SequenceState,
   PROTOCOL_VERSION,
   HEARTBEAT_INTERVAL_MS,
   CLIENT_TIMEOUT_MS,
@@ -14,6 +15,7 @@ import {
 } from "../types/protocol.js";
 import { logger } from "../utils/logger.js";
 import { config } from "../utils/config.js";
+import { SequenceManager, SequenceManagerEvents } from "../managers/sequence-manager.js";
 
 export class WebSocketManager {
   private wss: WebSocketServer;
@@ -21,6 +23,7 @@ export class WebSocketManager {
   private room: RoomState;
   private heartbeatInterval: NodeJS.Timeout | null = null;
   private sslOptions: https.ServerOptions | null;
+  private sequenceManager: SequenceManager;
 
   constructor(sslOptions: https.ServerOptions | null = null) {
     this.sslOptions = sslOptions;
@@ -54,7 +57,57 @@ export class WebSocketManager {
       clients: [],
       isPlaying: false,
       seekOffset: 0,
+      sequenceState: {
+        isActive: false,
+        isPaused: false,
+        currentSceneIndex: 0,
+        progress: 0,
+        autoLoop: false,
+      },
     };
+
+    // Initialize sequence manager with event handlers
+    this.sequenceManager = new SequenceManager({
+      onSceneChange: (sceneId: string, sceneIndex: number) => {
+        logger.info(`🎬 Sequence scene change: ${sceneId} (${sceneIndex})`);
+        this.room.currentScene = sceneId;
+        this.broadcastCommand({
+          type: "COMMAND",
+          payload: { commandType: "LOAD", sceneId }
+        });
+        this.updateRoomState();
+      },
+      onSequenceComplete: (sequenceId: string) => {
+        logger.info(`✅ Sequence completed: ${sequenceId}`);
+        this.updateRoomState();
+      },
+      onSequencePaused: (sequenceId: string) => {
+        logger.info(`⏸️ Sequence paused: ${sequenceId}`);
+        this.broadcastCommand({
+          type: "COMMAND",
+          payload: { commandType: "PAUSE" }
+        });
+        this.updateRoomState();
+      },
+      onSequenceResumed: (sequenceId: string) => {
+        logger.info(`▶️ Sequence resumed: ${sequenceId}`);
+        this.broadcastCommand({
+          type: "COMMAND",
+          payload: { commandType: "RESUME" }
+        });
+        this.updateRoomState();
+      },
+      onProgress: (progress: number, remainingMs: number) => {
+        // Update room state with current progress
+        if (this.room.sequenceState) {
+          this.room.sequenceState.progress = progress;
+          this.room.sequenceState.remainingTime = remainingMs;
+        }
+      },
+      onError: (error: Error) => {
+        logger.error("SequenceManager error:", error);
+      }
+    });
 
     this.setupWebSocketServer();
     this.startHeartbeat();
@@ -113,6 +166,7 @@ export class WebSocketManager {
     this.room.clients = Array.from(this.clients.values()).map((conn) =>
       conn.getStatus()
     );
+    this.room.sequenceState = this.sequenceManager.getState();
   }
 
   public broadcastCommand(command: ServerMessage): void {
@@ -138,10 +192,66 @@ export class WebSocketManager {
     ).length;
   }
 
+  // Sequence management methods
+  public async startSequence(sequenceId: string, config?: { autoLoop?: boolean, showScreensAutomatically?: boolean }): Promise<boolean> {
+    const result = await this.sequenceManager.startSequence(sequenceId, config);
+    this.updateRoomState();
+    return result;
+  }
+
+  public async stopSequence(): Promise<void> {
+    await this.sequenceManager.stopSequence();
+    this.updateRoomState();
+  }
+
+  public pauseSequence(): boolean {
+    const result = this.sequenceManager.pauseSequence();
+    this.updateRoomState();
+    return result;
+  }
+
+  public resumeSequence(): boolean {
+    const result = this.sequenceManager.resumeSequence();
+    this.updateRoomState();
+    return result;
+  }
+
+  public async nextScene(): Promise<boolean> {
+    const result = await this.sequenceManager.nextScene();
+    this.updateRoomState();
+    return result;
+  }
+
+  public async previousScene(): Promise<boolean> {
+    const result = await this.sequenceManager.previousScene();
+    this.updateRoomState();
+    return result;
+  }
+
+  public async jumpToScene(sceneIndex: number): Promise<boolean> {
+    const result = await this.sequenceManager.jumpToScene(sceneIndex);
+    this.updateRoomState();
+    return result;
+  }
+
+  public getAvailableSequences() {
+    return this.sequenceManager.getAvailableSequences();
+  }
+
+  public updateSequence(sequenceId: string, scenes: any[], config?: any) {
+    // This would involve more complex validation and updating
+    // For now, we'll implement the basic structure
+    logger.info(`📝 Update sequence request for ${sequenceId}`);
+    this.updateRoomState();
+  }
+
   public close(): void {
     if (this.heartbeatInterval) {
       clearInterval(this.heartbeatInterval);
     }
+
+    // Stop any active sequence
+    this.sequenceManager.stopSequence();
 
     for (const connection of this.clients.values()) {
       connection.close();
