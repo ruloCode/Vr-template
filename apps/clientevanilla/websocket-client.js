@@ -4,7 +4,11 @@
  */
 class VRWebSocketClient {
   constructor(options = {}) {
-    this.serverUrl = options.serverUrl || "wss://192.168.40.31:8081/ws";
+    // No default hardcoded URL - must be provided by caller
+    if (!options.serverUrl) {
+      throw new Error("🚨 serverUrl is required - no hardcoded URLs allowed");
+    }
+    this.serverUrl = options.serverUrl;
     this.deviceId = options.deviceId || `client-${Date.now()}`;
     this.reconnectInterval = options.reconnectInterval || 3000;
     this.pingInterval = options.pingInterval || 5000;

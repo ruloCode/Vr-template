@@ -190,28 +190,38 @@ class VRSyncServer {
 
     const server = serverCreation.listen(config.port, config.host, () => {
       const urls = generateAccessUrls(config.port);
+      const wsPort = config.port + 1;
 
-      logger.info(
-        `🚀 VR Sync Server iniciado en ${protocol}://${config.host}:${config.port}`
-      );
+      logger.info("🚀 VR Sync Server started successfully!");
+      logger.info(`📡 Server running on: ${protocol}://${config.host}:${config.port}`);
+      logger.info(`🌐 Local IP detected: ${localIP}`);
 
-      // URLs de acceso para dispositivos
-      logger.info(
-        `📱 Dashboard: ${protocol}://${localIP}:${config.port}/dashboard`
-      );
-
-      // Network interfaces available
-
-      if (isDevelopment) {
-        logger.info(
-          `📋 Health Check: ${protocol}://${localIP}:${config.port}/health`
-        );
-        logger.info(
-          `🔧 API Config: ${protocol}://${localIP}:${config.port}/api/config`
-        );
+      if (urls.network.length > 0) {
+        logger.info("🌐 Available on network:");
+        urls.network.forEach(url => logger.info(`   ${url}`));
       }
 
-      // WebSocket connection info for clients
+      // Dashboard URLs
+      logger.info(`🎮 Dashboard Local: ${protocol}://localhost:${config.port}/dashboard`);
+      if (localIP !== "localhost") {
+        logger.info(`🎮 Dashboard Network: ${protocol}://${localIP}:${config.port}/dashboard`);
+      }
+
+      // WebSocket URLs  
+      logger.info(`🔌 WebSocket Local: ${wsProtocol}://localhost:${wsPort}/ws`);
+      if (localIP !== "localhost") {
+        logger.info(`🔌 WebSocket Network: ${wsProtocol}://${localIP}:${wsPort}/ws`);
+      }
+
+      logger.info(`📊 Health: ${protocol}://localhost:${config.port}/health`);
+      logger.info(`⚙️ Network Config: ${protocol}://localhost:${config.port}/api/config`);
+
+      if (isDevelopment) {
+        logger.info("🔧 Development mode - Hot reload enabled");
+        logger.info("💡 Clients will auto-detect network configuration");
+      }
+
+      logger.info("✨ Server ready for VR connections!");
     });
 
     server.on("error", (err: any) => {

@@ -41,12 +41,12 @@ export class WebSocketManager {
 
       httpsServer.listen(config.port + 1, config.host, () => {
         logger.info(
-          `🔒 WSS (Secure WebSocket) server started on port ${config.port + 1}`
+          `🔒 WSS (Secure WebSocket) server started on ${config.host}:${config.port + 1}`
         );
       });
     } else {
       logger.info(
-        `🔓 WS (Regular WebSocket) server starting on port ${config.port + 1}`
+        `🔓 WS (Regular WebSocket) server starting on ${config.host}:${config.port + 1}`
       );
     }
 
