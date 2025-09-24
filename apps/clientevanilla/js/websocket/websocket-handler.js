@@ -21,27 +21,49 @@ export async function initializeWebSocket(sceneManagerInstance) {
   try {
     // Get dynamic network configuration from server
     const networkConfig = await getNetworkConfig();
-    const serverUrl = networkConfig.urls.websocket;
-    
+    const primaryUrl = networkConfig.urls.websocket;
+    const fallbackUrl = networkConfig.urls.websocketFallback;
+
     console.log("🌐 Configuración de red obtenida:");
     console.log("📡 Server IP:", networkConfig.network.serverIP);
-    console.log("🔌 WebSocket URL:", serverUrl);
+    console.log("🔌 WebSocket URL principal:", primaryUrl);
+    console.log("🔄 WebSocket URL fallback:", fallbackUrl);
     console.log("👤 Cliente IP:", networkConfig.network.clientIP);
     console.log("🏠 Es conexión local:", networkConfig.network.isLocal);
-    
-    await connectWithConfig(serverUrl, networkConfig);
+    console.log("🔐 Protocolo detectado:", networkConfig.network.protocol);
+
+    // Try primary URL first, then fallback
+    try {
+      await connectWithConfig(primaryUrl, networkConfig);
+    } catch (primaryError) {
+      console.warn("⚠️ Conexión principal falló, intentando fallback...");
+      console.error("Error primario:", primaryError);
+
+      if (fallbackUrl && fallbackUrl !== primaryUrl) {
+        console.log("🔄 Intentando conexión fallback:", fallbackUrl);
+        await connectWithConfig(fallbackUrl, networkConfig);
+      } else {
+        throw primaryError;
+      }
+    }
     
   } catch (error) {
     console.warn("⚠️ Error obteniendo configuración dinámica, usando fallback:");
     console.error(error);
-    
-    // Fallback to manual detection
+
+    // Fallback to manual detection based on main server
     const currentHost = window.location.hostname;
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const serverPort = determineWebSocketPort();
-    const serverUrl = `${protocol}//${currentHost}:${serverPort}/ws`;
-    
+    const mainServerPort = getMainServerPort();
+    const wsPort = parseInt(mainServerPort) + 1; // WebSocket is typically main server port + 1
+
+    // Determine WebSocket protocol based on main server capabilities
+    const wsProtocol = await detectWebSocketProtocol(currentHost, wsPort);
+    const serverUrl = `${wsProtocol}://${currentHost}:${wsPort}/ws`;
+
     console.log("🔗 Conectando con configuración fallback:", serverUrl);
+    console.log("📡 Servidor principal detectado en puerto:", mainServerPort);
+    console.log("🔌 WebSocket detectado en puerto:", wsPort);
+
     await connectWithConfig(serverUrl, null);
   }
 }
@@ -50,66 +72,166 @@ export async function initializeWebSocket(sceneManagerInstance) {
  * Get network configuration from server
  */
 async function getNetworkConfig() {
-  const configUrl = `${window.location.origin}/api/config`;
-  console.log("🔍 Consultando configuración en:", configUrl);
-  
+  // ClienteVanilla runs on port 8444 (HTTPS) but needs to get config from main server (port 8080)
+  const currentHost = window.location.hostname;
+  const serverPort = getMainServerPort();
+  const serverProtocol = getMainServerProtocol();
+
+  const configUrl = `${serverProtocol}://${currentHost}:${serverPort}/api/config`;
+  console.log("🔍 Consultando configuración del servidor principal en:", configUrl);
+
   const response = await fetch(configUrl);
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
   }
-  
+
   return await response.json();
 }
 
 /**
- * Determine WebSocket port dynamically
+ * Get main server port (typically 8080)
  */
-function determineWebSocketPort() {
-  // Try to get from server config first, fallback to +1 pattern
-  const currentPort = window.location.port || (window.location.protocol === "https:" ? "443" : "80");
-  return currentPort === "80" ? "8081" : (parseInt(currentPort) + 1).toString();
+function getMainServerPort() {
+  // ClienteVanilla typically runs on 8444, main server on 8080
+  if (window.location.port === "8444") {
+    return "8080";
+  }
+  // If running on different setup, try to detect
+  const currentPort = parseInt(window.location.port) || 8080;
+  // If current port is > 8080, assume main server is on 8080
+  return currentPort > 8080 ? "8080" : currentPort.toString();
+}
+
+/**
+ * Get main server protocol
+ */
+function getMainServerProtocol() {
+  // Main server typically runs on HTTP even if ClienteVanilla is on HTTPS
+  // This is because the main server serves the dashboard and API
+  return "http";
+}
+
+/**
+ * Detect if WebSocket server supports secure (WSS) or regular (WS) protocol
+ */
+async function detectWebSocketProtocol(host, port) {
+  console.log(`🔍 Detectando protocolo WebSocket en ${host}:${port}...`);
+
+  // If the current page is HTTPS, try WSS first for security
+  if (window.location.protocol === "https:") {
+    console.log("📱 Página actual es HTTPS, intentando WSS primero...");
+
+    try {
+      // Try a quick connection test to WSS
+      const testWss = await testWebSocketConnection(`wss://${host}:${port}/ws`);
+      if (testWss) {
+        console.log("✅ WSS disponible, usando conexión segura");
+        return "wss";
+      }
+    } catch (error) {
+      console.warn("⚠️ WSS no disponible:", error.message);
+    }
+
+    // WSS failed, but we're on HTTPS - this might cause mixed content issues
+    console.warn("🚨 ADVERTENCIA: Página HTTPS pero WebSocket no soporta WSS");
+    console.warn("🚨 Esto puede causar problemas de mixed content security");
+  }
+
+  // Fallback to regular WS
+  console.log("🔓 Usando WebSocket no seguro (WS)");
+  return "ws";
+}
+
+/**
+ * Test WebSocket connection quickly
+ */
+function testWebSocketConnection(url) {
+  return new Promise((resolve) => {
+    try {
+      const testWs = new WebSocket(url);
+
+      const timeout = setTimeout(() => {
+        testWs.close();
+        resolve(false);
+      }, 3000); // 3 second timeout
+
+      testWs.onopen = () => {
+        clearTimeout(timeout);
+        testWs.close();
+        resolve(true);
+      };
+
+      testWs.onerror = () => {
+        clearTimeout(timeout);
+        resolve(false);
+      };
+
+    } catch (error) {
+      resolve(false);
+    }
+  });
 }
 
 /**
  * Connect with determined configuration
  */
 async function connectWithConfig(serverUrl, networkConfig) {
-  // Initialize WebSocket client
-  vrClient = new VRWebSocketClient({
-    serverUrl: serverUrl,
-    deviceId: `clientevanilla-${Date.now()}`,
-    onConnect: () => {
-      console.log("🎮 VR Client connected to server");
-      console.log("🔍 Current scene ID on connect:", window.currentSceneId);
-      // Send ready signal for current scene
-      setTimeout(() => {
-        console.log(
-          "📤 Sending READY signal for scene:",
-          window.currentSceneId
-        );
-        vrClient.sendReady(window.currentSceneId);
-      }, 1000);
-    },
-    onDisconnect: () => {
-      console.log("🔌 VR Client disconnected from server");
-    },
-    onCommand: (command) => {
-      console.log("📨 Received command from server:", command);
-      handleServerCommand(command);
-    },
-    onError: (error) => {
-      console.error("🚨 VR Client error:", error);
-    },
+  return new Promise((resolve, reject) => {
+    console.log("🔄 Iniciando conexión con:", serverUrl);
+
+    // Track connection timeout
+    const connectionTimeout = setTimeout(() => {
+      console.error("⏰ Timeout de conexión WebSocket");
+      reject(new Error("Connection timeout"));
+    }, 10000); // 10 second timeout
+
+    // Initialize WebSocket client
+    vrClient = new VRWebSocketClient({
+      serverUrl: serverUrl,
+      deviceId: `clientevanilla-${Date.now()}`,
+      onConnect: () => {
+        clearTimeout(connectionTimeout);
+        console.log("🎮 VR Client connected to server successfully");
+        console.log("🔍 Current scene ID on connect:", window.currentSceneId);
+
+        // Send ready signal for current scene
+        setTimeout(() => {
+          console.log("📤 Sending READY signal for scene:", window.currentSceneId);
+          vrClient.sendReady(window.currentSceneId);
+        }, 1000);
+
+        resolve(vrClient);
+      },
+      onDisconnect: () => {
+        console.log("🔌 VR Client disconnected from server");
+      },
+      onCommand: (command) => {
+        console.log("📨 Received command from server:", command);
+        handleServerCommand(command);
+      },
+      onError: (error) => {
+        clearTimeout(connectionTimeout);
+        console.error("🚨 VR Client error:", error);
+        reject(error);
+      },
+    });
+
+    // Connect to server
+    try {
+      vrClient.connect();
+
+      // Setup audio interaction listeners
+      setupAudioInteractionListeners();
+
+      // Expose client globally for compatibility
+      window.vrClient = vrClient;
+
+    } catch (error) {
+      clearTimeout(connectionTimeout);
+      console.error("❌ Error durante conexión:", error);
+      reject(error);
+    }
   });
-
-  // Connect to server
-  vrClient.connect();
-
-  // Setup audio interaction listeners
-  setupAudioInteractionListeners();
-
-  // Expose client globally for compatibility
-  window.vrClient = vrClient;
 }
 
 /**
