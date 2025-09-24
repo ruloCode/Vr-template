@@ -2,6 +2,55 @@ const https = require("https");
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const os = require("os");
+
+/**
+ * Obtiene la IP local del servidor para conexiones LAN
+ */
+function getLocalIP() {
+  const interfaces = os.networkInterfaces();
+
+  for (const name of Object.keys(interfaces)) {
+    const iface = interfaces[name];
+    if (!iface) continue;
+
+    for (const alias of iface) {
+      // Buscar IPv4, no interna, no loopback
+      if (
+        alias.family === "IPv4" &&
+        !alias.internal &&
+        alias.address !== "127.0.0.1"
+      ) {
+        console.log(`📡 IP local detectada: ${alias.address} (${name})`);
+        return alias.address;
+      }
+    }
+  }
+
+  console.warn("⚠️ No se pudo detectar IP local, usando localhost");
+  return "localhost";
+}
+
+/**
+ * Obtiene todas las IPs disponibles para mostrar en logs
+ */
+function getAllLocalIPs() {
+  const interfaces = os.networkInterfaces();
+  const ips = [];
+
+  for (const name of Object.keys(interfaces)) {
+    const iface = interfaces[name];
+    if (!iface) continue;
+
+    for (const alias of iface) {
+      if (alias.family === "IPv4" && !alias.internal) {
+        ips.push(`${alias.address} (${name})`);
+      }
+    }
+  }
+
+  return ips;
+}
 
 // SSL configuration - usando certificados SSL personalizados como en vr-a-frame-example
 const options = {
@@ -69,12 +118,16 @@ function serveFile(req, res) {
   });
 }
 
+// Get local IP dynamically
+const localIP = getLocalIP();
+const allIPs = getAllLocalIPs();
+
 // Create HTTPS server
 const httpsServer = https.createServer(options, serveFile);
 
 // Create HTTP server that redirects to HTTPS
 const httpServer = http.createServer((req, res) => {
-  res.writeHead(301, { Location: `https://192.168.40.31:8444${req.url}` });
+  res.writeHead(301, { Location: `https://${localIP}:8444${req.url}` });
   res.end();
 });
 
@@ -85,8 +138,17 @@ const host = "0.0.0.0";
 
 httpsServer.listen(httpsPort, host, () => {
   console.log(`🔒 HTTPS Server running on ${host}:${httpsPort}`);
-  console.log(`📱 VR Experience: https://192.168.40.31:${httpsPort}/`);
-  console.log(`🌐 Network access: https://192.168.40.31:${httpsPort}/`);
+  console.log(`📱 VR Experience Local: https://localhost:${httpsPort}/`);
+  console.log(`🌐 VR Experience Network: https://${localIP}:${httpsPort}/`);
+
+  // Show all available network interfaces
+  if (allIPs.length > 0) {
+    console.log(`📡 Available network interfaces:`);
+    allIPs.forEach(ip => {
+      const cleanIP = ip.split(' ')[0];
+      console.log(`   https://${cleanIP}:${httpsPort}/`);
+    });
+  }
 });
 
 httpServer.listen(httpPort, host, () => {
