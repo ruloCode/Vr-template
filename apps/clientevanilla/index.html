@@ -23,7 +23,7 @@
     <a-scene background="color: #88c">
       <!-- Audio y assets - Dynamic loading -->
       <a-assets>
-        <audio id="current-audio" src="audio/ambient-wind.mp3"></audio>
+        <audio id="current-audio" src="audio/toma_01_02.mp3"></audio>
         <img id="current-skybox" src="images/base.jpg" />
 
         <!-- Solar videos for floating screen (Scene 1 only) -->
@@ -2031,6 +2031,13 @@
           }
 
           updateAudio(sceneConfig) {
+            // ⭐ NUEVO: Actualizar el src del elemento audio dinámicamente
+            const audioElement = document.querySelector("#current-audio");
+            if (audioElement && sceneConfig.assets.audio) {
+              audioElement.src = sceneConfig.assets.audio;
+              audioElement.load(); // Recargar el elemento audio
+            }
+
             // Update the audio source
             this.elements.sound.setAttribute("src", "#current-audio");
 
