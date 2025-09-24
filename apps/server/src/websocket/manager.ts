@@ -27,31 +27,49 @@ export class WebSocketManager {
 
   constructor(sslOptions: https.ServerOptions | null = null) {
     this.sslOptions = sslOptions;
+    const wsPort = config.port + 1;
+
+    logger.info("🔄 Initializing WebSocket server...");
 
     const wsOptions: any = {
-      port: config.port + 1, // WS en puerto +1
+      port: wsPort,
       path: config.paths.websocket,
     };
 
     // If SSL is available, create HTTPS server for WSS
     if (this.sslOptions) {
+      logger.info("🔐 SSL certificates detected, configuring WSS server...");
+
       const httpsServer = https.createServer(this.sslOptions);
       wsOptions.server = httpsServer;
       delete wsOptions.port; // Remove port when using existing server
 
-      httpsServer.listen(config.port + 1, config.host, () => {
-        logger.info(
-          `🔒 WSS (Secure WebSocket) server started on ${config.host}:${config.port + 1}`
-        );
+      httpsServer.listen(wsPort, config.host, () => {
+        logger.info(`🔒 WSS (Secure WebSocket) server listening on ${config.host}:${wsPort}`);
+        logger.info(`🔗 WSS URL: wss://${config.host}:${wsPort}${config.paths.websocket}`);
       });
+
+      httpsServer.on('error', (error) => {
+        logger.error("🚨 HTTPS server error:", error);
+        logger.error("💡 Verificar certificados SSL en apps/server/ssl/");
+      });
+
     } else {
-      logger.info(
-        `🔓 WS (Regular WebSocket) server starting on ${config.host}:${config.port + 1}`
-      );
+      logger.info("🔓 No SSL certificates, using regular WebSocket server...");
+      logger.info(`🔌 WS server will listen on ${config.host}:${wsPort}`);
+      logger.info(`🔗 WS URL: ws://${config.host}:${wsPort}${config.paths.websocket}`);
     }
 
-    this.wss = new WebSocketServer(wsOptions);
+    // Create WebSocket server with error handling
+    try {
+      this.wss = new WebSocketServer(wsOptions);
+      logger.info("✅ WebSocket server instance created successfully");
+    } catch (error) {
+      logger.error("❌ Failed to create WebSocket server:", error);
+      throw error;
+    }
 
+    // Initialize room state
     this.room = {
       id: "main",
       clients: [],
@@ -113,28 +131,49 @@ export class WebSocketManager {
     this.startHeartbeat();
 
     const protocol = this.sslOptions ? "WSS" : "WS";
-    logger.info(
-      `✅ ${protocol} WebSocket server initialized on port ${config.port + 1}`
-    );
+    logger.info(`✅ ${protocol} WebSocket server initialized on port ${wsPort}`);
+    logger.info(`🎯 Ready to accept ${this.sslOptions ? 'secure' : 'regular'} WebSocket connections`);
   }
 
   private setupWebSocketServer(): void {
     this.wss.on("connection", (ws: WebSocket, request) => {
       const clientId = uuidv4();
+      const clientIP = request.socket.remoteAddress || "unknown";
+      const userAgent = request.headers['user-agent'] || "unknown";
+
+      logger.info(`🎮 Nueva conexión WebSocket:`);
+      logger.info(`   Client ID: ${clientId}`);
+      logger.info(`   IP: ${clientIP}`);
+      logger.info(`   User-Agent: ${userAgent.substring(0, 50)}...`);
+      logger.info(`   Protocol: ${this.sslOptions ? 'WSS (Secure)' : 'WS (Regular)'}`);
+
       const connection = new ClientConnection(clientId, ws, this);
       this.clients.set(clientId, connection);
 
-      logger.info(`Cliente conectado: ${clientId}`);
+      logger.info(`📊 Total clientes conectados: ${this.clients.size}`);
 
-      ws.on("close", () => {
+      ws.on("close", (code, reason) => {
+        logger.info(`🔌 Cliente desconectado: ${clientId}`);
+        logger.info(`   Código: ${code}, Razón: ${reason?.toString() || 'Sin especificar'}`);
         this.handleClientDisconnect(clientId);
       });
 
       ws.on("error", (error) => {
-        logger.error(`Error en WebSocket ${clientId}:`, error);
+        logger.error(`🚨 Error en WebSocket ${clientId}:`, error);
+        logger.error(`   IP: ${clientIP}`);
         this.handleClientDisconnect(clientId);
       });
     });
+
+    this.wss.on("error", (error) => {
+      logger.error("🚨 WebSocket Server Error:", error);
+    });
+
+    this.wss.on("listening", () => {
+      logger.info("👂 WebSocket server is now listening for connections");
+    });
+
+    logger.info("🔧 WebSocket server event handlers configured");
   }
 
   private startHeartbeat(): void {
@@ -155,10 +194,19 @@ export class WebSocketManager {
   private handleClientDisconnect(clientId: string): void {
     const connection = this.clients.get(clientId);
     if (connection) {
+      const status = connection.getStatus();
+      logger.info(`📤 Removing client ${clientId}:`);
+      logger.info(`   Device ID: ${status.deviceId || 'Not provided'}`);
+      logger.info(`   Last status: ${status.status}`);
+      logger.info(`   Connected duration: ${Math.round((Date.now() - status.connectedAt) / 1000)}s`);
+
       connection.close();
       this.clients.delete(clientId);
       this.updateRoomState();
-      // Client disconnected
+
+      logger.info(`📊 Remaining clients: ${this.clients.size}`);
+    } else {
+      logger.warn(`⚠️ Attempted to disconnect unknown client: ${clientId}`);
     }
   }
 
@@ -245,6 +293,81 @@ export class WebSocketManager {
     this.updateRoomState();
   }
 
+  /**
+   * Get debug information about WebSocket server
+   */
+  public getDebugInfo() {
+    const clientsInfo = Array.from(this.clients.values()).map(conn => {
+      const status = conn.getStatus();
+      return {
+        id: status.id,
+        deviceId: status.deviceId,
+        status: status.status,
+        latency: status.latencyMs,
+        connectedDuration: Math.round((Date.now() - status.connectedAt) / 1000)
+      };
+    });
+
+    return {
+      server: {
+        protocol: this.sslOptions ? 'WSS' : 'WS',
+        port: config.port + 1,
+        hasSSL: !!this.sslOptions,
+        uptime: process.uptime()
+      },
+      clients: {
+        total: this.clients.size,
+        connected: clientsInfo.filter(c => c.status === 'connected').length,
+        ready: clientsInfo.filter(c => c.status === 'ready').length,
+        playing: clientsInfo.filter(c => c.status === 'playing').length,
+        list: clientsInfo
+      },
+      room: {
+        id: this.room.id,
+        currentScene: this.room.currentScene,
+        isPlaying: this.room.isPlaying,
+        sequenceActive: this.room.sequenceState?.isActive || false
+      },
+      timestamp: Date.now()
+    };
+  }
+
+  /**
+   * Log detailed debug information
+   */
+  public logDebugInfo() {
+    const debug = this.getDebugInfo();
+
+    logger.info("🔍 WebSocket Server Debug Information:");
+    logger.info("═══════════════════════════════════════");
+    logger.info(`🔧 Server: ${debug.server.protocol} on port ${debug.server.port}`);
+    logger.info(`🔐 SSL: ${debug.server.hasSSL ? 'Enabled' : 'Disabled'}`);
+    logger.info(`⏱️ Uptime: ${Math.round(debug.server.uptime)}s`);
+    logger.info("───────────────────────────────────────");
+    logger.info(`👥 Clients: ${debug.clients.total} total`);
+    logger.info(`   Connected: ${debug.clients.connected}`);
+    logger.info(`   Ready: ${debug.clients.ready}`);
+    logger.info(`   Playing: ${debug.clients.playing}`);
+    logger.info("───────────────────────────────────────");
+    logger.info(`🎬 Room: ${debug.room.id}`);
+    logger.info(`   Current Scene: ${debug.room.currentScene || 'None'}`);
+    logger.info(`   Playing: ${debug.room.isPlaying}`);
+    logger.info(`   Sequence Active: ${debug.room.sequenceActive}`);
+
+    if (debug.clients.list.length > 0) {
+      logger.info("───────────────────────────────────────");
+      logger.info("📱 Client Details:");
+      debug.clients.list.forEach((client, index) => {
+        logger.info(`   ${index + 1}. ${client.deviceId || client.id.substr(0, 8)}`);
+        logger.info(`      Status: ${client.status}`);
+        logger.info(`      Latency: ${client.latency}ms`);
+        logger.info(`      Connected: ${client.connectedDuration}s`);
+      });
+    }
+
+    logger.info("═══════════════════════════════════════");
+  }
+
   public close(): void {
     if (this.heartbeatInterval) {
       clearInterval(this.heartbeatInterval);
@@ -329,16 +452,26 @@ class ClientConnection {
     this.status.deviceId = message.payload.deviceId;
     this.status.battery = message.payload.battery;
 
-    this.send({
-      type: "WELCOME",
+    logger.info(`👋 HELLO recibido de ${this.clientId}:`);
+    logger.info(`   Device ID: ${message.payload.deviceId}`);
+    logger.info(`   Version: ${message.payload.version}`);
+    logger.info(`   Battery: ${message.payload.battery || 'N/A'}%`);
+    logger.info(`   User Agent: ${message.payload.userAgent?.substring(0, 50)}...`);
+
+    const welcomeMessage = {
+      type: "WELCOME" as const,
       payload: {
         serverEpochMs: Date.now(),
         clientId: this.clientId,
         serverVersion: PROTOCOL_VERSION,
       },
-    });
+    };
 
-    logger.info(`Cliente ${this.clientId} conectado`);
+    this.send(welcomeMessage);
+
+    logger.info(`🎉 WELCOME enviado a ${message.payload.deviceId} (${this.clientId})`);
+    logger.info(`   Server time: ${new Date().toISOString()}`);
+    logger.info(`   Protocol version: ${PROTOCOL_VERSION}`);
   }
 
   private handlePing(message: ClientMessage & { type: "PING" }): void {
@@ -364,7 +497,16 @@ class ClientConnection {
     this.status.status = "ready";
     this.status.lastStateUpdate = Date.now();
 
-    logger.info(`Cliente ${this.clientId} listo`);
+    logger.info(`✅ Cliente READY: ${this.status.deviceId} (${this.clientId})`);
+    logger.info(`   Scene ID: ${message.payload.sceneId}`);
+    logger.info(`   Status: ${this.status.status}`);
+    logger.info(`   Latency: ${this.status.latencyMs}ms`);
+
+    // Log total ready clients after this client becomes ready
+    const manager = this.manager as any;
+    const readyClients = manager.getReadyClientCount();
+    const totalClients = manager.getClientCount();
+    logger.info(`📊 Clientes listos: ${readyClients}/${totalClients}`);
   }
 
   private handleState(message: ClientMessage & { type: "STATE" }): void {

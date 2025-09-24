@@ -157,15 +157,17 @@ export function createApiRoutes(wsManager: WebSocketManager): Router {
       const localIP = getLocalIP();
       const urls = generateAccessUrls(config.port);
       const wsPort = config.port + 1;
-      
+
       // Detectar si la petición viene de la misma máquina o red
       const clientIP = req.ip || req.connection.remoteAddress || "unknown";
       const isLocal = clientIP.includes("127.0.0.1") || clientIP.includes("::1");
-      
-      const wsUrl = isLocal 
-        ? `ws://localhost:${wsPort}/ws`
-        : `ws://${localIP}:${wsPort}/ws`;
-      
+
+      // For HTTPS ClienteVanilla, try WSS first, fallback to WS
+      const wsProtocol = req.headers['x-forwarded-proto'] === 'https' || req.secure ? 'wss' : 'ws';
+      const wsUrl = isLocal
+        ? `${wsProtocol}://localhost:${wsPort}/ws`
+        : `${wsProtocol}://${localIP}:${wsPort}/ws`;
+
       const serverUrl = isLocal
         ? `http://localhost:${config.port}`
         : `http://${localIP}:${config.port}`;
@@ -176,21 +178,56 @@ export function createApiRoutes(wsManager: WebSocketManager): Router {
           serverPort: config.port,
           wsPort: wsPort,
           clientIP: clientIP,
-          isLocal: isLocal
+          isLocal: isLocal,
+          protocol: wsProtocol
         },
         urls: {
           websocket: wsUrl,
+          websocketFallback: `ws://${isLocal ? 'localhost' : localIP}:${wsPort}/ws`, // Always provide WS fallback
           server: serverUrl,
           dashboard: `${serverUrl}/dashboard`,
           available: urls.network
         },
         timestamp: Date.now()
       });
-      
-      logger.debug(`📡 Config request from ${clientIP} - Local: ${isLocal}`);
+
+      logger.info(`📡 Config request from ${clientIP} - Local: ${isLocal} - Protocol: ${wsProtocol}`);
     } catch (error) {
       logger.error("Error getting network config:", error);
       res.status(500).json({ error: "Error obteniendo configuración de red" });
+    }
+  });
+
+  // WebSocket debug endpoint
+  router.get("/ws-debug", (req: Request, res: Response) => {
+    try {
+      const debugInfo = wsManager.getDebugInfo();
+
+      res.json({
+        ...debugInfo,
+        cors: {
+          enabled: true,
+          allowedOrigins: "all",
+          webSocketHeaders: [
+            "Sec-WebSocket-Protocol",
+            "Sec-WebSocket-Version",
+            "Sec-WebSocket-Key",
+            "Connection",
+            "Upgrade"
+          ]
+        },
+        tips: [
+          "If WSS fails, the client should fallback to WS",
+          "Check browser console for WebSocket connection errors",
+          "Mixed content warnings mean HTTPS page trying to connect to WS (not WSS)",
+          "Use browser DevTools Network tab to see WebSocket handshake"
+        ]
+      });
+
+      logger.info("🔍 WebSocket debug info requested");
+    } catch (error) {
+      logger.error("Error getting WebSocket debug info:", error);
+      res.status(500).json({ error: "Error obteniendo información de debug" });
     }
   });
 

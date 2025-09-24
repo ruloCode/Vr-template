@@ -60,15 +60,42 @@ class VRSyncServer {
       })
     );
 
-    // CORS configuration for LAN access
+    // CORS configuration for LAN access and WebSocket support
     this.app.use(
       cors({
-        origin: true, // Allow all origins for LAN
+        origin: (origin, callback) => {
+          // Allow all origins for LAN deployment
+          callback(null, true);
+        },
         credentials: true,
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+        allowedHeaders: [
+          "Content-Type",
+          "Authorization",
+          "X-Requested-With",
+          // WebSocket headers
+          "Sec-WebSocket-Protocol",
+          "Sec-WebSocket-Version",
+          "Sec-WebSocket-Key",
+          "Connection",
+          "Upgrade"
+        ],
+        // Expose headers needed for WebSocket
+        exposedHeaders: [
+          "Sec-WebSocket-Accept",
+          "Sec-WebSocket-Protocol",
+          "Sec-WebSocket-Version"
+        ]
       })
     );
+
+    // Handle preflight requests for WebSocket
+    this.app.options('*', (req, res) => {
+      res.header('Access-Control-Allow-Origin', '*');
+      res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With, Sec-WebSocket-Protocol, Sec-WebSocket-Version, Sec-WebSocket-Key, Connection, Upgrade');
+      res.sendStatus(200);
+    });
 
     // Compression and parsing
     this.app.use(compression());
