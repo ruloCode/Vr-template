@@ -9,7 +9,7 @@ const SCENES_CONFIG = {
     description: "Panorámica de instalaciones de energía solar y eólica",
     assets: {
       skybox: "images/escena_1.png",
-      audio: "audio/toma_01_02.mp3",
+      audio: "audio/toma_01.mp3",
       models: [],
     },
     lighting: {
@@ -32,7 +32,7 @@ const SCENES_CONFIG = {
     description: "Vista panorámica de operaciones petroleras industriales",
     assets: {
       skybox: "images/escena_2.png",
-      audio: "audio/toma_03.mp3",
+      audio: "audio/toma_02.mp3",
       models: [],
     },
     lighting: {
@@ -55,7 +55,7 @@ const SCENES_CONFIG = {
     description: "Vista panorámica de plataformas petroleras y CPF",
     assets: {
       skybox: "images/escena_3.png",
-      audio: "audio/toma_04.mp3",
+      audio: "audio/toma_03.mp3",
       models: [],
     },
     lighting: {
@@ -78,7 +78,7 @@ const SCENES_CONFIG = {
     description: "Vista panorámica del entorno natural y paisajes",
     assets: {
       skybox: "images/escena_4.png",
-      audio: "audio/toma_05.mp3",
+      audio: "audio/toma_04.mp3",
       models: [],
     },
     lighting: {
@@ -101,7 +101,7 @@ const SCENES_CONFIG = {
     description: "Vista panorámica completa del entorno industrial y natural",
     assets: {
       skybox: "images/escena_5.png",
-      audio: "audio/toma_06.mp3",
+      audio: "audio/toma_05.mp3",
       models: [],
     },
     lighting: {
@@ -125,7 +125,7 @@ const SCENES_CONFIG = {
       "Vista panorámica de operaciones especializadas y tecnología avanzada",
     assets: {
       skybox: "images/escena_6.png",
-      audio: "audio/toma_07.mp3",
+      audio: "audio/toma_06.mp3",
       models: [],
     },
     lighting: {
@@ -149,7 +149,7 @@ const SCENES_CONFIG = {
       "Vista panorámica de instalaciones industriales avanzadas y tecnología moderna",
     assets: {
       skybox: "images/escena_7.png",
-      audio: "audio/toma_08.mp3",
+      audio: "audio/toma_07.mp3",
       models: [],
     },
     lighting: {
@@ -173,7 +173,7 @@ const SCENES_CONFIG = {
       "Vista panorámica de operaciones industriales y equipos especializados",
     assets: {
       skybox: "images/escena_8.png",
-      audio: "audio/toma_09.mp3",
+      audio: "audio/toma_08.mp3",
       models: [],
     },
     lighting: {
@@ -197,7 +197,7 @@ const SCENES_CONFIG = {
       "Vista panorámica de instalaciones industriales avanzadas y tecnología moderna",
     assets: {
       skybox: "images/escena_9.png",
-      audio: "audio/toma_10.mp3",
+      audio: "audio/toma_09.mp3",
       models: [],
     },
     lighting: {
@@ -221,7 +221,7 @@ const SCENES_CONFIG = {
       "Vista panorámica de operaciones especializadas y equipos de alta tecnología",
     assets: {
       skybox: "images/escena_10.png",
-      audio: "audio/toma_11.mp3",
+      audio: "audio/toma_10.mp3",
       models: [],
     },
     lighting: {
@@ -245,7 +245,7 @@ const SCENES_CONFIG = {
       "Vista panorámica completa de la infraestructura industrial y operacional",
     assets: {
       skybox: "images/escena_11.png",
-      audio: "audio/ambient-industrial.mp3",
+      audio: "audio/toma_11.mp3",
       models: [],
     },
     lighting: {
@@ -269,7 +269,7 @@ const SCENES_CONFIG = {
       "Escena base por defecto cuando no hay escena específica cargada",
     assets: {
       skybox: "images/base.jpg",
-      audio: "audio/ambient-base.mp3",
+      audio: "audio/toma_01.mp3",
       models: [],
     },
     lighting: {
