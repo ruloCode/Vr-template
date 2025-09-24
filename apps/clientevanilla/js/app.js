@@ -40,7 +40,12 @@ async function initializeApplication() {
   sceneManager = new VRSceneManager();
 
   // Initialize WebSocket connection
-  initializeWebSocket(sceneManager);
+  try {
+    await initializeWebSocket(sceneManager);
+    console.log('✅ WebSocket connection initialized successfully');
+  } catch (error) {
+    console.error('❌ Error initializing WebSocket:', error);
+  }
 
   // Setup audio interaction listeners
   setupAudioInteractionListeners();

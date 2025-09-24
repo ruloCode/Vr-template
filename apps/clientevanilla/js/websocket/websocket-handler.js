@@ -13,17 +13,67 @@ let sceneManager = null;
  * Initialize WebSocket connection and handlers
  * @param {VRSceneManager} sceneManagerInstance - The scene manager instance
  */
-export function initializeWebSocket(sceneManagerInstance) {
+export async function initializeWebSocket(sceneManagerInstance) {
   sceneManager = sceneManagerInstance;
 
-  // Determine server URL based on current host
-  const currentHost = window.location.hostname;
-  const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-  const serverPort = "8081"; // Consistent port for both HTTP and HTTPS
-  const serverUrl = `${protocol}//${currentHost}:${serverPort}/ws`;
+  console.log("🔍 Obteniendo configuración de red del servidor...");
 
-  console.log("🔗 Conectando al servidor WebSocket:", serverUrl);
+  try {
+    // Get dynamic network configuration from server
+    const networkConfig = await getNetworkConfig();
+    const serverUrl = networkConfig.urls.websocket;
+    
+    console.log("🌐 Configuración de red obtenida:");
+    console.log("📡 Server IP:", networkConfig.network.serverIP);
+    console.log("🔌 WebSocket URL:", serverUrl);
+    console.log("👤 Cliente IP:", networkConfig.network.clientIP);
+    console.log("🏠 Es conexión local:", networkConfig.network.isLocal);
+    
+    await connectWithConfig(serverUrl, networkConfig);
+    
+  } catch (error) {
+    console.warn("⚠️ Error obteniendo configuración dinámica, usando fallback:");
+    console.error(error);
+    
+    // Fallback to manual detection
+    const currentHost = window.location.hostname;
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const serverPort = determineWebSocketPort();
+    const serverUrl = `${protocol}//${currentHost}:${serverPort}/ws`;
+    
+    console.log("🔗 Conectando con configuración fallback:", serverUrl);
+    await connectWithConfig(serverUrl, null);
+  }
+}
 
+/**
+ * Get network configuration from server
+ */
+async function getNetworkConfig() {
+  const configUrl = `${window.location.origin}/api/config`;
+  console.log("🔍 Consultando configuración en:", configUrl);
+  
+  const response = await fetch(configUrl);
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  }
+  
+  return await response.json();
+}
+
+/**
+ * Determine WebSocket port dynamically
+ */
+function determineWebSocketPort() {
+  // Try to get from server config first, fallback to +1 pattern
+  const currentPort = window.location.port || (window.location.protocol === "https:" ? "443" : "80");
+  return currentPort === "80" ? "8081" : (parseInt(currentPort) + 1).toString();
+}
+
+/**
+ * Connect with determined configuration
+ */
+async function connectWithConfig(serverUrl, networkConfig) {
   // Initialize WebSocket client
   vrClient = new VRWebSocketClient({
     serverUrl: serverUrl,
