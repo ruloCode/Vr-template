@@ -175,6 +175,35 @@ function handleServerCommand(command) {
       handleToggleScreenCommand(command.screenType);
       break;
 
+    // Sequence automation commands
+    case "START_SEQUENCE":
+      handleStartSequenceCommand(command);
+      break;
+
+    case "STOP_SEQUENCE":
+      handleStopSequenceCommand();
+      break;
+
+    case "PAUSE_SEQUENCE":
+      handlePauseSequenceCommand();
+      break;
+
+    case "RESUME_SEQUENCE":
+      handleResumeSequenceCommand();
+      break;
+
+    case "NEXT_SCENE":
+      handleNextSceneCommand();
+      break;
+
+    case "PREVIOUS_SCENE":
+      handlePreviousSceneCommand();
+      break;
+
+    case "JUMP_TO_SCENE":
+      handleJumpToSceneCommand(command.sceneIndex);
+      break;
+
     default:
       console.log("🤷 Unknown command:", command.commandType);
   }
@@ -401,6 +430,78 @@ function handleToggleScreenCommand(screenType) {
     method();
   } else {
     console.warn("⚠️ Tipo de pantalla no reconocido para toggle:", screenType);
+  }
+}
+
+/**
+ * Handle sequence automation commands
+ */
+function handleStartSequenceCommand(command) {
+  console.log("🎬 Starting sequence:", command.sequenceId);
+  
+  if (sceneManager) {
+    // Enable sequence mode in scene manager
+    sceneManager.enableSequenceMode(command.sequenceId, command.config);
+  }
+}
+
+function handleStopSequenceCommand() {
+  console.log("⏹️ Stopping sequence");
+  
+  if (sceneManager) {
+    sceneManager.disableSequenceMode();
+  }
+}
+
+function handlePauseSequenceCommand() {
+  console.log("⏸️ Pausing sequence");
+  
+  // Pause current audio
+  const audioEl = document.querySelector("#scene-sound");
+  if (audioEl && audioEl.components.sound) {
+    audioEl.components.sound.pauseSound();
+  }
+  
+  if (sceneManager) {
+    sceneManager.onSequencePaused();
+  }
+}
+
+function handleResumeSequenceCommand() {
+  console.log("▶️ Resuming sequence");
+  
+  // Resume current audio
+  const audioEl = document.querySelector("#scene-sound");
+  if (audioEl && audioEl.components.sound) {
+    audioEl.components.sound.playSound();
+  }
+  
+  if (sceneManager) {
+    sceneManager.onSequenceResumed();
+  }
+}
+
+function handleNextSceneCommand() {
+  console.log("⏭️ Next scene command received");
+  
+  if (sceneManager) {
+    sceneManager.onSequenceNextScene();
+  }
+}
+
+function handlePreviousSceneCommand() {
+  console.log("⏮️ Previous scene command received");
+  
+  if (sceneManager) {
+    sceneManager.onSequencePreviousScene();
+  }
+}
+
+function handleJumpToSceneCommand(sceneIndex) {
+  console.log("⏯️ Jump to scene command received:", sceneIndex);
+  
+  if (sceneManager) {
+    sceneManager.onSequenceJumpToScene(sceneIndex);
   }
 }
 

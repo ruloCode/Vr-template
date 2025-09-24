@@ -10,6 +10,13 @@ export class VRSceneManager {
     this.currentScene = null;
     this.isLoading = false;
     this.elements = {};
+    
+    // Sequence automation properties
+    this.sequenceMode = false;
+    this.sequenceId = null;
+    this.sequenceConfig = null;
+    this.currentSequenceConfig = null;
+    
     this.initializeElements();
   }
 
@@ -677,6 +684,84 @@ export class VRSceneManager {
         this.elements.overlay.setAttribute("visible", "false");
       }
     }, 20);
+  }
+
+  // ===== SEQUENCE AUTOMATION METHODS =====
+  
+  enableSequenceMode(sequenceId, config) {
+    console.log("🎭 Enabling sequence mode:", sequenceId, config);
+    
+    this.sequenceMode = true;
+    this.sequenceId = sequenceId;
+    this.sequenceConfig = config || {};
+    
+    // Load sequence configuration if available
+    if (window.SEQUENCE_CONFIGS && window.SEQUENCE_CONFIGS[sequenceId]) {
+      this.currentSequenceConfig = window.SEQUENCE_CONFIGS[sequenceId];
+      console.log("📋 Loaded sequence config:", this.currentSequenceConfig.name);
+    }
+  }
+
+  disableSequenceMode() {
+    console.log("🎭 Disabling sequence mode");
+    
+    this.sequenceMode = false;
+    this.sequenceId = null;
+    this.sequenceConfig = null;
+    this.currentSequenceConfig = null;
+  }
+
+  onSequencePaused() {
+    console.log("⏸️ Sequence paused - Client side handling");
+    // Additional client-side handling for sequence pause
+  }
+
+  onSequenceResumed() {
+    console.log("▶️ Sequence resumed - Client side handling");
+    // Additional client-side handling for sequence resume
+  }
+
+  onSequenceNextScene() {
+    console.log("⏭️ Next scene - Client side handling");
+    // The server handles the actual scene change via LOAD command
+  }
+
+  onSequencePreviousScene() {
+    console.log("⏮️ Previous scene - Client side handling");
+    // The server handles the actual scene change via LOAD command
+  }
+
+  onSequenceJumpToScene(sceneIndex) {
+    console.log("⏯️ Jump to scene:", sceneIndex, "- Client side handling");
+    // The server handles the actual scene change via LOAD command
+  }
+
+  // Enhanced loadScene method for sequence mode
+  async loadSceneForSequence(sceneId, sequenceContext) {
+    console.log("🎬 Loading scene for sequence:", sceneId, sequenceContext);
+    
+    // Use the existing loadScene method but with sequence awareness
+    const result = await this.loadScene(sceneId);
+    
+    if (result && sequenceContext) {
+      // Additional sequence-specific handling
+      if (sequenceContext.showScreensAutomatically && sequenceContext.screenDelay) {
+        // Auto-show screens after delay (handled by server)
+        console.log("📺 Screens will auto-show in", sequenceContext.screenDelay, "ms");
+      }
+    }
+    
+    return result;
+  }
+
+  // Get current sequence info
+  getSequenceInfo() {
+    return {
+      isSequenceMode: this.sequenceMode,
+      sequenceId: this.sequenceId,
+      sequenceConfig: this.sequenceConfig,
+      currentSequenceConfig: this.currentSequenceConfig
+    };
   }
 }
 
