@@ -402,8 +402,9 @@ export class VRSceneManager {
       this.showEscena5Screen();
       this.showEscena5BScreen();
     } else if (sceneConfig.id === "escena-6") {
-      this.showEscena6Screen();
-      this.showEscena6BScreen();
+      // REMOVED: No screens for escena-6
+      // this.showEscena6Screen();
+      // this.showEscena6BScreen();
     } else if (sceneConfig.id === "escena-7") {
       this.showEscena7Screen();
       this.showEscena7BScreen();

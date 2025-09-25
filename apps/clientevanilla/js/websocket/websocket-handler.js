@@ -527,8 +527,9 @@ function handleShowAllScreensCommand() {
       sceneManager.showEscena5BScreen();
       break;
     case "escena-6":
-      sceneManager.showEscena6Screen();
-      sceneManager.showEscena6BScreen();
+      // REMOVED: No screens for escena-6
+      // sceneManager.showEscena6Screen();
+      // sceneManager.showEscena6BScreen();
       break;
     case "escena-7":
       sceneManager.showEscena7Screen();
