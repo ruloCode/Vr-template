@@ -40,7 +40,35 @@ export function registerEscena11bVideoCycler() {
         const videoElement = document.querySelector(videoSrc);
         if (videoElement) {
           this.currentVideo = videoElement;
-          videoElement.play().catch(console.error);
+
+          // Ensure video is muted for autoplay
+          videoElement.muted = true;
+          videoElement.volume = 0;
+
+          // Wait for video to be ready before playing
+          const playVideo = () => {
+            videoElement.currentTime = 0;
+            videoElement.play().catch((error) => {
+              console.warn("Video playback failed, retrying:", error);
+              // Retry with delay
+              setTimeout(() => {
+                videoElement.muted = true;
+                videoElement.play().catch((retryError) => {
+                  console.error("Second video play attempt failed:", retryError);
+                });
+              }, 1000);
+            });
+          };
+
+          // Check if video is ready
+          if (videoElement.readyState >= 2) {
+            playVideo();
+          } else {
+            videoElement.addEventListener("loadeddata", playVideo, {
+              once: true,
+            });
+            videoElement.load();
+          }
         }
       };
 

@@ -42,8 +42,34 @@ export function registerEscena4bVideoCycler() {
         // Get the video element
         this.currentVideo = document.querySelector(videoSrc);
         if (this.currentVideo) {
-          // Start playing the video
-          this.currentVideo.play();
+          // Ensure video is muted for autoplay
+          this.currentVideo.muted = true;
+          this.currentVideo.volume = 0;
+
+          // Wait for video to be ready before playing
+          const playVideo = () => {
+            this.currentVideo.currentTime = 0;
+            this.currentVideo.play().catch((error) => {
+              console.warn("Video playback failed, retrying:", error);
+              // Retry with delay
+              setTimeout(() => {
+                this.currentVideo.muted = true;
+                this.currentVideo.play().catch((retryError) => {
+                  console.error("Second video play attempt failed:", retryError);
+                });
+              }, 1000);
+            });
+          };
+
+          // Check if video is ready
+          if (this.currentVideo.readyState >= 2) {
+            playVideo();
+          } else {
+            this.currentVideo.addEventListener("loadeddata", playVideo, {
+              once: true,
+            });
+            this.currentVideo.load();
+          }
         }
       };
 
