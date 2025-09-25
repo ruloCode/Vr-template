@@ -48,6 +48,10 @@ export function registerSolarVideoCycler() {
         // Get the video element and set up event listeners
         this.currentVideo = document.querySelector(videoSrc);
         if (this.currentVideo) {
+          // Ensure video is muted for autoplay
+          this.currentVideo.muted = true;
+          this.currentVideo.volume = 0;
+
           // Remove any existing event listeners
           this.currentVideo.removeEventListener(
             "ended",
@@ -64,12 +68,13 @@ export function registerSolarVideoCycler() {
           const playVideo = () => {
             this.currentVideo.currentTime = 0;
             this.currentVideo.play().catch((error) => {
-              // Video playback failed
+              console.warn("Video playback failed, retrying:", error);
               // Try to load the video again
               this.currentVideo.load();
               setTimeout(() => {
+                this.currentVideo.muted = true;
                 this.currentVideo.play().catch((retryError) => {
-                  // Second attempt failed
+                  console.error("Second video play attempt failed:", retryError);
                 });
               }, 1000);
             });
@@ -79,13 +84,13 @@ export function registerSolarVideoCycler() {
           if (this.currentVideo.readyState >= 2) {
             playVideo();
           } else {
-            this.currentVideo.addEventListener("canplay", playVideo, {
+            this.currentVideo.addEventListener("loadeddata", playVideo, {
               once: true,
             });
             this.currentVideo.load();
           }
         } else {
-          // Video element not found
+          console.error("Video element not found:", videoSrc);
         }
       };
 
