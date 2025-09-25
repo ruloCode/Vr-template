@@ -4,20 +4,27 @@
  */
 
 import { enableAudio } from './audio-manager.js';
+import { assetPreloader } from '../utils/asset-preloader.js';
+import { cacheManager } from '../utils/cache-manager.js';
 
 export class VRSceneManager {
   constructor() {
     this.currentScene = null;
     this.isLoading = false;
     this.elements = {};
-    
+
     // Sequence automation properties
     this.sequenceMode = false;
     this.sequenceId = null;
     this.sequenceConfig = null;
     this.currentSequenceConfig = null;
-    
+
+    // Asset preloading properties
+    this.preloadingEnabled = true;
+    this.preloadProgress = { loaded: 0, total: 0, percentage: 0 };
+
     this.initializeElements();
+    this.initializePreloader();
   }
 
   initializeElements() {
@@ -28,10 +35,6 @@ export class VRSceneManager {
       directionalLight: document.querySelector("#directional-light"),
       models: document.querySelector("#scene-models"),
       overlay: document.querySelector("#scene-overlay"),
-      loadingTextFront: document.querySelector("#loading-text-front"),
-      loadingTextBack: document.querySelector("#loading-text-back"),
-      loadingTextLeft: document.querySelector("#loading-text-left"),
-      loadingTextRight: document.querySelector("#loading-text-right"),
       escena1Screen: document.querySelector("#escena1-screen"),
       escena2Screen: document.querySelector("#escena2-screen"),
       escena3Screen: document.querySelector("#escena3-screen"),
@@ -59,6 +62,62 @@ export class VRSceneManager {
     };
   }
 
+  /**
+   * Initialize asset preloader with progress tracking
+   */
+  initializePreloader() {
+    // Set up progress listener
+    assetPreloader.onProgress((progress) => {
+      this.preloadProgress = progress;
+      this.updateLoadingUI(progress);
+
+      // Emit progress event for external listeners
+      if (window.vrClient && window.vrClient.isConnected) {
+        // Ensure buffered percentage is between 0-100
+        const bufferedPercentage = Math.min(100, Math.max(0, progress.percentage || 0));
+        window.vrClient.sendState(this.currentScene?.id || 'loading', 0, false, bufferedPercentage);
+      }
+    });
+
+    console.log('🎯 Asset preloader initialized with scene manager');
+  }
+
+  /**
+   * Update loading UI with progress
+   */
+  updateLoadingUI(progress) {
+    const progressBar = document.getElementById('progress-bar');
+    const loadingStatus = document.getElementById('loading-status');
+
+    if (progressBar) {
+      progressBar.style.width = `${progress.percentage}%`;
+    }
+
+    if (loadingStatus) {
+      if (progress.currentAsset) {
+        const assetName = progress.currentAsset.split('/').pop();
+        loadingStatus.textContent = `Cargando: ${assetName} (${progress.loaded}/${progress.total})`;
+      } else if (progress.isComplete) {
+        loadingStatus.textContent = 'Listo para comenzar';
+      } else {
+        loadingStatus.textContent = `${progress.loaded}/${progress.total} assets cargados`;
+      }
+    }
+  }
+
+  /**
+   * Hide loading overlay once assets are ready
+   */
+  hideAppLoading() {
+    const loadingOverlay = document.getElementById('app-loading');
+    if (loadingOverlay) {
+      loadingOverlay.classList.add('hidden');
+      setTimeout(() => {
+        loadingOverlay.style.display = 'none';
+      }, 300);
+    }
+  }
+
   async loadScene(sceneId) {
     if (this.isLoading) {
       // Scene loading already in progress
@@ -70,6 +129,8 @@ export class VRSceneManager {
       return false;
     }
 
+    console.log('🎬 Loading scene:', sceneId);
+
     // Loading scene
     this.isLoading = true;
     this.showLoadingOverlay(sceneId);
@@ -79,6 +140,14 @@ export class VRSceneManager {
     try {
       // Enable audio if not already enabled
       await enableAudio();
+
+      // Start intelligent preloading for current and nearby scenes
+      if (this.preloadingEnabled) {
+        await this.startIntelligentPreloading(sceneId);
+      }
+
+      // Ensure critical assets for this scene are preloaded
+      await assetPreloader.preloadCriticalAssets(sceneId);
 
       // Update assets
       await this.updateAssets(sceneConfig);
@@ -98,35 +167,93 @@ export class VRSceneManager {
         window.vrClient.sendReady(sceneId);
       }
 
+      // Hide app loading overlay if this is the first scene
+      if (sceneId === 'base' || !this.hasLoadedInitialScene) {
+        this.hideAppLoading();
+        this.hasLoadedInitialScene = true;
+      }
+
+      console.log('✅ Scene loaded successfully:', sceneId);
       return true;
+
     } catch (error) {
-      // Error loading scene
+      console.error('❌ Error loading scene:', sceneId, error);
       return false;
     } finally {
       this.isLoading = false;
-      // Add a small delay before hiding overlay to ensure scene is fully loaded
+      // Reduced delay for faster transitions
       setTimeout(() => {
         this.hideLoadingOverlay();
-      }, 300);
+      }, 100);
+    }
+  }
+
+  /**
+   * Start intelligent preloading for current and nearby scenes
+   */
+  async startIntelligentPreloading(currentSceneId) {
+    try {
+      // Preload current scene and nearby scenes
+      await assetPreloader.preloadCurrentAndNearbyScenes(currentSceneId);
+
+      console.log('🚀 Intelligent preloading started for:', currentSceneId);
+    } catch (error) {
+      console.error('❌ Error starting intelligent preloading:', error);
     }
   }
 
   async updateAssets(sceneConfig) {
-    // Update audio asset using the same approach as updateAudio
-    const audioElement = document.querySelector("#current-audio");
-    if (audioElement && sceneConfig.assets.audio) {
-      audioElement.src = sceneConfig.assets.audio;
-      audioElement.load();
+    try {
+      // Update audio asset with cache checking
+      const audioElement = document.querySelector("#current-audio");
+      if (audioElement && sceneConfig.assets.audio) {
+        const cachedAudio = await cacheManager.getAsset(sceneConfig.assets.audio);
+
+        if (cachedAudio) {
+          console.log('🎵 Using cached audio:', sceneConfig.assets.audio);
+          // Create blob URL from cached data
+          const audioUrl = URL.createObjectURL(cachedAudio.data);
+          audioElement.src = audioUrl;
+        } else {
+          console.log('🌐 Loading audio from network:', sceneConfig.assets.audio);
+          audioElement.src = sceneConfig.assets.audio;
+        }
+
+        audioElement.load();
+      }
+
+      // Update skybox asset with cache checking
+      const skyboxUrl = sceneConfig.assets.skybox;
+      const cachedSkybox = await cacheManager.getAsset(skyboxUrl);
+
+      if (cachedSkybox) {
+        console.log('🖼️ Using cached skybox:', skyboxUrl);
+        const imageUrl = URL.createObjectURL(cachedSkybox.data);
+        this.elements.assets.skybox.setAttribute("src", imageUrl);
+      } else {
+        console.log('🌐 Loading skybox from network:', skyboxUrl);
+        this.elements.assets.skybox.setAttribute("src", skyboxUrl);
+      }
+
+      // Wait for assets to load
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      console.log('✅ Assets updated for scene:', sceneConfig.id);
+
+    } catch (error) {
+      console.error('❌ Error updating assets:', error);
+
+      // Fallback to direct loading if cache fails
+      const audioElement = document.querySelector("#current-audio");
+      if (audioElement && sceneConfig.assets.audio) {
+        audioElement.src = sceneConfig.assets.audio;
+        audioElement.load();
+      }
+
+      this.elements.assets.skybox.setAttribute("src", sceneConfig.assets.skybox);
+
+      await new Promise((resolve) => setTimeout(resolve, 500));
     }
-
-    // Update skybox asset
-    this.elements.assets.skybox.setAttribute(
-      "src",
-      sceneConfig.assets.skybox
-    );
-
-    // Wait for assets to load
-    return new Promise((resolve) => setTimeout(resolve, 500));
   }
 
   updateSkybox(sceneConfig) {
@@ -645,37 +772,27 @@ export class VRSceneManager {
   showLoadingOverlay(sceneId = null) {
     this.elements.overlay.setAttribute("visible", "true");
 
-    // Update loading text with scene name for all directions
-    let loadingMessage = "Cargando Escena...";
-    if (sceneId && window.SCENES_CONFIG[sceneId]) {
-      const sceneName = window.SCENES_CONFIG[sceneId].name || sceneId;
-      loadingMessage = `Cargando ${sceneName}...`;
-    }
-
-    // Update all text elements
-    this.elements.loadingTextFront.setAttribute("value", loadingMessage);
-    this.elements.loadingTextBack.setAttribute("value", loadingMessage);
-    this.elements.loadingTextLeft.setAttribute("value", loadingMessage);
-    this.elements.loadingTextRight.setAttribute("value", loadingMessage);
-
-    // Fade in animation
+    // Faster fade in animation with lower max opacity for subtlety
     let opacity = 0;
     const fadeInInterval = setInterval(() => {
-      opacity += 0.05;
+      opacity += 0.1; // Faster fade
       this.elements.overlay.setAttribute("material", "opacity", opacity);
 
-      if (opacity >= 1.0) {
+      if (opacity >= 0.6) { // Lower max opacity for subtler transition
         clearInterval(fadeInInterval);
-        this.elements.overlay.setAttribute("material", "opacity", 1.0);
+        this.elements.overlay.setAttribute("material", "opacity", 0.6);
       }
-    }, 20);
+    }, 15); // Faster interval
   }
 
   hideLoadingOverlay() {
-    // Fade out animation
-    let opacity = 1.0;
+    // Get current opacity
+    const currentMaterial = this.elements.overlay.getAttribute("material");
+    let opacity = currentMaterial && currentMaterial.opacity ? currentMaterial.opacity : 0.6;
+
+    // Faster fade out animation
     const fadeOutInterval = setInterval(() => {
-      opacity -= 0.05;
+      opacity -= 0.1; // Faster fade
       this.elements.overlay.setAttribute("material", "opacity", opacity);
 
       if (opacity <= 0) {
@@ -683,7 +800,7 @@ export class VRSceneManager {
         this.elements.overlay.setAttribute("material", "opacity", 0);
         this.elements.overlay.setAttribute("visible", "false");
       }
-    }, 20);
+    }, 15); // Faster interval
   }
 
   // ===== SEQUENCE AUTOMATION METHODS =====

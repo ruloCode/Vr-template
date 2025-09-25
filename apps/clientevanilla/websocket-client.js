@@ -221,13 +221,16 @@ class VRWebSocketClient {
   }
 
   sendState(sceneId, currentTime, playing, buffered = 100) {
+    // Ensure buffered is a valid percentage (0-100) as expected by server protocol
+    const validBuffered = Math.min(100, Math.max(0, Number(buffered) || 0));
+
     const message = {
       type: "STATE",
       payload: {
         sceneId,
         currentTime,
         playing,
-        buffered,
+        buffered: validBuffered,
       },
     };
 

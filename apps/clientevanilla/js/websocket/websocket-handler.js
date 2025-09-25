@@ -264,9 +264,11 @@ function setupAudioInteractionListeners() {
 /**
  * Send state update to server
  */
-export function sendStateUpdate() {
+export function sendStateUpdate(bufferedPercentage = 100) {
   if (vrClient && vrClient.isConnected) {
-    vrClient.sendState(window.currentSceneId, 0, true, 100);
+    // Ensure buffered is a valid percentage (0-100)
+    const validBuffered = Math.min(100, Math.max(0, bufferedPercentage));
+    vrClient.sendState(window.currentSceneId, 0, true, validBuffered);
   }
 }
 

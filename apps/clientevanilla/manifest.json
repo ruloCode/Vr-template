@@ -1,0 +1,170 @@
+{
+  "name": "VR Ecopetrol Experience",
+  "short_name": "VR Ecopetrol",
+  "description": "Experiencia VR 360° sincronizada para eventos educativos de Ecopetrol",
+  "version": "1.0.0",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "landscape-primary",
+  "theme_color": "#1e40af",
+  "background_color": "#000000",
+  "scope": "/",
+  "lang": "es-CO",
+  "categories": ["education", "entertainment", "productivity"],
+  "icons": [
+    {
+      "src": "icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/desktop-screenshot.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "screenshots/mobile-screenshot.png",
+      "sizes": "720x1280",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "features": [
+    "VR Experience",
+    "WebSocket Synchronization",
+    "Offline Asset Caching",
+    "360° Panoramic Views",
+    "Audio Narration",
+    "Multi-device Support"
+  ],
+  "capabilities": {
+    "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+    "prefer_related_applications": false
+  },
+  "permissions": [
+    "storage",
+    "audio",
+    "fullscreen"
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+vr",
+      "url": "/?scene=%s"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Escena 1 - Energías Renovables",
+      "short_name": "Escena 1",
+      "description": "Ir directamente a la escena de energías renovables",
+      "url": "/?scene=escena-1",
+      "icons": [
+        {
+          "src": "icons/shortcut-solar.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Escena 2 - Operaciones Petroleras",
+      "short_name": "Escena 2",
+      "description": "Ir directamente a operaciones petroleras",
+      "url": "/?scene=escena-2",
+      "icons": [
+        {
+          "src": "icons/shortcut-oil.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Dashboard Control",
+      "short_name": "Dashboard",
+      "description": "Acceder al dashboard de control",
+      "url": "/dashboard",
+      "icons": [
+        {
+          "src": "icons/shortcut-dashboard.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  },
+  "file_handlers": [
+    {
+      "action": "/",
+      "accept": {
+        "application/vnd.vr-scene": [".vrscene"]
+      },
+      "launch_type": "single-client"
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "vrfiles",
+          "accept": ["image/*", "video/*", "audio/*"]
+        }
+      ]
+    }
+  }
+}
