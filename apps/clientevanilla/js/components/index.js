@@ -20,9 +20,9 @@ import { registerEscena11ImageCycler } from './image-cyclers/escena11-image-cycl
 
 // Import all video cycler components
 import { registerSolarVideoCycler } from './video-cyclers/solar-video-cycler.js';
-import { registerEscena4VideoCycler } from './video-cyclers/escena4-video-cycler.js';
+// import { registerEscena4VideoCycler } from './video-cyclers/escena4-video-cycler.js';
 import { registerEscena4bVideoCycler } from './video-cyclers/escena4b-video-cycler.js';
-import { registerEscena6bVideoCycler } from './video-cyclers/escena6b-video-cycler.js';
+// import { registerEscena6bVideoCycler } from './video-cyclers/escena6b-video-cycler.js';
 import { registerEscena7bVideoCycler } from './video-cyclers/escena7b-video-cycler.js';
 import { registerEscena9bVideoCycler } from './video-cyclers/escena9b-video-cycler.js';
 import { registerEscena11bVideoCycler } from './video-cyclers/escena11b-video-cycler.js';
@@ -51,9 +51,9 @@ export function registerAllComponents() {
 
   // Register video cyclers
   registerSolarVideoCycler();
-  registerEscena4VideoCycler();
+  // registerEscena4VideoCycler();
   registerEscena4bVideoCycler();
-  registerEscena6bVideoCycler();
+  // registerEscena6bVideoCycler();
   registerEscena7bVideoCycler();
   registerEscena9bVideoCycler();
   registerEscena11bVideoCycler();

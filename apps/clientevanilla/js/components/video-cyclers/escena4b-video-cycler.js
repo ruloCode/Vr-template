@@ -1,12 +1,18 @@
 /**
- * Escena 4B - Video Cycler Component (Single Video)
- * A-Frame component for single video playback in Scene 4B
+ * Escena 4B - Video Cycler Component (Multiple Videos)
+ * A-Frame component for video cycling in Scene 4B, including videos from Scene 4
  */
 
 export function registerEscena4bVideoCycler() {
   AFRAME.registerComponent("escena4b-video-cycler", {
     init() {
       this.isVisible = false;
+      this.currentVideoIndex = 0;
+      this.videos = [
+        "#escena4-3-video",
+        "#escena4-1-video",
+        "#escena4-2-video",
+      ];
       this.currentVideo = null;
 
       this.show = () => {
@@ -25,7 +31,7 @@ export function registerEscena4bVideoCycler() {
       };
 
       this.startVideoPlayback = () => {
-        this.playVideo();
+        this.playCurrentVideo();
       };
 
       this.stopVideoPlayback = () => {
@@ -35,13 +41,22 @@ export function registerEscena4bVideoCycler() {
         }
       };
 
-      this.playVideo = () => {
-        const videoSrc = "#escena4-3-video";
+      this.playCurrentVideo = () => {
+        const videoSrc = this.videos[this.currentVideoIndex];
         this.el.setAttribute("src", videoSrc);
 
-        // Get the video element
+        // Get the video element and set up event listeners
         this.currentVideo = document.querySelector(videoSrc);
         if (this.currentVideo) {
+          // Remove any existing event listeners
+          this.currentVideo.removeEventListener("ended", this.onVideoEnded);
+
+          // Add new event listener
+          this.onVideoEnded = () => {
+            this.nextVideo();
+          };
+          this.currentVideo.addEventListener("ended", this.onVideoEnded);
+
           // Ensure video is muted for autoplay
           this.currentVideo.muted = true;
           this.currentVideo.volume = 0;
@@ -55,7 +70,10 @@ export function registerEscena4bVideoCycler() {
               setTimeout(() => {
                 this.currentVideo.muted = true;
                 this.currentVideo.play().catch((retryError) => {
-                  console.error("Second video play attempt failed:", retryError);
+                  console.error(
+                    "Second video play attempt failed:",
+                    retryError
+                  );
                 });
               }, 1000);
             });
@@ -71,6 +89,12 @@ export function registerEscena4bVideoCycler() {
             this.currentVideo.load();
           }
         }
+      };
+
+      this.nextVideo = () => {
+        this.currentVideoIndex =
+          (this.currentVideoIndex + 1) % this.videos.length;
+        this.playCurrentVideo();
       };
 
       // Expose methods globally for easy access
