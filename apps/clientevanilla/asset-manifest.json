@@ -1,0 +1,197 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2024-09-24T21:30:00.000Z",
+  "totalAssets": 74,
+  "totalSize": 683500000,
+  "scenes": {
+    "base": {
+      "id": "base",
+      "name": "Escena Base",
+      "description": "Escena base por defecto",
+      "priority": 1,
+      "preloadStrategy": "critical",
+      "assets": [
+        {
+          "url": "/images/base.jpg",
+          "type": "images",
+          "size": 19300000,
+          "critical": true,
+          "hash": "base-image-hash"
+        },
+        {
+          "url": "/audio/toma_01.mp3",
+          "type": "audio",
+          "size": 800000,
+          "critical": true,
+          "hash": "base-audio-hash"
+        }
+      ],
+      "totalSize": 20100000,
+      "assetCount": 2
+    },
+    "escena-1": {
+      "id": "escena-1",
+      "name": "Escena 1 - Energías Renovables",
+      "priority": 1,
+      "preloadStrategy": "aggressive",
+      "assets": [
+        {
+          "url": "/images/escena_1.png",
+          "type": "images",
+          "size": 25000000,
+          "critical": false,
+          "hash": "escena1-skybox-hash"
+        },
+        {
+          "url": "/audio/toma_01.mp3",
+          "type": "audio",
+          "size": 800000,
+          "critical": true,
+          "hash": "escena1-audio-hash"
+        },
+        {
+          "url": "/videos/escena%201/solar_1.MP4",
+          "type": "videos",
+          "size": 15000000,
+          "critical": false,
+          "hash": "solar1-video-hash"
+        },
+        {
+          "url": "/videos/escena%201/solar_2.MP4",
+          "type": "videos",
+          "size": 12000000,
+          "critical": false,
+          "hash": "solar2-video-hash"
+        },
+        {
+          "url": "/videos/escena%201/solar_3.MP4",
+          "type": "videos",
+          "size": 10000000,
+          "critical": false,
+          "hash": "solar3-video-hash"
+        }
+      ],
+      "totalSize": 62800000,
+      "assetCount": 5
+    },
+    "escena-2": {
+      "id": "escena-2",
+      "name": "Escena 2 - Operaciones Petroleras",
+      "priority": 1,
+      "preloadStrategy": "aggressive",
+      "assets": [
+        {
+          "url": "/images/escena_2.png",
+          "type": "images",
+          "size": 28000000,
+          "critical": false,
+          "hash": "escena2-skybox-hash"
+        },
+        {
+          "url": "/audio/toma_02.mp3",
+          "type": "audio",
+          "size": 900000,
+          "critical": true,
+          "hash": "escena2-audio-hash"
+        }
+      ],
+      "totalSize": 28900000,
+      "assetCount": 2
+    }
+  },
+  "categories": {
+    "images": {
+      "count": 45,
+      "size": 260000000
+    },
+    "videos": {
+      "count": 18,
+      "size": 414000000
+    },
+    "audio": {
+      "count": 11,
+      "size": 9500000
+    },
+    "critical": {
+      "count": 8,
+      "size": 50000000
+    }
+  },
+  "preloadStrategies": {
+    "critical": [
+      "/images/base.jpg",
+      "/audio/toma_01.mp3",
+      "/videos/escena%201/solar_1.MP4",
+      "/videos/escena%201/solar_2.MP4",
+      "/videos/escena%201/solar_3.MP4",
+      "/index.html",
+      "/aframe-v1.3.0.min.js",
+      "/scenes-config.js",
+      "/websocket-client.js"
+    ],
+    "aggressive": [
+      "/images/escena_1.png",
+      "/images/escena_2.png",
+      "/audio/toma_01.mp3",
+      "/audio/toma_02.mp3"
+    ],
+    "moderate": [
+      "/images/escena_3.png",
+      "/images/escena_4.png",
+      "/images/escena_5.png",
+      "/audio/toma_03.mp3",
+      "/audio/toma_04.mp3",
+      "/audio/toma_05.mp3"
+    ],
+    "conservative": [
+      "/images/escena_6.png",
+      "/images/escena_7.png",
+      "/images/escena_8.png",
+      "/images/escena_9.png",
+      "/images/escena_10.png",
+      "/images/escena_11.png"
+    ]
+  },
+  "integrity": {
+    "/images/base.jpg": "sha256-baseimagehash",
+    "/audio/toma_01.mp3": "sha256-baseaudiohash",
+    "/images/escena_1.png": "sha256-escena1hash",
+    "/images/escena_2.png": "sha256-escena2hash",
+    "/images/escena_3.png": "sha256-escena3hash",
+    "/images/escena_4.png": "sha256-escena4hash",
+    "/images/escena_5.png": "sha256-escena5hash",
+    "/images/escena_6.png": "sha256-escena6hash",
+    "/images/escena_7.png": "sha256-escena7hash",
+    "/images/escena_8.png": "sha256-escena8hash",
+    "/images/escena_9.png": "sha256-escena9hash",
+    "/images/escena_10.png": "sha256-escena10hash",
+    "/images/escena_11.png": "sha256-escena11hash"
+  },
+  "statistics": {
+    "assetsByType": {
+      "images": {
+        "count": 45,
+        "size": 260000000
+      },
+      "videos": {
+        "count": 18,
+        "size": 414000000
+      },
+      "audio": {
+        "count": 11,
+        "size": 9500000
+      }
+    },
+    "averageAssetSize": 9237837,
+    "largestAsset": {
+      "url": "/videos/escena%204/escena_4.3.mp4",
+      "size": 45000000,
+      "type": "videos"
+    },
+    "smallestAsset": {
+      "url": "/audio/toma_01.mp3",
+      "size": 800000,
+      "type": "audio"
+    }
+  }
+}

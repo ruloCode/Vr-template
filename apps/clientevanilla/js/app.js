@@ -10,6 +10,7 @@ import { enableAudio, setupAudioInteractionListeners } from './managers/audio-ma
 import { screenControls } from './controls/screen-controls.js';
 import { cameraControls } from './controls/camera-controls.js';
 import { initializeWebSocket, sendStateUpdate } from './websocket/websocket-handler.js';
+import { appInitializer } from './utils/app-initializer.js';
 
 // Global variables
 let sceneManager = null;
@@ -27,36 +28,91 @@ export function updateCurrentSceneId(newSceneId) {
 async function initializeApplication() {
   console.log('🚀 Initializing VR ClienteVanilla application...');
 
-  // Wait for A-Frame to be loaded
-  if (typeof AFRAME === 'undefined') {
-    console.error('❌ A-Frame not loaded! Make sure aframe-v1.3.0.min.js is loaded before this script.');
-    return;
-  }
-
-  // Register all A-Frame components
-  registerAllComponents();
-
-  // Initialize Scene Manager
-  sceneManager = new VRSceneManager();
-
-  // Initialize WebSocket connection
   try {
-    await initializeWebSocket(sceneManager);
-    console.log('✅ WebSocket connection initialized successfully');
+    // Initialize app systems first (Service Worker, preloading, etc.)
+    await appInitializer.initialize();
+
+    // Wait for A-Frame to be loaded
+    if (typeof AFRAME === 'undefined') {
+      console.error('❌ A-Frame not loaded! Make sure aframe-v1.3.0.min.js is loaded before this script.');
+      return;
+    }
+
+    // Register all A-Frame components
+    registerAllComponents();
+
+    // Initialize Scene Manager (now with preloading support)
+    sceneManager = new VRSceneManager();
+
+    // Initialize WebSocket connection
+    try {
+      await initializeWebSocket(sceneManager);
+      console.log('✅ WebSocket connection initialized successfully');
+    } catch (error) {
+      console.error('❌ Error initializing WebSocket:', error);
+    }
+
+    // Setup audio interaction listeners
+    setupAudioInteractionListeners();
+
+    // Set up global debug functions
+    setupGlobalDebugFunctions();
+
+    // Expose globals for compatibility
+    exposeGlobalsForCompatibility();
+
+    // Load initial scene
+    await loadInitialScene();
+
+    console.log('✅ VR ClienteVanilla application initialized successfully');
+
   } catch (error) {
-    console.error('❌ Error initializing WebSocket:', error);
+    console.error('❌ Application initialization failed:', error);
+    showInitializationError(error);
   }
+}
 
-  // Setup audio interaction listeners
-  setupAudioInteractionListeners();
+/**
+ * Load the initial scene
+ */
+async function loadInitialScene() {
+  if (sceneManager) {
+    try {
+      // Load the base scene first
+      await sceneManager.loadScene('base');
+      console.log('✅ Initial scene loaded');
+    } catch (error) {
+      console.error('❌ Error loading initial scene:', error);
+    }
+  }
+}
 
-  // Set up global debug functions
-  setupGlobalDebugFunctions();
+/**
+ * Show initialization error to user
+ */
+function showInitializationError(error) {
+  const loadingOverlay = document.getElementById('app-loading');
+  if (loadingOverlay) {
+    const spinner = loadingOverlay.querySelector('.loading-spinner');
+    const status = loadingOverlay.querySelector('.loading-status');
 
-  // Expose globals for compatibility
-  exposeGlobalsForCompatibility();
-
-  console.log('✅ VR ClienteVanilla application initialized successfully');
+    if (spinner) spinner.style.display = 'none';
+    if (status) {
+      status.innerHTML = `
+        <div style="color: #ff6b6b; margin-bottom: 10px;">❌ Error de inicialización</div>
+        <div style="font-size: 12px; opacity: 0.8;">${error.message || 'Error desconocido'}</div>
+        <button onclick="window.location.reload()" style="
+          margin-top: 20px;
+          padding: 10px 20px;
+          background: rgba(255,255,255,0.2);
+          border: 1px solid rgba(255,255,255,0.3);
+          color: white;
+          border-radius: 4px;
+          cursor: pointer;
+        ">Reintentar</button>
+      `;
+    }
+  }
 }
 
 /**
@@ -104,7 +160,7 @@ function setupGlobalDebugFunctions() {
     }
   };
 
-  // Debug helpers
+  // Debug helpers - Enhanced for optimization systems
   window.VR_DEBUG = {
     sceneManager: () => sceneManager,
     currentScene: () => currentSceneId,
@@ -113,12 +169,33 @@ function setupGlobalDebugFunctions() {
     loadScene: window.loadScene,
     toggleScene: window.toggleScene,
     sendStateUpdate,
+
+    // New optimization debug functions
+    appInitializer: () => window.appInitializer,
+    assetPreloader: () => window.assetPreloader,
+    cacheManager: () => window.cacheManager,
+
+    // System information
     info: () => ({
       currentScene: currentSceneId,
       sceneManager: !!sceneManager,
       audioEnabled: window.audioEnabled,
       vrClientConnected: window.vrClient?.isConnected || false,
+      appInitialized: window.appInitialized || false,
+      assetsReady: window.assetsReady || false,
+      serviceWorkerActive: !!navigator.serviceWorker?.controller
     }),
+
+    // Performance utilities
+    getInitStatus: () => window.appInitializer?.getStatus(),
+    getCacheStats: () => window.appInitializer?.getCacheStats(),
+    clearCaches: () => window.appInitializer?.clearAllCaches(),
+    getPreloadStats: () => window.assetPreloader?.getStats(),
+
+    // Force operations for testing
+    forcePreloadScene: (sceneId) => window.assetPreloader?.queueSceneAssets(sceneId, 1),
+    pausePreloading: () => window.assetPreloader?.pausePreloading(),
+    resumePreloading: () => window.assetPreloader?.resumePreloading(),
   };
 }
 
