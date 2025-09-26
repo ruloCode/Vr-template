@@ -23,6 +23,11 @@ export class VRSceneManager {
     this.preloadingEnabled = true;
     this.preloadProgress = { loaded: 0, total: 0, percentage: 0 };
 
+    // Memory management properties for blob URLs
+    this.currentAudioBlobUrl = null;
+    this.currentSkyboxBlobUrl = null;
+    this.previousTextures = new Set();
+
     this.initializeElements();
     this.initializePreloader();
   }
@@ -118,6 +123,101 @@ export class VRSceneManager {
     }
   }
 
+  /**
+   * Clean up previous assets to prevent memory leaks
+   */
+  cleanupPreviousAssets() {
+    // Revoke previous blob URLs to free memory
+    if (this.currentAudioBlobUrl) {
+      URL.revokeObjectURL(this.currentAudioBlobUrl);
+      this.currentAudioBlobUrl = null;
+    }
+
+    if (this.currentSkyboxBlobUrl) {
+      URL.revokeObjectURL(this.currentSkyboxBlobUrl);
+      this.currentSkyboxBlobUrl = null;
+    }
+
+    // Clean up Three.js textures from previous scene
+    this.cleanupThreeJSTextures();
+
+    // Pause videos not needed for the current scene
+    this.pauseAllVideos();
+
+    console.log('🧹 Previous assets cleaned up for memory optimization');
+  }
+
+  /**
+   * Clean up Three.js textures to prevent GPU memory leaks
+   */
+  cleanupThreeJSTextures() {
+    try {
+      // Clean up skybox texture
+      const skyboxEl = this.elements.skybox || document.querySelector('#scene-skybox');
+      if (skyboxEl && skyboxEl.getObject3D && skyboxEl.getObject3D('mesh')) {
+        const mesh = skyboxEl.getObject3D('mesh');
+        if (mesh.material && mesh.material.map) {
+          mesh.material.map.dispose();
+          this.previousTextures.add(mesh.material.map);
+        }
+      }
+
+      // Clean up any image/video textures from floating screens
+      const screens = document.querySelectorAll('a-plane[src], a-video');
+      screens.forEach(screen => {
+        if (screen.getObject3D && screen.getObject3D('mesh')) {
+          const mesh = screen.getObject3D('mesh');
+          if (mesh.material && mesh.material.map) {
+            mesh.material.map.dispose();
+            this.previousTextures.add(mesh.material.map);
+          }
+        }
+      });
+
+      // Force garbage collection hint
+      if (window.gc) {
+        window.gc();
+      }
+    } catch (error) {
+      console.warn('⚠️ Error during texture cleanup:', error);
+    }
+  }
+
+  /**
+   * Pause all video elements except those needed for current scene to free GPU resources
+   */
+  pauseAllVideos() {
+    const videos = document.querySelectorAll('video');
+    const currentSceneId = this.currentScene?.id;
+
+    videos.forEach(video => {
+      // Only pause videos that are not needed for the current scene
+      const videoId = video.id;
+      const isCurrentSceneVideo = currentSceneId && videoId.includes(currentSceneId.replace('escena-', 'escena'));
+
+      if (!isCurrentSceneVideo && !video.paused) {
+        video.pause();
+        video.currentTime = 0;
+        // Remove from DOM rendering to free GPU memory
+        video.style.display = 'none';
+      }
+    });
+  }
+
+  /**
+   * Resume videos needed for current scene
+   */
+  resumeSceneVideos(sceneId) {
+    const sceneNumber = sceneId.replace('escena-', '');
+    const sceneVideos = document.querySelectorAll(`video[id*="escena${sceneNumber}"]`);
+
+    sceneVideos.forEach(video => {
+      // Make video available for rendering again
+      video.style.display = '';
+      // Note: We don't auto-play here as video cyclers handle that
+    });
+  }
+
   async loadScene(sceneId) {
     if (this.isLoading) {
       // Scene loading already in progress
@@ -134,6 +234,9 @@ export class VRSceneManager {
     // Loading scene
     this.isLoading = true;
     this.showLoadingOverlay(sceneId);
+
+    // Clean up previous assets to prevent memory leaks
+    this.cleanupPreviousAssets();
 
     const sceneConfig = window.SCENES_CONFIG[sceneId];
 
@@ -158,6 +261,9 @@ export class VRSceneManager {
       this.updateModels(sceneConfig);
       this.updateAudio(sceneConfig);
       this.updateFloatingScreens(sceneConfig);
+
+      // Resume videos for the new scene
+      this.resumeSceneVideos(sceneId);
 
       this.currentScene = sceneConfig;
       window.currentSceneId = sceneId;
@@ -211,9 +317,9 @@ export class VRSceneManager {
 
         if (cachedAudio) {
           console.log('🎵 Using cached audio:', sceneConfig.assets.audio);
-          // Create blob URL from cached data
-          const audioUrl = URL.createObjectURL(cachedAudio.data);
-          audioElement.src = audioUrl;
+          // Create blob URL from cached data and store it for cleanup
+          this.currentAudioBlobUrl = URL.createObjectURL(cachedAudio.data);
+          audioElement.src = this.currentAudioBlobUrl;
         } else {
           console.log('🌐 Loading audio from network:', sceneConfig.assets.audio);
           audioElement.src = sceneConfig.assets.audio;
@@ -228,8 +334,9 @@ export class VRSceneManager {
 
       if (cachedSkybox) {
         console.log('🖼️ Using cached skybox:', skyboxUrl);
-        const imageUrl = URL.createObjectURL(cachedSkybox.data);
-        this.elements.assets.skybox.setAttribute("src", imageUrl);
+        // Create blob URL from cached data and store it for cleanup
+        this.currentSkyboxBlobUrl = URL.createObjectURL(cachedSkybox.data);
+        this.elements.assets.skybox.setAttribute("src", this.currentSkyboxBlobUrl);
       } else {
         console.log('🌐 Loading skybox from network:', skyboxUrl);
         this.elements.assets.skybox.setAttribute("src", skyboxUrl);
