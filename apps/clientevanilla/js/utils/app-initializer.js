@@ -3,8 +3,8 @@
  * Manages Service Worker, preloading, and initial app state
  */
 
-import { assetPreloader } from './asset-preloader.js';
-import { cacheManager } from './cache-manager.js';
+import { assetPreloader } from "./asset-preloader.js";
+import { cacheManager } from "./cache-manager.js";
 
 export class AppInitializer {
   constructor() {
@@ -23,13 +23,17 @@ export class AppInitializer {
    */
   async loadManifest() {
     try {
-      const response = await fetch('/asset-manifest.json');
+      const response = await fetch("/asset-manifest.json");
       if (response.ok) {
         this.manifest = await response.json();
-        console.log('📋 Asset manifest loaded:', this.manifest.totalAssets, 'assets');
+        console.log(
+          "📋 Asset manifest loaded:",
+          this.manifest.totalAssets,
+          "assets"
+        );
       }
     } catch (error) {
-      console.warn('⚠️ Could not load asset manifest:', error);
+      console.warn("⚠️ Could not load asset manifest:", error);
       // Continue without manifest - fallback mode
     }
   }
@@ -39,11 +43,11 @@ export class AppInitializer {
    */
   async initialize() {
     if (this.initialized) {
-      console.warn('⚠️ App already initialized');
+      console.warn("⚠️ App already initialized");
       return;
     }
 
-    console.log('🚀 Initializing VR Ecopetrol App...');
+    console.log("🚀 Initializing VR Ecopetrol App...");
 
     try {
       // Phase 1: Critical system initialization
@@ -65,9 +69,8 @@ export class AppInitializer {
 
       // Notify completion
       this.notifyInitializationComplete(totalTime);
-
     } catch (error) {
-      console.error('❌ App initialization failed:', error);
+      console.error("❌ App initialization failed:", error);
       throw error;
     }
   }
@@ -76,7 +79,7 @@ export class AppInitializer {
    * Initialize critical systems first
    */
   async initializeCriticalSystems() {
-    console.log('⚡ Initializing critical systems...');
+    console.log("⚡ Initializing critical systems...");
 
     // Wait for essential DOM elements
     await this.waitForCriticalElements();
@@ -84,30 +87,39 @@ export class AppInitializer {
     // Initialize cache manager
     await cacheManager.initPromise;
 
-    console.log('✅ Critical systems ready');
+    console.log("✅ Critical systems ready");
   }
 
   /**
    * Initialize Service Worker
    */
   async initializeServiceWorker() {
-    if (!('serviceWorker' in navigator)) {
-      console.warn('⚠️ Service Worker not supported');
+    if (!("serviceWorker" in navigator)) {
+      console.warn("⚠️ Service Worker not supported");
       return;
     }
 
-    console.log('🔧 Initializing Service Worker...');
+    // Skip Service Worker in development (localhost with SSL issues)
+    if (
+      window.location.hostname === "localhost" &&
+      window.location.protocol === "https:"
+    ) {
+      console.log("⚠️ Skipping Service Worker in development (SSL issues)");
+      return;
+    }
+
+    console.log("🔧 Initializing Service Worker...");
 
     try {
-      const registration = await navigator.serviceWorker.register('/sw.js', {
-        scope: '/'
+      const registration = await navigator.serviceWorker.register("/sw.js", {
+        scope: "/",
       });
 
       // Wait for Service Worker to be ready
       await navigator.serviceWorker.ready;
 
       this.serviceWorkerReady = true;
-      console.log('✅ Service Worker ready:', registration.scope);
+      console.log("✅ Service Worker ready:", registration.scope);
 
       // Set up message listener for SW communication
       this.setupServiceWorkerMessages();
@@ -117,14 +129,13 @@ export class AppInitializer {
         const criticalAssets = this.manifest.preloadStrategies.critical;
         if (criticalAssets.length > 0) {
           this.sendMessageToSW({
-            type: 'PRELOAD_ASSETS',
-            assets: criticalAssets
+            type: "PRELOAD_ASSETS",
+            assets: criticalAssets,
           });
         }
       }
-
     } catch (error) {
-      console.error('❌ Service Worker initialization failed:', error);
+      console.error("❌ Service Worker initialization failed:", error);
       // Continue without Service Worker
     }
   }
@@ -133,29 +144,29 @@ export class AppInitializer {
    * Set up Service Worker message handling
    */
   setupServiceWorkerMessages() {
-    navigator.serviceWorker.addEventListener('message', (event) => {
+    navigator.serviceWorker.addEventListener("message", (event) => {
       const { type, data } = event.data;
 
       switch (type) {
-        case 'SW_ACTIVATED':
-          console.log('🚀 Service Worker activated');
+        case "SW_ACTIVATED":
+          console.log("🚀 Service Worker activated");
           break;
 
-        case 'PRELOAD_COMPLETE':
-          console.log('✅ Service Worker preload completed');
+        case "PRELOAD_COMPLETE":
+          console.log("✅ Service Worker preload completed");
           this.onServiceWorkerPreloadComplete(data);
           break;
 
-        case 'CACHE_STATUS_RESPONSE':
+        case "CACHE_STATUS_RESPONSE":
           this.onCacheStatusResponse(data);
           break;
 
-        case 'CACHE_CLEARED':
-          console.log('🗑️ Cache cleared by Service Worker');
+        case "CACHE_CLEARED":
+          console.log("🗑️ Cache cleared by Service Worker");
           break;
 
         default:
-          console.log('📨 Service Worker message:', type, data);
+          console.log("📨 Service Worker message:", type, data);
       }
     });
   }
@@ -173,7 +184,7 @@ export class AppInitializer {
    * Initialize asset preloading system
    */
   async initializeAssetPreloading() {
-    console.log('📦 Initializing asset preloading...');
+    console.log("📦 Initializing asset preloading...");
 
     // Start preloading critical assets
     if (this.manifest) {
@@ -187,7 +198,7 @@ export class AppInitializer {
     // Set up progress monitoring
     this.monitorPreloadProgress();
 
-    console.log('✅ Asset preloading initialized');
+    console.log("✅ Asset preloading initialized");
   }
 
   /**
@@ -200,23 +211,29 @@ export class AppInitializer {
 
     // Queue critical assets first
     if (strategies.critical && strategies.critical.length > 0) {
-      const criticalAssets = strategies.critical.map(url => ({
+      const criticalAssets = strategies.critical.map((url) => ({
         url,
         type: this.getAssetTypeFromUrl(url),
-        critical: true
+        critical: true,
       }));
 
-      assetPreloader.queueAssets(criticalAssets, assetPreloader.PRIORITY.CRITICAL);
+      assetPreloader.queueAssets(
+        criticalAssets,
+        assetPreloader.PRIORITY.CRITICAL
+      );
     }
 
     // Queue aggressive preload assets
     if (strategies.aggressive && strategies.aggressive.length > 0) {
-      const aggressiveAssets = strategies.aggressive.map(url => ({
+      const aggressiveAssets = strategies.aggressive.map((url) => ({
         url,
-        type: this.getAssetTypeFromUrl(url)
+        type: this.getAssetTypeFromUrl(url),
       }));
 
-      assetPreloader.queueAssets(aggressiveAssets, assetPreloader.PRIORITY.HIGH);
+      assetPreloader.queueAssets(
+        aggressiveAssets,
+        assetPreloader.PRIORITY.HIGH
+      );
     }
   }
 
@@ -225,13 +242,16 @@ export class AppInitializer {
    */
   queueFallbackAssets() {
     const fallbackAssets = [
-      { url: '/images/base.jpg', type: 'image', critical: true },
-      { url: '/audio/toma_01.mp3', type: 'audio', critical: true },
-      { url: '/images/escena_1.png', type: 'image' },
-      { url: '/images/escena_2.png', type: 'image' }
+      { url: "/images/base.jpg", type: "image", critical: true },
+      { url: "/audio/toma_01.mp3", type: "audio", critical: true },
+      { url: "/images/escena_1.png", type: "image" },
+      { url: "/images/escena_2.png", type: "image" },
     ];
 
-    assetPreloader.queueAssets(fallbackAssets, assetPreloader.PRIORITY.CRITICAL);
+    assetPreloader.queueAssets(
+      fallbackAssets,
+      assetPreloader.PRIORITY.CRITICAL
+    );
   }
 
   /**
@@ -254,22 +274,24 @@ export class AppInitializer {
    */
   updateGlobalProgress(progress) {
     // Update any global progress indicators
-    window.dispatchEvent(new CustomEvent('app-progress', {
-      detail: {
-        type: 'asset-preload',
-        progress: progress.percentage,
-        loaded: progress.loaded,
-        total: progress.total,
-        currentAsset: progress.currentAsset
-      }
-    }));
+    window.dispatchEvent(
+      new CustomEvent("app-progress", {
+        detail: {
+          type: "asset-preload",
+          progress: progress.percentage,
+          loaded: progress.loaded,
+          total: progress.total,
+          currentAsset: progress.currentAsset,
+        },
+      })
+    );
   }
 
   /**
    * Initialize main application after critical loading
    */
   async initializeApp() {
-    console.log('🎯 Initializing main application...');
+    console.log("🎯 Initializing main application...");
 
     // Wait for A-Frame to be ready
     await this.waitForAFrame();
@@ -277,14 +299,14 @@ export class AppInitializer {
     // Initialize VR scene manager and other systems
     // This is handled by the main app.js module
 
-    console.log('✅ Main application initialized');
+    console.log("✅ Main application initialized");
   }
 
   /**
    * Wait for critical DOM elements
    */
   async waitForCriticalElements() {
-    const requiredElements = ['#app-loading', 'a-scene'];
+    const requiredElements = ["#app-loading", "a-scene"];
 
     for (const selector of requiredElements) {
       await this.waitForElement(selector);
@@ -296,7 +318,7 @@ export class AppInitializer {
    */
   async waitForAFrame() {
     return new Promise((resolve) => {
-      if (typeof AFRAME !== 'undefined') {
+      if (typeof AFRAME !== "undefined") {
         // A-Frame already loaded
         resolve();
         return;
@@ -304,7 +326,7 @@ export class AppInitializer {
 
       // Wait for A-Frame to load
       const checkAFrame = () => {
-        if (typeof AFRAME !== 'undefined') {
+        if (typeof AFRAME !== "undefined") {
           resolve();
         } else {
           setTimeout(checkAFrame, 100);
@@ -336,7 +358,7 @@ export class AppInitializer {
 
       observer.observe(document.body, {
         childList: true,
-        subtree: true
+        subtree: true,
       });
 
       // Timeout fallback
@@ -351,30 +373,30 @@ export class AppInitializer {
    * Get asset type from URL
    */
   getAssetTypeFromUrl(url) {
-    const extension = url.split('.').pop().toLowerCase();
+    const extension = url.split(".").pop().toLowerCase();
 
-    if (['jpg', 'jpeg', 'png', 'webp'].includes(extension)) {
-      return 'image';
+    if (["jpg", "jpeg", "png", "webp"].includes(extension)) {
+      return "image";
     }
-    if (['mp4', 'webm', 'mov'].includes(extension)) {
-      return 'video';
+    if (["mp4", "webm", "mov"].includes(extension)) {
+      return "video";
     }
-    if (['mp3', 'wav', 'ogg'].includes(extension)) {
-      return 'audio';
+    if (["mp3", "wav", "ogg"].includes(extension)) {
+      return "audio";
     }
 
-    return 'unknown';
+    return "unknown";
   }
 
   /**
    * Handle Service Worker preload completion
    */
   onServiceWorkerPreloadComplete(data) {
-    console.log('✅ Service Worker preload completed:', data);
+    console.log("✅ Service Worker preload completed:", data);
 
     // Update our preload progress
     if (data && data.assets) {
-      data.assets.forEach(assetUrl => {
+      data.assets.forEach((assetUrl) => {
         assetPreloader.loadedAssets.add(assetUrl);
       });
     }
@@ -384,7 +406,7 @@ export class AppInitializer {
    * Handle cache status response
    */
   onCacheStatusResponse(data) {
-    console.log('📊 Cache status:', data.status);
+    console.log("📊 Cache status:", data.status);
 
     // Store cache status for debugging
     window.cacheStatus = data.status;
@@ -394,10 +416,10 @@ export class AppInitializer {
    * Handle asset preload completion
    */
   onAssetPreloadComplete() {
-    console.log('✅ Asset preloading completed');
+    console.log("✅ Asset preloading completed");
 
     // Notify the application that assets are ready
-    window.dispatchEvent(new CustomEvent('assets-ready'));
+    window.dispatchEvent(new CustomEvent("assets-ready"));
 
     // Enable any features that depend on preloaded assets
     this.enableAssetDependentFeatures();
@@ -411,7 +433,7 @@ export class AppInitializer {
     window.assetsReady = true;
 
     // Enable any UI elements that were waiting for assets
-    document.body.classList.add('assets-ready');
+    document.body.classList.add("assets-ready");
   }
 
   /**
@@ -419,14 +441,16 @@ export class AppInitializer {
    */
   notifyInitializationComplete(totalTime) {
     // Dispatch event for other systems to listen to
-    window.dispatchEvent(new CustomEvent('app-initialized', {
-      detail: {
-        totalTime,
-        serviceWorkerReady: this.serviceWorkerReady,
-        assetsPreloaded: this.assetsPreloaded,
-        manifest: this.manifest
-      }
-    }));
+    window.dispatchEvent(
+      new CustomEvent("app-initialized", {
+        detail: {
+          totalTime,
+          serviceWorkerReady: this.serviceWorkerReady,
+          assetsPreloaded: this.assetsPreloaded,
+          manifest: this.manifest,
+        },
+      })
+    );
 
     // Global flag for debugging
     window.appInitialized = true;
@@ -441,7 +465,7 @@ export class AppInitializer {
       serviceWorkerReady: this.serviceWorkerReady,
       assetsPreloaded: this.assetsPreloaded,
       totalTime: Date.now() - this.startTime,
-      manifest: !!this.manifest
+      manifest: !!this.manifest,
     };
   }
 
@@ -449,7 +473,7 @@ export class AppInitializer {
    * Force clear all caches (for debugging/maintenance)
    */
   async clearAllCaches() {
-    console.log('🧹 Clearing all caches...');
+    console.log("🧹 Clearing all caches...");
 
     try {
       // Clear IndexedDB cache
@@ -457,17 +481,16 @@ export class AppInitializer {
 
       // Clear Service Worker caches
       if (this.serviceWorkerReady) {
-        this.sendMessageToSW({ type: 'CLEAR_CACHE' });
+        this.sendMessageToSW({ type: "CLEAR_CACHE" });
       }
 
       // Clear asset preloader
       assetPreloader.clearQueue();
 
-      console.log('✅ All caches cleared');
+      console.log("✅ All caches cleared");
       return true;
-
     } catch (error) {
-      console.error('❌ Error clearing caches:', error);
+      console.error("❌ Error clearing caches:", error);
       return false;
     }
   }
@@ -480,20 +503,19 @@ export class AppInitializer {
       const stats = {
         indexedDB: await cacheManager.getStats(),
         assetPreloader: assetPreloader.getStats(),
-        serviceWorker: null
+        serviceWorker: null,
       };
 
       // Request Service Worker cache stats
       if (this.serviceWorkerReady) {
         const channel = new MessageChannel();
-        this.sendMessageToSW({ type: 'GET_CACHE_STATUS' });
+        this.sendMessageToSW({ type: "GET_CACHE_STATUS" });
         // SW will respond via message event
       }
 
       return stats;
-
     } catch (error) {
-      console.error('❌ Error getting cache stats:', error);
+      console.error("❌ Error getting cache stats:", error);
       return null;
     }
   }
@@ -505,4 +527,4 @@ export const appInitializer = new AppInitializer();
 // Global access for debugging
 window.appInitializer = appInitializer;
 
-console.log('🏗️ App Initializer loaded');
+console.log("🏗️ App Initializer loaded");

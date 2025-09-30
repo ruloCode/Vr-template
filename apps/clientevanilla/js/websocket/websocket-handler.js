@@ -3,8 +3,8 @@
  * Manages WebSocket communication with the server and handles all incoming commands
  */
 
-import { VRSceneManager } from '../managers/scene-manager.js';
-import { enableAudio } from '../managers/audio-manager.js';
+import { VRSceneManager } from "../managers/scene-manager.js";
+import { enableAudio } from "../managers/audio-manager.js";
 
 let vrClient = null;
 let sceneManager = null;
@@ -46,9 +46,10 @@ export async function initializeWebSocket(sceneManagerInstance) {
         throw primaryError;
       }
     }
-    
   } catch (error) {
-    console.warn("⚠️ Error obteniendo configuración dinámica, usando fallback:");
+    console.warn(
+      "⚠️ Error obteniendo configuración dinámica, usando fallback:"
+    );
     console.error(error);
 
     // Fallback to manual detection based on main server
@@ -77,8 +78,11 @@ async function getNetworkConfig() {
   const serverPort = getMainServerPort();
   const serverProtocol = getMainServerProtocol();
 
-  const configUrl = `${serverProtocol}://${currentHost}:${serverPort}/api/config`;
-  console.log("🔍 Consultando configuración del servidor principal en:", configUrl);
+  const configUrl = `${serverProtocol}s://${currentHost}:${serverPort}/api/config`;
+  console.log(
+    "🔍 Consultando configuración del servidor principal en:",
+    configUrl
+  );
 
   const response = await fetch(configUrl);
   if (!response.ok) {
@@ -165,7 +169,6 @@ function testWebSocketConnection(url) {
         clearTimeout(timeout);
         resolve(false);
       };
-
     } catch (error) {
       resolve(false);
     }
@@ -196,7 +199,10 @@ async function connectWithConfig(serverUrl, networkConfig) {
 
         // Send ready signal for current scene
         setTimeout(() => {
-          console.log("📤 Sending READY signal for scene:", window.currentSceneId);
+          console.log(
+            "📤 Sending READY signal for scene:",
+            window.currentSceneId
+          );
           vrClient.sendReady(window.currentSceneId);
         }, 1000);
 
@@ -225,7 +231,6 @@ async function connectWithConfig(serverUrl, networkConfig) {
 
       // Expose client globally for compatibility
       window.vrClient = vrClient;
-
     } catch (error) {
       clearTimeout(connectionTimeout);
       console.error("❌ Error durante conexión:", error);
@@ -394,26 +399,26 @@ function handleShowScreenCommand(screenType) {
   }
 
   const screenMethods = {
-    "escena1": () => sceneManager.showEscena1Screen(),
-    "escena2": () => sceneManager.showEscena2Screen(),
-    "escena3": () => sceneManager.showEscena3Screen(),
-    "escena3B": () => sceneManager.showEscena3BScreen(),
-    "escena4": () => sceneManager.showEscena4Screen(),
-    "escena4B": () => sceneManager.showEscena4BScreen(),
-    "escena5": () => sceneManager.showEscena5Screen(),
-    "escena5B": () => sceneManager.showEscena5BScreen(),
-    "escena6": () => sceneManager.showEscena6Screen(),
-    "escena6B": () => sceneManager.showEscena6BScreen(),
-    "escena7": () => sceneManager.showEscena7Screen(),
-    "escena7B": () => sceneManager.showEscena7BScreen(),
-    "escena8": () => sceneManager.showEscena8Screen(),
-    "escena8B": () => sceneManager.showEscena8BScreen(),
-    "escena9": () => sceneManager.showEscena9Screen(),
-    "escena9B": () => sceneManager.showEscena9BScreen(),
-    "escena10": () => sceneManager.showEscena10Screen(),
-    "escena10B": () => sceneManager.showEscena10BScreen(),
-    "escena11": () => sceneManager.showEscena11Screen(),
-    "escena11B": () => sceneManager.showEscena11BScreen(),
+    escena1: () => sceneManager.showEscena1Screen(),
+    escena2: () => sceneManager.showEscena2Screen(),
+    escena3: () => sceneManager.showEscena3Screen(),
+    escena3B: () => sceneManager.showEscena3BScreen(),
+    escena4: () => sceneManager.showEscena4Screen(),
+    escena4B: () => sceneManager.showEscena4BScreen(),
+    escena5: () => sceneManager.showEscena5Screen(),
+    escena5B: () => sceneManager.showEscena5BScreen(),
+    escena6: () => sceneManager.showEscena6Screen(),
+    escena6B: () => sceneManager.showEscena6BScreen(),
+    escena7: () => sceneManager.showEscena7Screen(),
+    escena7B: () => sceneManager.showEscena7BScreen(),
+    escena8: () => sceneManager.showEscena8Screen(),
+    escena8B: () => sceneManager.showEscena8BScreen(),
+    escena9: () => sceneManager.showEscena9Screen(),
+    escena9B: () => sceneManager.showEscena9BScreen(),
+    escena10: () => sceneManager.showEscena10Screen(),
+    escena10B: () => sceneManager.showEscena10BScreen(),
+    escena11: () => sceneManager.showEscena11Screen(),
+    escena11B: () => sceneManager.showEscena11BScreen(),
   };
 
   const method = screenMethods[screenType];
@@ -435,26 +440,26 @@ function handleHideScreenCommand(screenType) {
   }
 
   const screenMethods = {
-    "escena1": () => sceneManager.hideEscena1Screen(),
-    "escena2": () => sceneManager.hideEscena2Screen(),
-    "escena3": () => sceneManager.hideEscena3Screen(),
-    "escena3B": () => sceneManager.hideEscena3BScreen(),
-    "escena4": () => sceneManager.hideEscena4Screen(),
-    "escena4B": () => sceneManager.hideEscena4BScreen(),
-    "escena5": () => sceneManager.hideEscena5Screen(),
-    "escena5B": () => sceneManager.hideEscena5BScreen(),
-    "escena6": () => sceneManager.hideEscena6Screen(),
-    "escena6B": () => sceneManager.hideEscena6BScreen(),
-    "escena7": () => sceneManager.hideEscena7Screen(),
-    "escena7B": () => sceneManager.hideEscena7BScreen(),
-    "escena8": () => sceneManager.hideEscena8Screen(),
-    "escena8B": () => sceneManager.hideEscena8BScreen(),
-    "escena9": () => sceneManager.hideEscena9Screen(),
-    "escena9B": () => sceneManager.hideEscena9BScreen(),
-    "escena10": () => sceneManager.hideEscena10Screen(),
-    "escena10B": () => sceneManager.hideEscena10BScreen(),
-    "escena11": () => sceneManager.hideEscena11Screen(),
-    "escena11B": () => sceneManager.hideEscena11BScreen(),
+    escena1: () => sceneManager.hideEscena1Screen(),
+    escena2: () => sceneManager.hideEscena2Screen(),
+    escena3: () => sceneManager.hideEscena3Screen(),
+    escena3B: () => sceneManager.hideEscena3BScreen(),
+    escena4: () => sceneManager.hideEscena4Screen(),
+    escena4B: () => sceneManager.hideEscena4BScreen(),
+    escena5: () => sceneManager.hideEscena5Screen(),
+    escena5B: () => sceneManager.hideEscena5BScreen(),
+    escena6: () => sceneManager.hideEscena6Screen(),
+    escena6B: () => sceneManager.hideEscena6BScreen(),
+    escena7: () => sceneManager.hideEscena7Screen(),
+    escena7B: () => sceneManager.hideEscena7BScreen(),
+    escena8: () => sceneManager.hideEscena8Screen(),
+    escena8B: () => sceneManager.hideEscena8BScreen(),
+    escena9: () => sceneManager.hideEscena9Screen(),
+    escena9B: () => sceneManager.hideEscena9BScreen(),
+    escena10: () => sceneManager.hideEscena10Screen(),
+    escena10B: () => sceneManager.hideEscena10BScreen(),
+    escena11: () => sceneManager.hideEscena11Screen(),
+    escena11B: () => sceneManager.hideEscena11BScreen(),
   };
 
   const method = screenMethods[screenType];
@@ -578,26 +583,187 @@ function handleToggleScreenCommand(screenType) {
   };
 
   const screenToggleMethods = {
-    "escena1": () => toggleScreen("escena1-screen", () => sceneManager.showEscena1Screen(), () => sceneManager.hideEscena1Screen()),
-    "escena2": () => toggleScreen("escena2-screen", () => sceneManager.showEscena2Screen(), () => sceneManager.hideEscena2Screen()),
-    "escena3": () => toggleScreen("escena3-screen", () => sceneManager.showEscena3Screen(), () => sceneManager.hideEscena3Screen()),
-    "escena3B": () => toggleScreen("escena3B-screen", () => sceneManager.showEscena3BScreen(), () => sceneManager.hideEscena3BScreen()),
-    "escena4": () => toggleScreen("escena4-screen", () => sceneManager.showEscena4Screen(), () => sceneManager.hideEscena4Screen()),
-    "escena4B": () => toggleScreen("escena4B-screen", () => sceneManager.showEscena4BScreen(), () => sceneManager.hideEscena4BScreen()),
-    "escena5": () => toggleScreen("escena5-screen", () => sceneManager.showEscena5Screen(), () => sceneManager.hideEscena5Screen()),
-    "escena5B": () => toggleScreen("escena5B-screen", () => sceneManager.showEscena5BScreen(), () => sceneManager.hideEscena5BScreen()),
-    "escena6": () => toggleScreen("escena6-screen", () => sceneManager.showEscena6Screen(), () => sceneManager.hideEscena6Screen()),
-    "escena6B": () => toggleScreen("escena6B-screen", () => sceneManager.showEscena6BScreen(), () => sceneManager.hideEscena6BScreen()),
-    "escena7": () => toggleScreen("escena7-screen", () => sceneManager.showEscena7Screen(), () => sceneManager.hideEscena7Screen()),
-    "escena7B": () => toggleScreen("escena7B-screen", () => sceneManager.showEscena7BScreen(), () => sceneManager.hideEscena7BScreen()),
-    "escena8": () => toggleScreen("escena8-screen", () => sceneManager.showEscena8Screen(), () => sceneManager.hideEscena8Screen()),
-    "escena8B": () => toggleScreen("escena8B-screen", () => sceneManager.showEscena8BScreen(), () => sceneManager.hideEscena8BScreen()),
-    "escena9": () => toggleScreen("escena9-screen", () => sceneManager.showEscena9Screen(), () => sceneManager.hideEscena9Screen()),
-    "escena9B": () => toggleScreen("escena9B-screen", () => sceneManager.showEscena9BScreen(), () => sceneManager.hideEscena9BScreen()),
-    "escena10": () => toggleScreen("escena10-screen", () => sceneManager.showEscena10Screen(), () => sceneManager.hideEscena10Screen()),
-    "escena10B": () => toggleScreen("escena10B-screen", () => sceneManager.showEscena10BScreen(), () => sceneManager.hideEscena10BScreen()),
-    "escena11": () => toggleScreen("escena11-screen", () => sceneManager.showEscena11Screen(), () => sceneManager.hideEscena11Screen()),
-    "escena11B": () => toggleScreen("escena11B-screen", () => sceneManager.showEscena11BScreen(), () => sceneManager.hideEscena11BScreen()),
+    escena1: () =>
+      toggleScreen(
+        "escena1-screen",
+        () => sceneManager.showEscena1Screen(),
+        () => sceneManager.hideEscena1Screen()
+      ),
+    escena2: () =>
+      toggleScreen(
+        "escena2-screen",
+        () => sceneManager.showEscena2Screen(),
+        () => sceneManager.hideEscena2Screen()
+      ),
+    escena3: () =>
+      toggleScreen(
+        "escena3-screen",
+        () => sceneManager.showEscena3Screen(),
+        () => sceneManager.hideEscena3Screen()
+      ),
+    escena3B: () =>
+      toggleScreen(
+        "escena3B-screen",
+        () => sceneManager.showEscena3BScreen(),
+        () => sceneManager.hideEscena3BScreen()
+      ),
+    escena4: () =>
+      toggleScreen(
+        "escena4-screen",
+        () => sceneManager.showEscena4Screen(),
+        () => sceneManager.hideEscena4Screen()
+      ),
+    escena4B: () =>
+      toggleScreen(
+        "escena4B-screen",
+        () => sceneManager.showEscena4BScreen(),
+        () => sceneManager.hideEscena4BScreen()
+      ),
+    escena5: () =>
+      toggleScreen(
+        "escena5-screen",
+        () => sceneManager.showEscena5Screen(),
+        () => sceneManager.hideEscena5Screen()
+      ),
+    escena5B: () =>
+      toggleScreen(
+        "escena5B-screen",
+        () => sceneManager.showEscena5BScreen(),
+        () => sceneManager.hideEscena5BScreen()
+      ),
+    escena6: () =>
+      toggleScreen(
+        "escena6-screen",
+        () => sceneManager.showEscena6Screen(),
+        () => sceneManager.hideEscena6Screen()
+      ),
+    escena6B: () =>
+      toggleScreen(
+        "escena6B-screen",
+        () => sceneManager.showEscena6BScreen(),
+        () => sceneManager.hideEscena6BScreen()
+      ),
+    escena7: () =>
+      toggleScreen(
+        "escena7-screen",
+        () => sceneManager.showEscena7Screen(),
+        () => sceneManager.hideEscena7Screen()
+      ),
+    escena7B: () =>
+      toggleScreen(
+        "escena7B-screen",
+        () => sceneManager.showEscena7BScreen(),
+        () => sceneManager.hideEscena7BScreen()
+      ),
+    escena8: () =>
+      toggleScreen(
+        "escena8-screen",
+        () => sceneManager.showEscena8Screen(),
+        () => sceneManager.hideEscena8Screen()
+      ),
+    escena8B: () =>
+      toggleScreen(
+        "escena8B-screen",
+        () => sceneManager.showEscena8BScreen(),
+        () => sceneManager.hideEscena8BScreen()
+      ),
+    escena9: () =>
+      toggleScreen(
+        "escena9-screen",
+        () => sceneManager.showEscena9Screen(),
+        () => sceneManager.hideEscena9Screen()
+      ),
+    escena9B: () =>
+      toggleScreen(
+        "escena9B-screen",
+        () => sceneManager.showEscena9BScreen(),
+        () => sceneManager.hideEscena9BScreen()
+      ),
+    escena10: () =>
+      toggleScreen(
+        "escena10-screen",
+        () => sceneManager.showEscena10Screen(),
+        () => sceneManager.hideEscena10Screen()
+      ),
+    escena10B: () =>
+      toggleScreen(
+        "escena10B-screen",
+        () => sceneManager.showEscena10BScreen(),
+        () => sceneManager.hideEscena10BScreen()
+      ),
+    escena11: () =>
+      toggleScreen(
+        "escena11-screen",
+        () => sceneManager.showEscena11Screen(),
+        () => sceneManager.hideEscena11Screen()
+      ),
+    escena11B: () =>
+      toggleScreen(
+        "escena11B-screen",
+        () => sceneManager.showEscena11BScreen(),
+        () => sceneManager.hideEscena11BScreen()
+      ),
+    // Guajira screens
+    guajira1: () =>
+      toggleScreen(
+        "guajira1-screen",
+        () => sceneManager.showGuajira1Screen(),
+        () => sceneManager.hideGuajira1Screen()
+      ),
+    guajira2: () =>
+      toggleScreen(
+        "guajira2-screen",
+        () => sceneManager.showGuajira2Screen(),
+        () => sceneManager.hideGuajira2Screen()
+      ),
+    guajira3: () =>
+      toggleScreen(
+        "guajira3-screen",
+        () => sceneManager.showGuajira3Screen(),
+        () => sceneManager.hideGuajira3Screen()
+      ),
+    guajira4: () =>
+      toggleScreen(
+        "guajira4-screen",
+        () => sceneManager.showGuajira4Screen(),
+        () => sceneManager.hideGuajira4Screen()
+      ),
+    guajira5: () =>
+      toggleScreen(
+        "guajira5-screen",
+        () => sceneManager.showGuajira5Screen(),
+        () => sceneManager.hideGuajira5Screen()
+      ),
+    guajira6: () =>
+      toggleScreen(
+        "guajira6-screen",
+        () => sceneManager.showGuajira6Screen(),
+        () => sceneManager.hideGuajira6Screen()
+      ),
+    guajira7: () =>
+      toggleScreen(
+        "guajira7-screen",
+        () => sceneManager.showGuajira7Screen(),
+        () => sceneManager.hideGuajira7Screen()
+      ),
+    guajira8: () =>
+      toggleScreen(
+        "guajira8-screen",
+        () => sceneManager.showGuajira8Screen(),
+        () => sceneManager.hideGuajira8Screen()
+      ),
+    guajira9: () =>
+      toggleScreen(
+        "guajira9-screen",
+        () => sceneManager.showGuajira9Screen(),
+        () => sceneManager.hideGuajira9Screen()
+      ),
+    guajira10: () =>
+      toggleScreen(
+        "guajira10-screen",
+        () => sceneManager.showGuajira10Screen(),
+        () => sceneManager.hideGuajira10Screen()
+      ),
   };
 
   const method = screenToggleMethods[screenType];
@@ -613,7 +779,7 @@ function handleToggleScreenCommand(screenType) {
  */
 function handleStartSequenceCommand(command) {
   console.log("🎬 Starting sequence:", command.sequenceId);
-  
+
   if (sceneManager) {
     // Enable sequence mode in scene manager
     sceneManager.enableSequenceMode(command.sequenceId, command.config);
@@ -622,7 +788,7 @@ function handleStartSequenceCommand(command) {
 
 function handleStopSequenceCommand() {
   console.log("⏹️ Stopping sequence");
-  
+
   if (sceneManager) {
     sceneManager.disableSequenceMode();
   }
@@ -630,13 +796,13 @@ function handleStopSequenceCommand() {
 
 function handlePauseSequenceCommand() {
   console.log("⏸️ Pausing sequence");
-  
+
   // Pause current audio
   const audioEl = document.querySelector("#scene-sound");
   if (audioEl && audioEl.components.sound) {
     audioEl.components.sound.pauseSound();
   }
-  
+
   if (sceneManager) {
     sceneManager.onSequencePaused();
   }
@@ -644,13 +810,13 @@ function handlePauseSequenceCommand() {
 
 function handleResumeSequenceCommand() {
   console.log("▶️ Resuming sequence");
-  
+
   // Resume current audio
   const audioEl = document.querySelector("#scene-sound");
   if (audioEl && audioEl.components.sound) {
     audioEl.components.sound.playSound();
   }
-  
+
   if (sceneManager) {
     sceneManager.onSequenceResumed();
   }
@@ -658,7 +824,7 @@ function handleResumeSequenceCommand() {
 
 function handleNextSceneCommand() {
   console.log("⏭️ Next scene command received");
-  
+
   if (sceneManager) {
     sceneManager.onSequenceNextScene();
   }
@@ -666,7 +832,7 @@ function handleNextSceneCommand() {
 
 function handlePreviousSceneCommand() {
   console.log("⏮️ Previous scene command received");
-  
+
   if (sceneManager) {
     sceneManager.onSequencePreviousScene();
   }
@@ -674,7 +840,7 @@ function handlePreviousSceneCommand() {
 
 function handleJumpToSceneCommand(sceneIndex) {
   console.log("⏯️ Jump to scene command received:", sceneIndex);
-  
+
   if (sceneManager) {
     sceneManager.onSequenceJumpToScene(sceneIndex);
   }

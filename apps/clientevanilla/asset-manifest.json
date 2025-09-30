@@ -123,11 +123,7 @@
       "/audio/toma_01.mp3",
       "/videos/escena%201/solar_1.MP4",
       "/videos/escena%201/solar_2.MP4",
-      "/videos/escena%201/solar_3.MP4",
-      "/index.html",
-      "/aframe-v1.3.0.min.js",
-      "/scenes-config.js",
-      "/websocket-client.js"
+      "/videos/escena%201/solar_3.MP4"
     ],
     "aggressive": [
       "/images/escena_1.png",

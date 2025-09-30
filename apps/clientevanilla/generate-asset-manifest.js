@@ -3,12 +3,12 @@
  * Creates a comprehensive manifest of all VR assets with integrity hashes
  */
 
-const fs = require('fs');
-const path = require('path');
-const crypto = require('crypto');
+const fs = require("fs");
+const path = require("path");
+const crypto = require("crypto");
 
-const ASSET_DIRECTORIES = ['images', 'videos', 'audio'];
-const OUTPUT_FILE = 'asset-manifest.json';
+const ASSET_DIRECTORIES = ["images", "videos", "audio"];
+const OUTPUT_FILE = "asset-manifest.json";
 
 // Scene configuration mapping
 const SCENES_CONFIG = {
@@ -17,85 +17,91 @@ const SCENES_CONFIG = {
     name: "Escena 1 - Energías Renovables",
     description: "Panorámica de instalaciones de energía solar y eólica",
     priority: 1,
-    preloadStrategy: "aggressive"
+    preloadStrategy: "aggressive",
   },
   "escena-2": {
     id: "escena-2",
     name: "Escena 2 - Operaciones Petroleras",
     description: "Vista panorámica de operaciones petroleras industriales",
     priority: 1,
-    preloadStrategy: "aggressive"
+    preloadStrategy: "aggressive",
   },
   "escena-3": {
     id: "escena-3",
     name: "Escena 3 - Operaciones de Plataforma",
     description: "Vista panorámica de plataformas petroleras y CPF",
     priority: 2,
-    preloadStrategy: "moderate"
+    preloadStrategy: "moderate",
   },
   "escena-4": {
     id: "escena-4",
     name: "Escena 4 - Entorno Natural",
     description: "Vista panorámica del entorno natural y paisajes",
     priority: 2,
-    preloadStrategy: "moderate"
+    preloadStrategy: "moderate",
   },
   "escena-5": {
     id: "escena-5",
     name: "Escena 5 - Vista Panorámica",
     description: "Vista panorámica completa del entorno industrial y natural",
     priority: 2,
-    preloadStrategy: "moderate"
+    preloadStrategy: "moderate",
   },
   "escena-6": {
     id: "escena-6",
     name: "Escena 6 - Operaciones Especializadas",
-    description: "Vista panorámica de operaciones especializadas y tecnología avanzada",
+    description:
+      "Vista panorámica de operaciones especializadas y tecnología avanzada",
     priority: 3,
-    preloadStrategy: "conservative"
+    preloadStrategy: "conservative",
   },
   "escena-7": {
     id: "escena-7",
     name: "Escena 7 - Vista Industrial Avanzada",
-    description: "Vista panorámica de instalaciones industriales avanzadas y tecnología moderna",
+    description:
+      "Vista panorámica de instalaciones industriales avanzadas y tecnología moderna",
     priority: 3,
-    preloadStrategy: "conservative"
+    preloadStrategy: "conservative",
   },
   "escena-8": {
     id: "escena-8",
     name: "Escena 8 - Operaciones Industriales",
-    description: "Vista panorámica de operaciones industriales y equipos especializados",
+    description:
+      "Vista panorámica de operaciones industriales y equipos especializados",
     priority: 3,
-    preloadStrategy: "conservative"
+    preloadStrategy: "conservative",
   },
   "escena-9": {
     id: "escena-9",
     name: "Escena 9 - Instalaciones Avanzadas",
-    description: "Vista panorámica de instalaciones industriales avanzadas y tecnología moderna",
+    description:
+      "Vista panorámica de instalaciones industriales avanzadas y tecnología moderna",
     priority: 3,
-    preloadStrategy: "conservative"
+    preloadStrategy: "conservative",
   },
   "escena-10": {
     id: "escena-10",
     name: "Escena 10 - Operaciones Especializadas",
-    description: "Vista panorámica de operaciones especializadas y equipos de alta tecnología",
+    description:
+      "Vista panorámica de operaciones especializadas y equipos de alta tecnología",
     priority: 3,
-    preloadStrategy: "conservative"
+    preloadStrategy: "conservative",
   },
   "escena-11": {
     id: "escena-11",
     name: "Escena 11 - Infraestructura Completa",
-    description: "Vista panorámica completa de la infraestructura industrial y operacional",
+    description:
+      "Vista panorámica completa de la infraestructura industrial y operacional",
     priority: 3,
-    preloadStrategy: "conservative"
+    preloadStrategy: "conservative",
   },
-  "base": {
+  base: {
     id: "base",
     name: "Escena Base",
     description: "Escena base por defecto",
     priority: 1,
-    preloadStrategy: "critical"
-  }
+    preloadStrategy: "critical",
+  },
 };
 
 class AssetManifestGenerator {
@@ -111,15 +117,15 @@ class AssetManifestGenerator {
         images: { count: 0, size: 0 },
         videos: { count: 0, size: 0 },
         audio: { count: 0, size: 0 },
-        critical: { count: 0, size: 0 }
+        critical: { count: 0, size: 0 },
       },
       preloadStrategies: {
         critical: [],
         aggressive: [],
         moderate: [],
-        conservative: []
+        conservative: [],
       },
-      integrity: {}
+      integrity: {},
     };
 
     this.processedFiles = new Set();
@@ -129,7 +135,7 @@ class AssetManifestGenerator {
    * Generate complete asset manifest
    */
   async generate() {
-    console.log('🏗️ Generating asset manifest...');
+    console.log("🏗️ Generating asset manifest...");
 
     try {
       // Process each asset directory
@@ -156,14 +162,13 @@ class AssetManifestGenerator {
       // Write manifest file
       this.writeManifest();
 
-      console.log('✅ Asset manifest generated successfully');
+      console.log("✅ Asset manifest generated successfully");
       console.log(`📊 Total assets: ${this.manifest.totalAssets}`);
       console.log(`📦 Total size: ${this.formatSize(this.manifest.totalSize)}`);
 
       return this.manifest;
-
     } catch (error) {
-      console.error('❌ Error generating manifest:', error);
+      console.error("❌ Error generating manifest:", error);
       throw error;
     }
   }
@@ -171,7 +176,7 @@ class AssetManifestGenerator {
   /**
    * Process directory recursively
    */
-  async processDirectory(directory, basePath = '') {
+  async processDirectory(directory, basePath = "") {
     const dirPath = path.join(process.cwd(), directory);
 
     if (!fs.existsSync(dirPath)) {
@@ -183,7 +188,9 @@ class AssetManifestGenerator {
 
     for (const item of items) {
       const itemPath = path.join(dirPath, item);
-      const relativePath = path.join(directory, basePath, item).replace(/\\/g, '/');
+      const relativePath = path
+        .join(directory, basePath, item)
+        .replace(/\\/g, "/");
 
       if (this.processedFiles.has(relativePath)) {
         continue;
@@ -209,7 +216,7 @@ class AssetManifestGenerator {
       const extension = path.extname(relativePath).toLowerCase();
       const assetType = this.getAssetType(extension);
 
-      if (assetType === 'unknown') {
+      if (assetType === "unknown") {
         return; // Skip unknown file types
       }
 
@@ -223,16 +230,16 @@ class AssetManifestGenerator {
       const metadata = this.getAssetMetadata(relativePath, assetType);
 
       const asset = {
-        url: '/' + relativePath,
+        url: "/" + relativePath,
         type: assetType,
         size: stats.size,
         hash: hash,
         scene: scene,
         critical: this.isCriticalAsset(relativePath),
         compressed: false,
-        quality: 'original',
+        quality: "original",
         lastModified: stats.mtime.toISOString(),
-        ...metadata
+        ...metadata,
       };
 
       this.manifest.assets[relativePath] = asset;
@@ -251,8 +258,9 @@ class AssetManifestGenerator {
       // Store integrity hash
       this.manifest.integrity[asset.url] = hash;
 
-      console.log(`📁 Processed: ${relativePath} (${this.formatSize(stats.size)})`);
-
+      console.log(
+        `📁 Processed: ${relativePath} (${this.formatSize(stats.size)})`
+      );
     } catch (error) {
       console.error(`❌ Error processing asset: ${relativePath}`, error);
     }
@@ -262,15 +270,7 @@ class AssetManifestGenerator {
    * Process critical assets (HTML, JS, CSS, base images)
    */
   async processCriticalAssets() {
-    const criticalFiles = [
-      'index.html',
-      'aframe-v1.3.0.min.js',
-      'scenes-config.js',
-      'sequence-config.js',
-      'websocket-client.js',
-      'images/base.jpg',
-      'audio/toma_01.mp3'
-    ];
+    const criticalFiles = ["images/base.jpg", "audio/toma_01.mp3"];
 
     for (const file of criticalFiles) {
       const filePath = path.join(process.cwd(), file);
@@ -292,12 +292,12 @@ class AssetManifestGenerator {
    */
   async generateFileHash(filePath) {
     return new Promise((resolve, reject) => {
-      const hash = crypto.createHash('sha256');
+      const hash = crypto.createHash("sha256");
       const stream = fs.createReadStream(filePath);
 
-      stream.on('error', reject);
-      stream.on('data', chunk => hash.update(chunk));
-      stream.on('end', () => resolve(hash.digest('hex')));
+      stream.on("error", reject);
+      stream.on("data", (chunk) => hash.update(chunk));
+      stream.on("end", () => resolve(hash.digest("hex")));
     });
   }
 
@@ -307,26 +307,26 @@ class AssetManifestGenerator {
   getAssetType(extension) {
     const types = {
       // Images
-      '.jpg': 'images',
-      '.jpeg': 'images',
-      '.png': 'images',
-      '.webp': 'images',
-      '.gif': 'images',
+      ".jpg": "images",
+      ".jpeg": "images",
+      ".png": "images",
+      ".webp": "images",
+      ".gif": "images",
 
       // Videos
-      '.mp4': 'videos',
-      '.webm': 'videos',
-      '.mov': 'videos',
-      '.avi': 'videos',
+      ".mp4": "videos",
+      ".webm": "videos",
+      ".mov": "videos",
+      ".avi": "videos",
 
       // Audio
-      '.mp3': 'audio',
-      '.wav': 'audio',
-      '.ogg': 'audio',
-      '.m4a': 'audio'
+      ".mp3": "audio",
+      ".wav": "audio",
+      ".ogg": "audio",
+      ".m4a": "audio",
     };
 
-    return types[extension] || 'unknown';
+    return types[extension] || "unknown";
   }
 
   /**
@@ -336,8 +336,8 @@ class AssetManifestGenerator {
     const filename = path.basename(relativePath).toLowerCase();
 
     // Base assets
-    if (filename.includes('base')) {
-      return 'base';
+    if (filename.includes("base")) {
+      return "base";
     }
 
     // Scene-specific patterns
@@ -346,9 +346,9 @@ class AssetManifestGenerator {
         `escena_${i}`,
         `escena${i}`,
         `escena ${i}`,
-        `toma_${i.toString().padStart(2, '0')}`,
+        `toma_${i.toString().padStart(2, "0")}`,
         `solar_${i}`,
-        `escena_${i}.`
+        `escena_${i}.`,
       ];
 
       for (const pattern of patterns) {
@@ -366,16 +366,16 @@ class AssetManifestGenerator {
    */
   isCriticalAsset(relativePath) {
     const criticalPatterns = [
-      'base.jpg',
-      'toma_01.mp3',
-      'escena_1.',
-      'solar_1.',
-      '.js',
-      '.html',
-      '.css'
+      "base.jpg",
+      "toma_01.mp3",
+      "escena_1.",
+      "solar_1.",
+      ".js",
+      ".html",
+      ".css",
     ];
 
-    return criticalPatterns.some(pattern =>
+    return criticalPatterns.some((pattern) =>
       relativePath.toLowerCase().includes(pattern)
     );
   }
@@ -387,17 +387,18 @@ class AssetManifestGenerator {
     const metadata = {};
 
     // Video-specific metadata
-    if (assetType === 'videos') {
-      metadata.preload = 'metadata';
+    if (assetType === "videos") {
+      metadata.preload = "metadata";
       metadata.autoplay = false;
-      metadata.loop = relativePath.includes('escena_4') ||
-                     relativePath.includes('escena_6') ||
-                     relativePath.includes('escena_7') ||
-                     relativePath.includes('escena_11');
+      metadata.loop =
+        relativePath.includes("escena_4") ||
+        relativePath.includes("escena_6") ||
+        relativePath.includes("escena_7") ||
+        relativePath.includes("escena_11");
     }
 
     // Audio-specific metadata
-    if (assetType === 'audio') {
+    if (assetType === "audio") {
       metadata.autoplay = true;
       metadata.loop = false;
 
@@ -409,13 +410,16 @@ class AssetManifestGenerator {
     }
 
     // Image-specific metadata
-    if (assetType === 'images') {
+    if (assetType === "images") {
       metadata.format = path.extname(relativePath).slice(1).toLowerCase();
 
       // Detect panoramic images
-      if (relativePath.includes('escena_') || relativePath.includes('base.jpg')) {
+      if (
+        relativePath.includes("escena_") ||
+        relativePath.includes("base.jpg")
+      ) {
         metadata.panoramic = true;
-        metadata.resolution = 'high'; // Assume high res for panoramic
+        metadata.resolution = "high"; // Assume high res for panoramic
       }
     }
 
@@ -432,7 +436,7 @@ class AssetManifestGenerator {
         ...SCENES_CONFIG[sceneId],
         assets: [],
         totalSize: 0,
-        assetCount: 0
+        assetCount: 0,
       };
     }
 
@@ -444,7 +448,7 @@ class AssetManifestGenerator {
           type: asset.type,
           size: asset.size,
           critical: asset.critical,
-          hash: asset.hash
+          hash: asset.hash,
         });
 
         this.manifest.scenes[asset.scene].totalSize += asset.size;
@@ -458,22 +462,22 @@ class AssetManifestGenerator {
    */
   generatePreloadStrategies() {
     for (const [sceneId, scene] of Object.entries(this.manifest.scenes)) {
-      const strategy = scene.preloadStrategy || 'moderate';
+      const strategy = scene.preloadStrategy || "moderate";
 
       // Add scene assets to appropriate strategy
-      scene.assets.forEach(asset => {
+      scene.assets.forEach((asset) => {
         this.manifest.preloadStrategies[strategy].push({
           url: asset.url,
           scene: sceneId,
           type: asset.type,
           size: asset.size,
-          priority: scene.priority || 3
+          priority: scene.priority || 3,
         });
       });
     }
 
     // Sort strategies by priority and size
-    Object.keys(this.manifest.preloadStrategies).forEach(strategy => {
+    Object.keys(this.manifest.preloadStrategies).forEach((strategy) => {
       this.manifest.preloadStrategies[strategy].sort((a, b) => {
         // Sort by priority first, then by size (smaller first for faster loading)
         if (a.priority !== b.priority) {
@@ -491,10 +495,12 @@ class AssetManifestGenerator {
     this.manifest.statistics = {
       assetsByType: {},
       assetsByScene: {},
-      averageAssetSize: this.manifest.totalAssets > 0 ?
-        this.manifest.totalSize / this.manifest.totalAssets : 0,
+      averageAssetSize:
+        this.manifest.totalAssets > 0
+          ? this.manifest.totalSize / this.manifest.totalAssets
+          : 0,
       largestAsset: null,
-      smallestAsset: null
+      smallestAsset: null,
     };
 
     let largest = null;
@@ -504,7 +510,10 @@ class AssetManifestGenerator {
     for (const asset of Object.values(this.manifest.assets)) {
       // By type
       if (!this.manifest.statistics.assetsByType[asset.type]) {
-        this.manifest.statistics.assetsByType[asset.type] = { count: 0, size: 0 };
+        this.manifest.statistics.assetsByType[asset.type] = {
+          count: 0,
+          size: 0,
+        };
       }
       this.manifest.statistics.assetsByType[asset.type].count++;
       this.manifest.statistics.assetsByType[asset.type].size += asset.size;
@@ -512,7 +521,10 @@ class AssetManifestGenerator {
       // By scene
       if (asset.scene) {
         if (!this.manifest.statistics.assetsByScene[asset.scene]) {
-          this.manifest.statistics.assetsByScene[asset.scene] = { count: 0, size: 0 };
+          this.manifest.statistics.assetsByScene[asset.scene] = {
+            count: 0,
+            size: 0,
+          };
         }
         this.manifest.statistics.assetsByScene[asset.scene].count++;
         this.manifest.statistics.assetsByScene[asset.scene].size += asset.size;
@@ -538,7 +550,7 @@ class AssetManifestGenerator {
     const manifestPath = path.join(process.cwd(), OUTPUT_FILE);
     const manifestJson = JSON.stringify(this.manifest, null, 2);
 
-    fs.writeFileSync(manifestPath, manifestJson, 'utf8');
+    fs.writeFileSync(manifestPath, manifestJson, "utf8");
     console.log(`💾 Manifest written to: ${manifestPath}`);
   }
 
@@ -546,7 +558,7 @@ class AssetManifestGenerator {
    * Format byte size to human readable
    */
   formatSize(bytes) {
-    const units = ['B', 'KB', 'MB', 'GB'];
+    const units = ["B", "KB", "MB", "GB"];
     let size = bytes;
     let unitIndex = 0;
 
@@ -563,21 +575,28 @@ class AssetManifestGenerator {
 if (require.main === module) {
   const generator = new AssetManifestGenerator();
 
-  generator.generate()
-    .then(manifest => {
-      console.log('\n📋 Manifest Generation Complete!');
-      console.log('═══════════════════════════════════');
+  generator
+    .generate()
+    .then((manifest) => {
+      console.log("\n📋 Manifest Generation Complete!");
+      console.log("═══════════════════════════════════");
       console.log(`📊 Total Assets: ${manifest.totalAssets}`);
       console.log(`📦 Total Size: ${generator.formatSize(manifest.totalSize)}`);
-      console.log(`🖼️  Images: ${manifest.categories.images.count} (${generator.formatSize(manifest.categories.images.size)})`);
-      console.log(`🎥 Videos: ${manifest.categories.videos.count} (${generator.formatSize(manifest.categories.videos.size)})`);
-      console.log(`🎵 Audio: ${manifest.categories.audio.count} (${generator.formatSize(manifest.categories.audio.size)})`);
+      console.log(
+        `🖼️  Images: ${manifest.categories.images.count} (${generator.formatSize(manifest.categories.images.size)})`
+      );
+      console.log(
+        `🎥 Videos: ${manifest.categories.videos.count} (${generator.formatSize(manifest.categories.videos.size)})`
+      );
+      console.log(
+        `🎵 Audio: ${manifest.categories.audio.count} (${generator.formatSize(manifest.categories.audio.size)})`
+      );
       console.log(`⚡ Critical: ${manifest.categories.critical.count} assets`);
       console.log(`🏗️ Scenes: ${Object.keys(manifest.scenes).length}`);
-      console.log('═══════════════════════════════════');
+      console.log("═══════════════════════════════════");
     })
-    .catch(error => {
-      console.error('❌ Failed to generate manifest:', error);
+    .catch((error) => {
+      console.error("❌ Failed to generate manifest:", error);
       process.exit(1);
     });
 }

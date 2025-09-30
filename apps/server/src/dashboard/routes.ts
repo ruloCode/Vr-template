@@ -157,9 +157,12 @@ export function createDashboardRoutes(wsManager: WebSocketManager): Router {
               .status(400)
               .json({ error: "sequenceId es requerido para START_SEQUENCE" });
           }
-          
+
           try {
-            const result = await wsManager.startSequence(payload.sequenceId, payload.config);
+            const result = await wsManager.startSequence(
+              payload.sequenceId,
+              payload.config
+            );
             return res.json({ success: result, command: commandType });
           } catch (error) {
             return res.status(500).json({ error: "Error iniciando secuencia" });
@@ -170,7 +173,9 @@ export function createDashboardRoutes(wsManager: WebSocketManager): Router {
             await wsManager.stopSequence();
             return res.json({ success: true, command: commandType });
           } catch (error) {
-            return res.status(500).json({ error: "Error deteniendo secuencia" });
+            return res
+              .status(500)
+              .json({ error: "Error deteniendo secuencia" });
           }
 
         case "PAUSE_SEQUENCE":
@@ -186,7 +191,9 @@ export function createDashboardRoutes(wsManager: WebSocketManager): Router {
             const result = wsManager.resumeSequence();
             return res.json({ success: result, command: commandType });
           } catch (error) {
-            return res.status(500).json({ error: "Error reanudando secuencia" });
+            return res
+              .status(500)
+              .json({ error: "Error reanudando secuencia" });
           }
 
         case "NEXT_SCENE":
@@ -202,7 +209,9 @@ export function createDashboardRoutes(wsManager: WebSocketManager): Router {
             const result = await wsManager.previousScene();
             return res.json({ success: result, command: commandType });
           } catch (error) {
-            return res.status(500).json({ error: "Error retrocediendo escena" });
+            return res
+              .status(500)
+              .json({ error: "Error retrocediendo escena" });
           }
 
         case "JUMP_TO_SCENE":
@@ -211,7 +220,7 @@ export function createDashboardRoutes(wsManager: WebSocketManager): Router {
               .status(400)
               .json({ error: "sceneIndex es requerido para JUMP_TO_SCENE" });
           }
-          
+
           try {
             const result = await wsManager.jumpToScene(payload.sceneIndex);
             return res.json({ success: result, command: commandType });
@@ -221,16 +230,22 @@ export function createDashboardRoutes(wsManager: WebSocketManager): Router {
 
         case "UPDATE_SEQUENCE":
           if (!payload.sequenceId || !payload.scenes) {
-            return res
-              .status(400)
-              .json({ error: "sequenceId y scenes son requeridos para UPDATE_SEQUENCE" });
+            return res.status(400).json({
+              error: "sequenceId y scenes son requeridos para UPDATE_SEQUENCE",
+            });
           }
-          
+
           try {
-            wsManager.updateSequence(payload.sequenceId, payload.scenes, payload.config);
+            wsManager.updateSequence(
+              payload.sequenceId,
+              payload.scenes,
+              payload.config
+            );
             return res.json({ success: true, command: commandType });
           } catch (error) {
-            return res.status(500).json({ error: "Error actualizando secuencia" });
+            return res
+              .status(500)
+              .json({ error: "Error actualizando secuencia" });
           }
 
         default:
@@ -711,6 +726,16 @@ function generateDashboardHTML(): string {
                         <option value="escena-9">Escena 9: Instalaciones Avanzadas</option>
                         <option value="escena-10">Escena 10: Operaciones Especializadas</option>
                         <option value="escena-11">Escena 11: Infraestructura Completa</option>
+                        <option value="guajira-1">Guajira 1</option>
+                        <option value="guajira-2">Guajira 2</option>
+                        <option value="guajira-3">Guajira 3</option>
+                        <option value="guajira-4">Guajira 4</option>
+                        <option value="guajira-5">Guajira 5</option>
+                        <option value="guajira-6">Guajira 6</option>
+                        <option value="guajira-7">Guajira 7</option>
+                        <option value="guajira-8">Guajira 8</option>
+                        <option value="guajira-9">Guajira 9</option>
+                        <option value="guajira-10">Guajira 10</option>
                     </select>
                     <button class="btn btn-primary" onclick="loadScene()">Cargar Escena</button>
                 </div>
@@ -951,6 +976,36 @@ function generateDashboardHTML(): string {
                     break;
                 case 'escena-11':
                     screenInfo = '🏢 Infraestructura Completa disponible';
+                    break;
+                case 'guajira-1':
+                    screenInfo = '🎬 Guajira 1: Video disponible';
+                    break;
+                case 'guajira-2':
+                    screenInfo = '🖼️ Guajira 2: Imágenes disponibles';
+                    break;
+                case 'guajira-3':
+                    screenInfo = '🎬 Guajira 3: Videos disponibles';
+                    break;
+                case 'guajira-4':
+                    screenInfo = '🖼️ Guajira 4: Imágenes disponibles';
+                    break;
+                case 'guajira-5':
+                    screenInfo = '🎬 Guajira 5: Videos disponibles';
+                    break;
+                case 'guajira-6':
+                    screenInfo = '🖼️ Guajira 6: Imágenes disponibles';
+                    break;
+                case 'guajira-7':
+                    screenInfo = '🖼️ Guajira 7: Imágenes disponibles';
+                    break;
+                case 'guajira-8':
+                    screenInfo = '🖼️ Guajira 8: Imágenes disponibles';
+                    break;
+                case 'guajira-9':
+                    screenInfo = '🎬 Guajira 9: Videos disponibles';
+                    break;
+                case 'guajira-10':
+                    screenInfo = '🖼️ Guajira 10: Imágenes disponibles';
                     break;
                 default:
                     screenInfo = 'Sin pantallas flotantes';
