@@ -63,6 +63,7 @@ export class VRSceneManager {
       // Guajira screens
       guajira1Screen: document.querySelector("#guajira1-screen"),
       guajira2Screen: document.querySelector("#guajira2-screen"),
+      guajira2VideoScreen: document.querySelector("#guajira2-video-screen"),
       guajira3Screen: document.querySelector("#guajira3-screen"),
       guajira4Screen: document.querySelector("#guajira4-screen"),
       guajira5Screen: document.querySelector("#guajira5-screen"),
@@ -1081,6 +1082,16 @@ export class VRSceneManager {
         ? component.show()
         : this.elements.guajira2Screen.setAttribute("visible", "true");
     } catch (error) {}
+
+    // Show video screen
+    if (!this.elements.guajira2VideoScreen) return;
+    try {
+      const videoComponent =
+        this.elements.guajira2VideoScreen.components["guajira2-video-cycler"];
+      videoComponent?.show
+        ? videoComponent.show()
+        : this.elements.guajira2VideoScreen.setAttribute("visible", "true");
+    } catch (error) {}
   }
 
   hideGuajira2Screen() {
@@ -1091,6 +1102,16 @@ export class VRSceneManager {
       component?.hide
         ? component.hide()
         : this.elements.guajira2Screen.setAttribute("visible", "false");
+    } catch (error) {}
+
+    // Hide video screen
+    if (!this.elements.guajira2VideoScreen) return;
+    try {
+      const videoComponent =
+        this.elements.guajira2VideoScreen.components["guajira2-video-cycler"];
+      videoComponent?.hide
+        ? videoComponent.hide()
+        : this.elements.guajira2VideoScreen.setAttribute("visible", "false");
     } catch (error) {}
   }
 

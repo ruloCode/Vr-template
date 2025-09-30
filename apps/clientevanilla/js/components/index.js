@@ -37,6 +37,7 @@ import { registerEscena11bVideoCycler } from "./video-cyclers/escena11b-video-cy
 
 // Import Guajira video cycler components
 import { registerGuajira1VideoCycler } from "./video-cyclers/guajira1-video-cycler.js";
+import { registerGuajira2VideoCycler } from "./video-cyclers/guajira2-video-cycler.js";
 import { registerGuajira3VideoCycler } from "./video-cyclers/guajira3-video-cycler.js";
 import { registerGuajira5VideoCycler } from "./video-cyclers/guajira5-video-cycler.js";
 import { registerGuajira9VideoCycler } from "./video-cyclers/guajira9-video-cycler.js";
@@ -82,6 +83,7 @@ export function registerAllComponents() {
 
   // Register Guajira video cyclers
   registerGuajira1VideoCycler();
+  registerGuajira2VideoCycler();
   registerGuajira3VideoCycler();
   registerGuajira5VideoCycler();
   registerGuajira9VideoCycler();
