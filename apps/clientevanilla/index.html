@@ -12,16 +12,33 @@
     <!-- PWA Meta tags -->
     <meta name="theme-color" content="#1e40af" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
     <meta name="apple-mobile-web-app-title" content="VR Ecopetrol" />
 
     <!-- Manifest -->
     <link rel="manifest" href="/manifest.json" />
 
     <!-- Icons -->
-    <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192x192.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png" />
+    <link
+      rel="apple-touch-icon"
+      sizes="192x192"
+      href="/icons/icon-192x192.svg"
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      sizes="32x32"
+      href="/icons/icon-32x32.svg"
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      sizes="16x16"
+      href="/icons/icon-16x16.svg"
+    />
 
     <!-- Preload critical resources -->
     <link rel="preload" href="aframe-v1.3.0.min.js" as="script" />
@@ -35,7 +52,8 @@
     <style>
       body {
         margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         background: #000;
       }
 
@@ -67,7 +85,7 @@
       .loading-progress {
         width: 300px;
         height: 4px;
-        background: rgba(255,255,255,0.3);
+        background: rgba(255, 255, 255, 0.3);
         border-radius: 2px;
         margin: 20px 0;
         overflow: hidden;
@@ -91,7 +109,7 @@
       .loading-spinner {
         width: 40px;
         height: 40px;
-        border: 3px solid rgba(255,255,255,0.3);
+        border: 3px solid rgba(255, 255, 255, 0.3);
         border-top: 3px solid white;
         border-radius: 50%;
         animation: spin 1s linear infinite;
@@ -99,39 +117,50 @@
       }
 
       @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
       }
     </style>
 
     <!-- Service Worker Registration -->
     <script>
       // Register Service Worker
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', async () => {
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", async () => {
           try {
-            const registration = await navigator.serviceWorker.register('/sw.js');
-            console.log('✅ Service Worker registered:', registration.scope);
+            const registration =
+              await navigator.serviceWorker.register("/sw.js");
+            console.log("✅ Service Worker registered:", registration.scope);
 
             // Listen for SW messages
-            navigator.serviceWorker.addEventListener('message', (event) => {
+            navigator.serviceWorker.addEventListener("message", (event) => {
               const { type, data } = event.data;
 
               switch (type) {
-                case 'SW_ACTIVATED':
-                  console.log('🚀 Service Worker activated, version:', data?.version);
+                case "SW_ACTIVATED":
+                  console.log(
+                    "🚀 Service Worker activated, version:",
+                    data?.version
+                  );
                   break;
-                case 'PRELOAD_COMPLETE':
-                  console.log('✅ Asset preload completed:', data?.assets?.length, 'assets');
+                case "PRELOAD_COMPLETE":
+                  console.log(
+                    "✅ Asset preload completed:",
+                    data?.assets?.length,
+                    "assets"
+                  );
                   break;
-                case 'CACHE_CLEARED':
-                  console.log('🗑️ Cache cleared for:', data?.cacheNames);
+                case "CACHE_CLEARED":
+                  console.log("🗑️ Cache cleared for:", data?.cacheNames);
                   break;
               }
             });
-
           } catch (error) {
-            console.error('❌ Service Worker registration failed:', error);
+            console.error("❌ Service Worker registration failed:", error);
           }
         });
       }
@@ -158,7 +187,11 @@
       <!-- Assets - Optimized for lazy loading -->
       <a-assets>
         <!-- Critical assets - loaded immediately -->
-        <audio id="current-audio" src="audio/toma_01.mp3" preload="auto"></audio>
+        <audio
+          id="current-audio"
+          src="audio/toma_01.mp3"
+          preload="auto"
+        ></audio>
         <img id="current-skybox" src="images/base.jpg" />
 
         <!-- Critical escena 1 videos - need immediate loading -->
@@ -236,7 +269,7 @@
         <!-- Images for Scene 5 -->
         <img id="escena5-1-image" src="images/escena%205/escena_5.1.jpeg" />
         <img id="escena5-2-image" src="images/escena%205/escena_5.2.jpeg" />
-        <img id="escena5-3-image" src="images/escena%205/escena_5.3.png" />
+        <img id="escena5-3-image" src="images/escena%205/escena_5.3.jpg" />
 
         <img id="escena5B-1-image" src="images/escena%205/escena_5.4.jpg" />
         <img id="escena5B-2-image" src="images/escena%205/escena_5.5.jpg" />
@@ -335,6 +368,124 @@
           muted
           playsinline
         ></video>
+
+        <!-- Assets for Guajira scenes -->
+        <!-- Guajira 1 - Videos -->
+        <video
+          id="guajira1-1-video"
+          src="images/guajira/escena_1.MP4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          playsinline
+        ></video>
+
+        <!-- Guajira 2 - Images -->
+        <img id="guajira2-1-image" src="images/guajira/escena_2.1.JPG" />
+        <img id="guajira2-2-image" src="images/guajira/escena_2.2.JPG" />
+        <video
+          id="guajira2-3-video"
+          src="images/guajira/escena_2.3.MP4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+
+        <!-- Guajira 3 - Videos -->
+        <video
+          id="guajira3-1-video"
+          src="images/guajira/escena_3.1.mov"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="guajira3-2-video"
+          src="images/guajira/escena_3.2.mov"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="guajira3-3-video"
+          src="images/guajira/escena_3.3.mov"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+
+        <!-- Guajira 5 - Videos -->
+        <video
+          id="guajira5-1-video"
+          src="images/guajira/escena_5.1.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="guajira5-2-video"
+          src="images/guajira/escena_5.2.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="guajira5-3-video"
+          src="images/guajira/escena_5.3.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+
+        <!-- Guajira 6 - Images -->
+        <img id="guajira6-1-image" src="images/guajira/escena_6.1.JPG" />
+        <img id="guajira6-2-image" src="images/guajira/escena_6.2.JPG" />
+        <img id="guajira6-3-image" src="images/guajira/escena_6.3.JPG" />
+        <img id="guajira6-4-image" src="images/guajira/escena_6.4.JPG" />
+        <img id="guajira6-5-image" src="images/guajira/escena_6.5.JPG" />
+        <img id="guajira6-6-image" src="images/guajira/escena_6.6.JPG" />
+
+        <!-- Guajira 9 - Videos -->
+        <video
+          id="guajira9-1-video"
+          src="images/guajira/escena_9.1.MP4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="guajira9-2-video"
+          src="images/guajira/escena_9.2.mov"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+
+        <!-- Guajira 10 - Images -->
+        <img id="guajira10-1-image" src="images/guajira/escena_10.1.JPG" />
+        <img id="guajira10-2-image" src="images/guajira/escena_10.2.JPG" />
+        <img id="guajira10-3-image" src="images/guajira/escena_10.3.JPG" />
+        <img id="guajira10-4-image" src="images/guajira/escena_10.4.JPG" />
+        <img id="guajira10-5-image" src="images/guajira/escena_10.5.JPG" />
+        <img id="guajira10-6-image" src="images/guajira/escena_10.6.JPG" />
       </a-assets>
 
       <!-- Scene loading overlay -->
@@ -610,6 +761,137 @@
         material="shader: flat; side: double"
         visible="false"
         escena11b-video-cycler
+      ></a-plane>
+
+      <!-- Pantallas flotantes para escenas de Guajira -->
+      <!-- Guajira 1 - Video -->
+      <a-plane
+        id="guajira1-screen"
+        src="#guajira1-1-video"
+        position="100 0 20"
+        rotation="-20 90 0"
+        width="120"
+        height="80"
+        material="shader: flat; side: double"
+        visible="false"
+        guajira1-video-cycler
+      ></a-plane>
+
+      <!-- Guajira 2 - Images and Video -->
+      <a-plane
+        id="guajira2-screen"
+        src="#guajira2-1-image"
+        position="100 20 20"
+        rotation="-30 90 0"
+        width="180"
+        height="100"
+        material="shader: flat; side: double"
+        visible="false"
+        guajira2-image-cycler
+      ></a-plane>
+
+      <!-- Guajira 3 - Videos -->
+      <a-plane
+        id="guajira3-screen"
+        src="#guajira3-1-video"
+        position="-120 20 20"
+        rotation="30 90 0"
+        width="200"
+        height="120"
+        material="shader: flat; side: double"
+        visible="false"
+        guajira3-video-cycler
+      ></a-plane>
+
+      <!-- Guajira 4 - Images -->
+      <a-plane
+        id="guajira4-screen"
+        src="#guajira6-4-image"
+        position="120 20 20"
+        rotation="-30 90 0"
+        width="200"
+        height="120"
+        material="shader: flat; side: double"
+        visible="false"
+        guajira4-image-cycler
+      ></a-plane>
+
+      <!-- Guajira 5 - Videos -->
+      <a-plane
+        id="guajira5-screen"
+        src="#guajira5-1-video"
+        position="-120 20 20"
+        rotation="30 90 0"
+        width="160"
+        height="90"
+        material="shader: flat; side: double"
+        visible="false"
+        guajira5-video-cycler
+      ></a-plane>
+
+      <!-- Guajira 6 - Images -->
+      <a-plane
+        id="guajira6-screen"
+        src="#guajira6-1-image"
+        position="120 20 20"
+        rotation="-30 90 0"
+        width="160"
+        height="90"
+        material="shader: flat; side: double"
+        visible="false"
+        guajira6-image-cycler
+      ></a-plane>
+
+      <!-- Guajira 7 - Images -->
+      <a-plane
+        id="guajira7-screen"
+        src="#guajira6-4-image"
+        position="-120 20 20"
+        rotation="30 90 0"
+        width="180"
+        height="100"
+        material="shader: flat; side: double"
+        visible="false"
+        guajira7-image-cycler
+      ></a-plane>
+
+      <!-- Guajira 8 - Images -->
+      <a-plane
+        id="guajira8-screen"
+        src="#guajira6-4-image"
+        position="120 20 20"
+        rotation="-30 90 0"
+        width="180"
+        height="100"
+        material="shader: flat; side: double"
+        visible="false"
+        guajira8-image-cycler
+      ></a-plane>
+
+      <!-- Guajira 9 - Videos -->
+      <a-plane
+        id="guajira9-screen"
+        src="#guajira9-1-video"
+        position="-200 20 -100"
+        rotation="30 90 0"
+        width="200"
+        height="110"
+        material="shader: flat; side: double"
+        visible="false"
+        guajira9-video-cycler
+      ></a-plane>
+
+      <!-- Guajira 10 - Images -->
+      <a-plane
+        id="guajira10-screen"
+        src="#guajira10-1-image"
+        position="-120 20 80"
+        rotation="30 90 0"
+        width="200"
+        height="110"
+        material="shader: flat; side: double"
+        visible="false"
+        guajira10-image-cycler
       ></a-plane>
 
       <!-- Lighting system -->

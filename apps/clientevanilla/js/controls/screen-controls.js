@@ -124,26 +124,18 @@ export const screenControls = {
         height: screen.getAttribute("height"),
       },
       currentIndex: cycler
-        ? (cycler.currentImageIndex ||
-            cycler.currentVideoIndex ||
-            0) + 1
+        ? (cycler.currentImageIndex || cycler.currentVideoIndex || 0) + 1
         : 0,
       totalItems: cycler
         ? cycler.images?.length || cycler.videos?.length || 0
         : 0,
       type: isVideo ? "video" : isImage ? "image" : "unknown",
       playing:
-        cycler && cycler.currentVideo
-          ? !cycler.currentVideo.paused
-          : false,
+        cycler && cycler.currentVideo ? !cycler.currentVideo.paused : false,
       currentTime:
-        cycler && cycler.currentVideo
-          ? cycler.currentVideo.currentTime
-          : 0,
+        cycler && cycler.currentVideo ? cycler.currentVideo.currentTime : 0,
       duration:
-        cycler && cycler.currentVideo
-          ? cycler.currentVideo.duration
-          : 0,
+        cycler && cycler.currentVideo ? cycler.currentVideo.duration : 0,
     };
   },
 
@@ -167,6 +159,8 @@ export const screenControls = {
   // List all available screens
   list: () => {
     const screens = [];
+
+    // Escenas normales (1-11)
     for (let scene = 1; scene <= 11; scene++) {
       if (scene === 1) {
         screens.push({
@@ -210,6 +204,22 @@ export const screenControls = {
         });
       }
     }
+
+    // Escenas de Guajira (1-10)
+    for (let scene = 1; scene <= 10; scene++) {
+      let type = "image";
+      if (scene === 1 || scene === 3 || scene === 5 || scene === 9) {
+        type = "video";
+      }
+
+      screens.push({
+        scene: `guajira-${scene}`,
+        screen: "A",
+        id: `guajira${scene}-screen`,
+        type: type,
+      });
+    }
+
     return screens;
   },
 

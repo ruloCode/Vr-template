@@ -262,6 +262,237 @@ const SCENES_CONFIG = {
     timeOfDay: "day",
   },
 
+  // Escenas de Guajira - Todas con el mismo fondo e_guajira_1.png
+  "guajira-1": {
+    id: "guajira-1",
+    name: "Guajira 1 - Operaciones Petroleras",
+    description: "Vista panorámica de operaciones petroleras en La Guajira",
+    assets: {
+      skybox: "images/e_guajira_1.png",
+      audio: "audio/toma_01.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "guajira-2": {
+    id: "guajira-2",
+    name: "Guajira 2 - Instalaciones Industriales",
+    description: "Vista panorámica de instalaciones industriales en La Guajira",
+    assets: {
+      skybox: "images/e_guajira_1.png",
+      audio: "audio/toma_02.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "guajira-3": {
+    id: "guajira-3",
+    name: "Guajira 3 - Operaciones de Campo",
+    description: "Vista panorámica de operaciones de campo en La Guajira",
+    assets: {
+      skybox: "images/e_guajira_1.png",
+      audio: "audio/toma_03.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "guajira-4": {
+    id: "guajira-4",
+    name: "Guajira 4 - Tecnología Avanzada",
+    description: "Vista panorámica de tecnología avanzada en La Guajira",
+    assets: {
+      skybox: "images/e_guajira_1.png",
+      audio: "audio/toma_04.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "guajira-5": {
+    id: "guajira-5",
+    name: "Guajira 5 - Operaciones Especializadas",
+    description: "Vista panorámica de operaciones especializadas en La Guajira",
+    assets: {
+      skybox: "images/e_guajira_1.png",
+      audio: "audio/toma_05.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "guajira-6": {
+    id: "guajira-6",
+    name: "Guajira 6 - Infraestructura Moderna",
+    description: "Vista panorámica de infraestructura moderna en La Guajira",
+    assets: {
+      skybox: "images/e_guajira_1.png",
+      audio: "audio/toma_06.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "guajira-7": {
+    id: "guajira-7",
+    name: "Guajira 7 - Operaciones de Producción",
+    description: "Vista panorámica de operaciones de producción en La Guajira",
+    assets: {
+      skybox: "images/e_guajira_1.png",
+      audio: "audio/toma_07.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "guajira-8": {
+    id: "guajira-8",
+    name: "Guajira 8 - Equipos Especializados",
+    description: "Vista panorámica de equipos especializados en La Guajira",
+    assets: {
+      skybox: "images/e_guajira_1.png",
+      audio: "audio/toma_08.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "guajira-9": {
+    id: "guajira-9",
+    name: "Guajira 9 - Instalaciones Avanzadas",
+    description: "Vista panorámica de instalaciones avanzadas en La Guajira",
+    assets: {
+      skybox: "images/e_guajira_1.png",
+      audio: "audio/toma_09.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "guajira-10": {
+    id: "guajira-10",
+    name: "Guajira 10 - Vista Completa",
+    description: "Vista panorámica completa de operaciones en La Guajira",
+    assets: {
+      skybox: "images/e_guajira_1.png",
+      audio: "audio/toma_10.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
   base: {
     id: "base",
     name: "Escena Base",

@@ -13,66 +13,16 @@
   "categories": ["education", "entertainment", "productivity"],
   "icons": [
     {
-      "src": "icons/icon-72x72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-96x96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-144x144.png",
+      "src": "icons/icon-144x144.svg",
       "sizes": "144x144",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "icons/icon-152x152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-192x192.png",
+      "src": "icons/icon-192x192.svg",
       "sizes": "192x192",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-384x384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "screenshots/desktop-screenshot.png",
-      "sizes": "1920x1080",
-      "type": "image/png",
-      "form_factor": "wide"
-    },
-    {
-      "src": "screenshots/mobile-screenshot.png",
-      "sizes": "720x1280",
-      "type": "image/png",
-      "form_factor": "narrow"
     }
   ],
   "features": [
@@ -87,11 +37,7 @@
     "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
     "prefer_related_applications": false
   },
-  "permissions": [
-    "storage",
-    "audio",
-    "fullscreen"
-  ],
+  "permissions": ["storage", "audio", "fullscreen"],
   "protocol_handlers": [
     {
       "protocol": "web+vr",
@@ -106,8 +52,8 @@
       "url": "/?scene=escena-1",
       "icons": [
         {
-          "src": "icons/shortcut-solar.png",
-          "sizes": "96x96"
+          "src": "icons/icon-192x192.svg",
+          "sizes": "192x192"
         }
       ]
     },
@@ -118,8 +64,8 @@
       "url": "/?scene=escena-2",
       "icons": [
         {
-          "src": "icons/shortcut-oil.png",
-          "sizes": "96x96"
+          "src": "icons/icon-192x192.svg",
+          "sizes": "192x192"
         }
       ]
     },
@@ -130,8 +76,8 @@
       "url": "/dashboard",
       "icons": [
         {
-          "src": "icons/shortcut-dashboard.png",
-          "sizes": "96x96"
+          "src": "icons/icon-192x192.svg",
+          "sizes": "192x192"
         }
       ]
     }

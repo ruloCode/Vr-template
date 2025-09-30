@@ -3,9 +3,9 @@
  * Manages VR scene loading, transitions, and controls
  */
 
-import { enableAudio } from './audio-manager.js';
-import { assetPreloader } from '../utils/asset-preloader.js';
-import { cacheManager } from '../utils/cache-manager.js';
+import { enableAudio } from "./audio-manager.js";
+import { assetPreloader } from "../utils/asset-preloader.js";
+import { cacheManager } from "../utils/cache-manager.js";
 
 export class VRSceneManager {
   constructor() {
@@ -60,6 +60,17 @@ export class VRSceneManager {
       escena10BScreen: document.querySelector("#escena10B-screen"),
       escena11Screen: document.querySelector("#escena11-screen"),
       escena11BScreen: document.querySelector("#escena11B-screen"),
+      // Guajira screens
+      guajira1Screen: document.querySelector("#guajira1-screen"),
+      guajira2Screen: document.querySelector("#guajira2-screen"),
+      guajira3Screen: document.querySelector("#guajira3-screen"),
+      guajira4Screen: document.querySelector("#guajira4-screen"),
+      guajira5Screen: document.querySelector("#guajira5-screen"),
+      guajira6Screen: document.querySelector("#guajira6-screen"),
+      guajira7Screen: document.querySelector("#guajira7-screen"),
+      guajira8Screen: document.querySelector("#guajira8-screen"),
+      guajira9Screen: document.querySelector("#guajira9-screen"),
+      guajira10Screen: document.querySelector("#guajira10-screen"),
       assets: {
         audio: document.querySelector("#current-audio"),
         skybox: document.querySelector("#current-skybox"),
@@ -79,20 +90,28 @@ export class VRSceneManager {
       // Emit progress event for external listeners
       if (window.vrClient && window.vrClient.isConnected) {
         // Ensure buffered percentage is between 0-100
-        const bufferedPercentage = Math.min(100, Math.max(0, progress.percentage || 0));
-        window.vrClient.sendState(this.currentScene?.id || 'loading', 0, false, bufferedPercentage);
+        const bufferedPercentage = Math.min(
+          100,
+          Math.max(0, progress.percentage || 0)
+        );
+        window.vrClient.sendState(
+          this.currentScene?.id || "loading",
+          0,
+          false,
+          bufferedPercentage
+        );
       }
     });
 
-    console.log('🎯 Asset preloader initialized with scene manager');
+    console.log("🎯 Asset preloader initialized with scene manager");
   }
 
   /**
    * Update loading UI with progress
    */
   updateLoadingUI(progress) {
-    const progressBar = document.getElementById('progress-bar');
-    const loadingStatus = document.getElementById('loading-status');
+    const progressBar = document.getElementById("progress-bar");
+    const loadingStatus = document.getElementById("loading-status");
 
     if (progressBar) {
       progressBar.style.width = `${progress.percentage}%`;
@@ -100,10 +119,10 @@ export class VRSceneManager {
 
     if (loadingStatus) {
       if (progress.currentAsset) {
-        const assetName = progress.currentAsset.split('/').pop();
+        const assetName = progress.currentAsset.split("/").pop();
         loadingStatus.textContent = `Cargando: ${assetName} (${progress.loaded}/${progress.total})`;
       } else if (progress.isComplete) {
-        loadingStatus.textContent = 'Listo para comenzar';
+        loadingStatus.textContent = "Listo para comenzar";
       } else {
         loadingStatus.textContent = `${progress.loaded}/${progress.total} assets cargados`;
       }
@@ -114,11 +133,11 @@ export class VRSceneManager {
    * Hide loading overlay once assets are ready
    */
   hideAppLoading() {
-    const loadingOverlay = document.getElementById('app-loading');
+    const loadingOverlay = document.getElementById("app-loading");
     if (loadingOverlay) {
-      loadingOverlay.classList.add('hidden');
+      loadingOverlay.classList.add("hidden");
       setTimeout(() => {
-        loadingOverlay.style.display = 'none';
+        loadingOverlay.style.display = "none";
       }, 300);
     }
   }
@@ -144,7 +163,7 @@ export class VRSceneManager {
     // Pause videos not needed for the current scene
     this.pauseAllVideos();
 
-    console.log('🧹 Previous assets cleaned up for memory optimization');
+    console.log("🧹 Previous assets cleaned up for memory optimization");
   }
 
   /**
@@ -153,9 +172,10 @@ export class VRSceneManager {
   cleanupThreeJSTextures() {
     try {
       // Clean up skybox texture
-      const skyboxEl = this.elements.skybox || document.querySelector('#scene-skybox');
-      if (skyboxEl && skyboxEl.getObject3D && skyboxEl.getObject3D('mesh')) {
-        const mesh = skyboxEl.getObject3D('mesh');
+      const skyboxEl =
+        this.elements.skybox || document.querySelector("#scene-skybox");
+      if (skyboxEl && skyboxEl.getObject3D && skyboxEl.getObject3D("mesh")) {
+        const mesh = skyboxEl.getObject3D("mesh");
         if (mesh.material && mesh.material.map) {
           mesh.material.map.dispose();
           this.previousTextures.add(mesh.material.map);
@@ -163,10 +183,10 @@ export class VRSceneManager {
       }
 
       // Clean up any image/video textures from floating screens
-      const screens = document.querySelectorAll('a-plane[src], a-video');
-      screens.forEach(screen => {
-        if (screen.getObject3D && screen.getObject3D('mesh')) {
-          const mesh = screen.getObject3D('mesh');
+      const screens = document.querySelectorAll("a-plane[src], a-video");
+      screens.forEach((screen) => {
+        if (screen.getObject3D && screen.getObject3D("mesh")) {
+          const mesh = screen.getObject3D("mesh");
           if (mesh.material && mesh.material.map) {
             mesh.material.map.dispose();
             this.previousTextures.add(mesh.material.map);
@@ -179,7 +199,7 @@ export class VRSceneManager {
         window.gc();
       }
     } catch (error) {
-      console.warn('⚠️ Error during texture cleanup:', error);
+      console.warn("⚠️ Error during texture cleanup:", error);
     }
   }
 
@@ -187,19 +207,21 @@ export class VRSceneManager {
    * Pause all video elements except those needed for current scene to free GPU resources
    */
   pauseAllVideos() {
-    const videos = document.querySelectorAll('video');
+    const videos = document.querySelectorAll("video");
     const currentSceneId = this.currentScene?.id;
 
-    videos.forEach(video => {
+    videos.forEach((video) => {
       // Only pause videos that are not needed for the current scene
       const videoId = video.id;
-      const isCurrentSceneVideo = currentSceneId && videoId.includes(currentSceneId.replace('escena-', 'escena'));
+      const isCurrentSceneVideo =
+        currentSceneId &&
+        videoId.includes(currentSceneId.replace("escena-", "escena"));
 
       if (!isCurrentSceneVideo && !video.paused) {
         video.pause();
         video.currentTime = 0;
         // Remove from DOM rendering to free GPU memory
-        video.style.display = 'none';
+        video.style.display = "none";
       }
     });
   }
@@ -208,12 +230,14 @@ export class VRSceneManager {
    * Resume videos needed for current scene
    */
   resumeSceneVideos(sceneId) {
-    const sceneNumber = sceneId.replace('escena-', '');
-    const sceneVideos = document.querySelectorAll(`video[id*="escena${sceneNumber}"]`);
+    const sceneNumber = sceneId.replace("escena-", "");
+    const sceneVideos = document.querySelectorAll(
+      `video[id*="escena${sceneNumber}"]`
+    );
 
-    sceneVideos.forEach(video => {
+    sceneVideos.forEach((video) => {
       // Make video available for rendering again
-      video.style.display = '';
+      video.style.display = "";
       // Note: We don't auto-play here as video cyclers handle that
     });
   }
@@ -229,7 +253,7 @@ export class VRSceneManager {
       return false;
     }
 
-    console.log('🎬 Loading scene:', sceneId);
+    console.log("🎬 Loading scene:", sceneId);
 
     // Loading scene
     this.isLoading = true;
@@ -274,16 +298,15 @@ export class VRSceneManager {
       }
 
       // Hide app loading overlay if this is the first scene
-      if (sceneId === 'base' || !this.hasLoadedInitialScene) {
+      if (sceneId === "base" || !this.hasLoadedInitialScene) {
         this.hideAppLoading();
         this.hasLoadedInitialScene = true;
       }
 
-      console.log('✅ Scene loaded successfully:', sceneId);
+      console.log("✅ Scene loaded successfully:", sceneId);
       return true;
-
     } catch (error) {
-      console.error('❌ Error loading scene:', sceneId, error);
+      console.error("❌ Error loading scene:", sceneId, error);
       return false;
     } finally {
       this.isLoading = false;
@@ -302,9 +325,9 @@ export class VRSceneManager {
       // Preload current scene and nearby scenes
       await assetPreloader.preloadCurrentAndNearbyScenes(currentSceneId);
 
-      console.log('🚀 Intelligent preloading started for:', currentSceneId);
+      console.log("🚀 Intelligent preloading started for:", currentSceneId);
     } catch (error) {
-      console.error('❌ Error starting intelligent preloading:', error);
+      console.error("❌ Error starting intelligent preloading:", error);
     }
   }
 
@@ -313,15 +336,20 @@ export class VRSceneManager {
       // Update audio asset with cache checking
       const audioElement = document.querySelector("#current-audio");
       if (audioElement && sceneConfig.assets.audio) {
-        const cachedAudio = await cacheManager.getAsset(sceneConfig.assets.audio);
+        const cachedAudio = await cacheManager.getAsset(
+          sceneConfig.assets.audio
+        );
 
         if (cachedAudio) {
-          console.log('🎵 Using cached audio:', sceneConfig.assets.audio);
+          console.log("🎵 Using cached audio:", sceneConfig.assets.audio);
           // Create blob URL from cached data and store it for cleanup
           this.currentAudioBlobUrl = URL.createObjectURL(cachedAudio.data);
           audioElement.src = this.currentAudioBlobUrl;
         } else {
-          console.log('🌐 Loading audio from network:', sceneConfig.assets.audio);
+          console.log(
+            "🌐 Loading audio from network:",
+            sceneConfig.assets.audio
+          );
           audioElement.src = sceneConfig.assets.audio;
         }
 
@@ -333,22 +361,24 @@ export class VRSceneManager {
       const cachedSkybox = await cacheManager.getAsset(skyboxUrl);
 
       if (cachedSkybox) {
-        console.log('🖼️ Using cached skybox:', skyboxUrl);
+        console.log("🖼️ Using cached skybox:", skyboxUrl);
         // Create blob URL from cached data and store it for cleanup
         this.currentSkyboxBlobUrl = URL.createObjectURL(cachedSkybox.data);
-        this.elements.assets.skybox.setAttribute("src", this.currentSkyboxBlobUrl);
+        this.elements.assets.skybox.setAttribute(
+          "src",
+          this.currentSkyboxBlobUrl
+        );
       } else {
-        console.log('🌐 Loading skybox from network:', skyboxUrl);
+        console.log("🌐 Loading skybox from network:", skyboxUrl);
         this.elements.assets.skybox.setAttribute("src", skyboxUrl);
       }
 
       // Wait for assets to load
       await new Promise((resolve) => setTimeout(resolve, 300));
 
-      console.log('✅ Assets updated for scene:', sceneConfig.id);
-
+      console.log("✅ Assets updated for scene:", sceneConfig.id);
     } catch (error) {
-      console.error('❌ Error updating assets:', error);
+      console.error("❌ Error updating assets:", error);
 
       // Fallback to direct loading if cache fails
       const audioElement = document.querySelector("#current-audio");
@@ -357,7 +387,10 @@ export class VRSceneManager {
         audioElement.load();
       }
 
-      this.elements.assets.skybox.setAttribute("src", sceneConfig.assets.skybox);
+      this.elements.assets.skybox.setAttribute(
+        "src",
+        sceneConfig.assets.skybox
+      );
 
       await new Promise((resolve) => setTimeout(resolve, 500));
     }
@@ -394,10 +427,7 @@ export class VRSceneManager {
     this.elements.models.innerHTML = "";
 
     // Add models from config if any
-    if (
-      sceneConfig.assets.models &&
-      sceneConfig.assets.models.length > 0
-    ) {
+    if (sceneConfig.assets.models && sceneConfig.assets.models.length > 0) {
       sceneConfig.assets.models.forEach((model) => {
         const modelEntity = document.createElement("a-entity");
         modelEntity.setAttribute("id", model.id);
@@ -493,6 +523,17 @@ export class VRSceneManager {
     this.hideEscena10BScreen();
     this.hideEscena11Screen();
     this.hideEscena11BScreen();
+    // Hide Guajira screens
+    this.hideGuajira1Screen();
+    this.hideGuajira2Screen();
+    this.hideGuajira3Screen();
+    this.hideGuajira4Screen();
+    this.hideGuajira5Screen();
+    this.hideGuajira6Screen();
+    this.hideGuajira7Screen();
+    this.hideGuajira8Screen();
+    this.hideGuajira9Screen();
+    this.hideGuajira10Screen();
 
     // Show screens based on scene
     if (sceneConfig.id === "escena-1") {
@@ -527,6 +568,26 @@ export class VRSceneManager {
     } else if (sceneConfig.id === "escena-11") {
       this.showEscena11Screen();
       this.showEscena11BScreen();
+    } else if (sceneConfig.id === "guajira-1") {
+      this.showGuajira1Screen();
+    } else if (sceneConfig.id === "guajira-2") {
+      this.showGuajira2Screen();
+    } else if (sceneConfig.id === "guajira-3") {
+      this.showGuajira3Screen();
+    } else if (sceneConfig.id === "guajira-4") {
+      this.showGuajira4Screen();
+    } else if (sceneConfig.id === "guajira-5") {
+      this.showGuajira5Screen();
+    } else if (sceneConfig.id === "guajira-6") {
+      this.showGuajira6Screen();
+    } else if (sceneConfig.id === "guajira-7") {
+      this.showGuajira7Screen();
+    } else if (sceneConfig.id === "guajira-8") {
+      this.showGuajira8Screen();
+    } else if (sceneConfig.id === "guajira-9") {
+      this.showGuajira9Screen();
+    } else if (sceneConfig.id === "guajira-10") {
+      this.showGuajira10Screen();
     }
   }
 
@@ -534,7 +595,8 @@ export class VRSceneManager {
   showEscena1Screen() {
     if (!this.elements.escena1Screen) return;
     try {
-      const component = this.elements.escena1Screen.components["solar-video-cycler"];
+      const component =
+        this.elements.escena1Screen.components["solar-video-cycler"];
       if (component && component.show) {
         component.show();
       } else {
@@ -548,7 +610,8 @@ export class VRSceneManager {
   hideEscena1Screen() {
     if (!this.elements.escena1Screen) return;
     try {
-      const component = this.elements.escena1Screen.components["solar-video-cycler"];
+      const component =
+        this.elements.escena1Screen.components["solar-video-cycler"];
       if (component && component.hide) {
         component.hide();
       } else {
@@ -562,7 +625,8 @@ export class VRSceneManager {
   showEscena2Screen() {
     if (!this.elements.escena2Screen) return;
     try {
-      const component = this.elements.escena2Screen.components["escena2-image-cycler"];
+      const component =
+        this.elements.escena2Screen.components["escena2-image-cycler"];
       if (component && component.show) {
         component.show();
       } else {
@@ -576,7 +640,8 @@ export class VRSceneManager {
   hideEscena2Screen() {
     if (!this.elements.escena2Screen) return;
     try {
-      const component = this.elements.escena2Screen.components["escena2-image-cycler"];
+      const component =
+        this.elements.escena2Screen.components["escena2-image-cycler"];
       if (component && component.hide) {
         component.hide();
       } else {
@@ -591,288 +656,617 @@ export class VRSceneManager {
   showEscena3Screen() {
     if (!this.elements.escena3Screen) return;
     try {
-      const component = this.elements.escena3Screen.components["escena3a-image-cycler"];
-      component?.show ? component.show() : this.elements.escena3Screen.setAttribute("visible", "true");
+      const component =
+        this.elements.escena3Screen.components["escena3a-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.escena3Screen.setAttribute("visible", "true");
     } catch (error) {}
   }
 
   hideEscena3Screen() {
     if (!this.elements.escena3Screen) return;
     try {
-      const component = this.elements.escena3Screen.components["escena3a-image-cycler"];
-      component?.hide ? component.hide() : this.elements.escena3Screen.setAttribute("visible", "false");
+      const component =
+        this.elements.escena3Screen.components["escena3a-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.escena3Screen.setAttribute("visible", "false");
     } catch (error) {}
   }
 
   showEscena3BScreen() {
     if (!this.elements.escena3BScreen) return;
     try {
-      const component = this.elements.escena3BScreen.components["escena3b-image-cycler"];
-      component?.show ? component.show() : this.elements.escena3BScreen.setAttribute("visible", "true");
+      const component =
+        this.elements.escena3BScreen.components["escena3b-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.escena3BScreen.setAttribute("visible", "true");
     } catch (error) {}
   }
 
   hideEscena3BScreen() {
     if (!this.elements.escena3BScreen) return;
     try {
-      const component = this.elements.escena3BScreen.components["escena3b-image-cycler"];
-      component?.hide ? component.hide() : this.elements.escena3BScreen.setAttribute("visible", "false");
+      const component =
+        this.elements.escena3BScreen.components["escena3b-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.escena3BScreen.setAttribute("visible", "false");
     } catch (error) {}
   }
 
   showEscena4Screen() {
     if (!this.elements.escena4Screen) return;
     try {
-      const component = this.elements.escena4Screen.components["escena4-video-cycler"];
-      component?.show ? component.show() : this.elements.escena4Screen.setAttribute("visible", "true");
+      const component =
+        this.elements.escena4Screen.components["escena4-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.escena4Screen.setAttribute("visible", "true");
     } catch (error) {}
   }
 
   hideEscena4Screen() {
     if (!this.elements.escena4Screen) return;
     try {
-      const component = this.elements.escena4Screen.components["escena4-video-cycler"];
-      component?.hide ? component.hide() : this.elements.escena4Screen.setAttribute("visible", "false");
+      const component =
+        this.elements.escena4Screen.components["escena4-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.escena4Screen.setAttribute("visible", "false");
     } catch (error) {}
   }
 
   showEscena4BScreen() {
     if (!this.elements.escena4BScreen) return;
     try {
-      const component = this.elements.escena4BScreen.components["escena4b-video-cycler"];
-      component?.show ? component.show() : this.elements.escena4BScreen.setAttribute("visible", "true");
+      const component =
+        this.elements.escena4BScreen.components["escena4b-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.escena4BScreen.setAttribute("visible", "true");
     } catch (error) {}
   }
 
   hideEscena4BScreen() {
     if (!this.elements.escena4BScreen) return;
     try {
-      const component = this.elements.escena4BScreen.components["escena4b-video-cycler"];
-      component?.hide ? component.hide() : this.elements.escena4BScreen.setAttribute("visible", "false");
+      const component =
+        this.elements.escena4BScreen.components["escena4b-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.escena4BScreen.setAttribute("visible", "false");
     } catch (error) {}
   }
 
   showEscena5Screen() {
     if (!this.elements.escena5Screen) return;
     try {
-      const component = this.elements.escena5Screen.components["escena5-image-cycler"];
-      component?.show ? component.show() : this.elements.escena5Screen.setAttribute("visible", "true");
+      const component =
+        this.elements.escena5Screen.components["escena5-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.escena5Screen.setAttribute("visible", "true");
     } catch (error) {}
   }
 
   hideEscena5Screen() {
     if (!this.elements.escena5Screen) return;
     try {
-      const component = this.elements.escena5Screen.components["escena5-image-cycler"];
-      component?.hide ? component.hide() : this.elements.escena5Screen.setAttribute("visible", "false");
+      const component =
+        this.elements.escena5Screen.components["escena5-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.escena5Screen.setAttribute("visible", "false");
     } catch (error) {}
   }
 
   showEscena5BScreen() {
     if (!this.elements.escena5BScreen) return;
     try {
-      const component = this.elements.escena5BScreen.components["escena5b-image-cycler"];
-      component?.show ? component.show() : this.elements.escena5BScreen.setAttribute("visible", "true");
+      const component =
+        this.elements.escena5BScreen.components["escena5b-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.escena5BScreen.setAttribute("visible", "true");
     } catch (error) {}
   }
 
   hideEscena5BScreen() {
     if (!this.elements.escena5BScreen) return;
     try {
-      const component = this.elements.escena5BScreen.components["escena5b-image-cycler"];
-      component?.hide ? component.hide() : this.elements.escena5BScreen.setAttribute("visible", "false");
+      const component =
+        this.elements.escena5BScreen.components["escena5b-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.escena5BScreen.setAttribute("visible", "false");
     } catch (error) {}
   }
 
   showEscena6Screen() {
     if (!this.elements.escena6Screen) return;
     try {
-      const component = this.elements.escena6Screen.components["escena6-image-cycler"];
-      component?.show ? component.show() : this.elements.escena6Screen.setAttribute("visible", "true");
+      const component =
+        this.elements.escena6Screen.components["escena6-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.escena6Screen.setAttribute("visible", "true");
     } catch (error) {}
   }
 
   hideEscena6Screen() {
     if (!this.elements.escena6Screen) return;
     try {
-      const component = this.elements.escena6Screen.components["escena6-image-cycler"];
-      component?.hide ? component.hide() : this.elements.escena6Screen.setAttribute("visible", "false");
+      const component =
+        this.elements.escena6Screen.components["escena6-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.escena6Screen.setAttribute("visible", "false");
     } catch (error) {}
   }
 
   showEscena6BScreen() {
     if (!this.elements.escena6BScreen) return;
     try {
-      const component = this.elements.escena6BScreen.components["escena6b-video-cycler"];
-      component?.show ? component.show() : this.elements.escena6BScreen.setAttribute("visible", "true");
+      const component =
+        this.elements.escena6BScreen.components["escena6b-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.escena6BScreen.setAttribute("visible", "true");
     } catch (error) {}
   }
 
   hideEscena6BScreen() {
     if (!this.elements.escena6BScreen) return;
     try {
-      const component = this.elements.escena6BScreen.components["escena6b-video-cycler"];
-      component?.hide ? component.hide() : this.elements.escena6BScreen.setAttribute("visible", "false");
+      const component =
+        this.elements.escena6BScreen.components["escena6b-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.escena6BScreen.setAttribute("visible", "false");
     } catch (error) {}
   }
 
   showEscena7Screen() {
     if (!this.elements.escena7Screen) return;
     try {
-      const component = this.elements.escena7Screen.components["escena7-image-cycler"];
-      component?.show ? component.show() : this.elements.escena7Screen.setAttribute("visible", "true");
+      const component =
+        this.elements.escena7Screen.components["escena7-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.escena7Screen.setAttribute("visible", "true");
     } catch (error) {}
   }
 
   hideEscena7Screen() {
     if (!this.elements.escena7Screen) return;
     try {
-      const component = this.elements.escena7Screen.components["escena7-image-cycler"];
-      component?.hide ? component.hide() : this.elements.escena7Screen.setAttribute("visible", "false");
+      const component =
+        this.elements.escena7Screen.components["escena7-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.escena7Screen.setAttribute("visible", "false");
     } catch (error) {}
   }
 
   showEscena7BScreen() {
     if (!this.elements.escena7BScreen) return;
     try {
-      const component = this.elements.escena7BScreen.components["escena7b-video-cycler"];
-      component?.show ? component.show() : this.elements.escena7BScreen.setAttribute("visible", "true");
+      const component =
+        this.elements.escena7BScreen.components["escena7b-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.escena7BScreen.setAttribute("visible", "true");
     } catch (error) {}
   }
 
   hideEscena7BScreen() {
     if (!this.elements.escena7BScreen) return;
     try {
-      const component = this.elements.escena7BScreen.components["escena7b-video-cycler"];
-      component?.hide ? component.hide() : this.elements.escena7BScreen.setAttribute("visible", "false");
+      const component =
+        this.elements.escena7BScreen.components["escena7b-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.escena7BScreen.setAttribute("visible", "false");
     } catch (error) {}
   }
 
   showEscena8Screen() {
     if (!this.elements.escena8Screen) return;
     try {
-      const component = this.elements.escena8Screen.components["escena8-image-cycler"];
-      component?.show ? component.show() : this.elements.escena8Screen.setAttribute("visible", "true");
+      const component =
+        this.elements.escena8Screen.components["escena8-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.escena8Screen.setAttribute("visible", "true");
     } catch (error) {}
   }
 
   hideEscena8Screen() {
     if (!this.elements.escena8Screen) return;
     try {
-      const component = this.elements.escena8Screen.components["escena8-image-cycler"];
-      component?.hide ? component.hide() : this.elements.escena8Screen.setAttribute("visible", "false");
+      const component =
+        this.elements.escena8Screen.components["escena8-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.escena8Screen.setAttribute("visible", "false");
     } catch (error) {}
   }
 
   showEscena8BScreen() {
     if (!this.elements.escena8BScreen) return;
     try {
-      const component = this.elements.escena8BScreen.components["escena8b-image-cycler"];
-      component?.show ? component.show() : this.elements.escena8BScreen.setAttribute("visible", "true");
+      const component =
+        this.elements.escena8BScreen.components["escena8b-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.escena8BScreen.setAttribute("visible", "true");
     } catch (error) {}
   }
 
   hideEscena8BScreen() {
     if (!this.elements.escena8BScreen) return;
     try {
-      const component = this.elements.escena8BScreen.components["escena8b-image-cycler"];
-      component?.hide ? component.hide() : this.elements.escena8BScreen.setAttribute("visible", "false");
+      const component =
+        this.elements.escena8BScreen.components["escena8b-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.escena8BScreen.setAttribute("visible", "false");
     } catch (error) {}
   }
 
   showEscena9Screen() {
     if (!this.elements.escena9Screen) return;
     try {
-      const component = this.elements.escena9Screen.components["escena9-image-cycler"];
-      component?.show ? component.show() : this.elements.escena9Screen.setAttribute("visible", "true");
+      const component =
+        this.elements.escena9Screen.components["escena9-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.escena9Screen.setAttribute("visible", "true");
     } catch (error) {}
   }
 
   hideEscena9Screen() {
     if (!this.elements.escena9Screen) return;
     try {
-      const component = this.elements.escena9Screen.components["escena9-image-cycler"];
-      component?.hide ? component.hide() : this.elements.escena9Screen.setAttribute("visible", "false");
+      const component =
+        this.elements.escena9Screen.components["escena9-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.escena9Screen.setAttribute("visible", "false");
     } catch (error) {}
   }
 
   showEscena9BScreen() {
     if (!this.elements.escena9BScreen) return;
     try {
-      const component = this.elements.escena9BScreen.components["escena9b-video-cycler"];
-      component?.show ? component.show() : this.elements.escena9BScreen.setAttribute("visible", "true");
+      const component =
+        this.elements.escena9BScreen.components["escena9b-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.escena9BScreen.setAttribute("visible", "true");
     } catch (error) {}
   }
 
   hideEscena9BScreen() {
     if (!this.elements.escena9BScreen) return;
     try {
-      const component = this.elements.escena9BScreen.components["escena9b-video-cycler"];
-      component?.hide ? component.hide() : this.elements.escena9BScreen.setAttribute("visible", "false");
+      const component =
+        this.elements.escena9BScreen.components["escena9b-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.escena9BScreen.setAttribute("visible", "false");
     } catch (error) {}
   }
 
   showEscena10Screen() {
     if (!this.elements.escena10Screen) return;
     try {
-      const component = this.elements.escena10Screen.components["escena10-image-cycler"];
-      component?.show ? component.show() : this.elements.escena10Screen.setAttribute("visible", "true");
+      const component =
+        this.elements.escena10Screen.components["escena10-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.escena10Screen.setAttribute("visible", "true");
     } catch (error) {}
   }
 
   hideEscena10Screen() {
     if (!this.elements.escena10Screen) return;
     try {
-      const component = this.elements.escena10Screen.components["escena10-image-cycler"];
-      component?.hide ? component.hide() : this.elements.escena10Screen.setAttribute("visible", "false");
+      const component =
+        this.elements.escena10Screen.components["escena10-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.escena10Screen.setAttribute("visible", "false");
     } catch (error) {}
   }
 
   showEscena10BScreen() {
     if (!this.elements.escena10BScreen) return;
     try {
-      const component = this.elements.escena10BScreen.components["escena10b-image-cycler"];
-      component?.show ? component.show() : this.elements.escena10BScreen.setAttribute("visible", "true");
+      const component =
+        this.elements.escena10BScreen.components["escena10b-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.escena10BScreen.setAttribute("visible", "true");
     } catch (error) {}
   }
 
   hideEscena10BScreen() {
     if (!this.elements.escena10BScreen) return;
     try {
-      const component = this.elements.escena10BScreen.components["escena10b-image-cycler"];
-      component?.hide ? component.hide() : this.elements.escena10BScreen.setAttribute("visible", "false");
+      const component =
+        this.elements.escena10BScreen.components["escena10b-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.escena10BScreen.setAttribute("visible", "false");
     } catch (error) {}
   }
 
   showEscena11Screen() {
     if (!this.elements.escena11Screen) return;
     try {
-      const component = this.elements.escena11Screen.components["escena11-image-cycler"];
-      component?.show ? component.show() : this.elements.escena11Screen.setAttribute("visible", "true");
+      const component =
+        this.elements.escena11Screen.components["escena11-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.escena11Screen.setAttribute("visible", "true");
     } catch (error) {}
   }
 
   hideEscena11Screen() {
     if (!this.elements.escena11Screen) return;
     try {
-      const component = this.elements.escena11Screen.components["escena11-image-cycler"];
-      component?.hide ? component.hide() : this.elements.escena11Screen.setAttribute("visible", "false");
+      const component =
+        this.elements.escena11Screen.components["escena11-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.escena11Screen.setAttribute("visible", "false");
     } catch (error) {}
   }
 
   showEscena11BScreen() {
     if (!this.elements.escena11BScreen) return;
     try {
-      const component = this.elements.escena11BScreen.components["escena11b-video-cycler"];
-      component?.show ? component.show() : this.elements.escena11BScreen.setAttribute("visible", "true");
+      const component =
+        this.elements.escena11BScreen.components["escena11b-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.escena11BScreen.setAttribute("visible", "true");
     } catch (error) {}
   }
 
   hideEscena11BScreen() {
     if (!this.elements.escena11BScreen) return;
     try {
-      const component = this.elements.escena11BScreen.components["escena11b-video-cycler"];
-      component?.hide ? component.hide() : this.elements.escena11BScreen.setAttribute("visible", "false");
+      const component =
+        this.elements.escena11BScreen.components["escena11b-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.escena11BScreen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  // Guajira screen control methods
+  showGuajira1Screen() {
+    if (!this.elements.guajira1Screen) return;
+    try {
+      const component =
+        this.elements.guajira1Screen.components["guajira1-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.guajira1Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideGuajira1Screen() {
+    if (!this.elements.guajira1Screen) return;
+    try {
+      const component =
+        this.elements.guajira1Screen.components["guajira1-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.guajira1Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showGuajira2Screen() {
+    if (!this.elements.guajira2Screen) return;
+    try {
+      const component =
+        this.elements.guajira2Screen.components["guajira2-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.guajira2Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideGuajira2Screen() {
+    if (!this.elements.guajira2Screen) return;
+    try {
+      const component =
+        this.elements.guajira2Screen.components["guajira2-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.guajira2Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showGuajira3Screen() {
+    if (!this.elements.guajira3Screen) return;
+    try {
+      const component =
+        this.elements.guajira3Screen.components["guajira3-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.guajira3Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideGuajira3Screen() {
+    if (!this.elements.guajira3Screen) return;
+    try {
+      const component =
+        this.elements.guajira3Screen.components["guajira3-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.guajira3Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showGuajira4Screen() {
+    if (!this.elements.guajira4Screen) return;
+    try {
+      const component =
+        this.elements.guajira4Screen.components["guajira4-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.guajira4Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideGuajira4Screen() {
+    if (!this.elements.guajira4Screen) return;
+    try {
+      const component =
+        this.elements.guajira4Screen.components["guajira4-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.guajira4Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showGuajira5Screen() {
+    if (!this.elements.guajira5Screen) return;
+    try {
+      const component =
+        this.elements.guajira5Screen.components["guajira5-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.guajira5Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideGuajira5Screen() {
+    if (!this.elements.guajira5Screen) return;
+    try {
+      const component =
+        this.elements.guajira5Screen.components["guajira5-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.guajira5Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showGuajira6Screen() {
+    if (!this.elements.guajira6Screen) return;
+    try {
+      const component =
+        this.elements.guajira6Screen.components["guajira6-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.guajira6Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideGuajira6Screen() {
+    if (!this.elements.guajira6Screen) return;
+    try {
+      const component =
+        this.elements.guajira6Screen.components["guajira6-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.guajira6Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showGuajira7Screen() {
+    if (!this.elements.guajira7Screen) return;
+    try {
+      const component =
+        this.elements.guajira7Screen.components["guajira7-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.guajira7Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideGuajira7Screen() {
+    if (!this.elements.guajira7Screen) return;
+    try {
+      const component =
+        this.elements.guajira7Screen.components["guajira7-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.guajira7Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showGuajira8Screen() {
+    if (!this.elements.guajira8Screen) return;
+    try {
+      const component =
+        this.elements.guajira8Screen.components["guajira8-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.guajira8Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideGuajira8Screen() {
+    if (!this.elements.guajira8Screen) return;
+    try {
+      const component =
+        this.elements.guajira8Screen.components["guajira8-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.guajira8Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showGuajira9Screen() {
+    if (!this.elements.guajira9Screen) return;
+    try {
+      const component =
+        this.elements.guajira9Screen.components["guajira9-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.guajira9Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideGuajira9Screen() {
+    if (!this.elements.guajira9Screen) return;
+    try {
+      const component =
+        this.elements.guajira9Screen.components["guajira9-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.guajira9Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showGuajira10Screen() {
+    if (!this.elements.guajira10Screen) return;
+    try {
+      const component =
+        this.elements.guajira10Screen.components["guajira10-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.guajira10Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideGuajira10Screen() {
+    if (!this.elements.guajira10Screen) return;
+    try {
+      const component =
+        this.elements.guajira10Screen.components["guajira10-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.guajira10Screen.setAttribute("visible", "false");
     } catch (error) {}
   }
 
@@ -886,7 +1280,8 @@ export class VRSceneManager {
       opacity += 0.1; // Faster fade
       this.elements.overlay.setAttribute("material", "opacity", opacity);
 
-      if (opacity >= 0.6) { // Lower max opacity for subtler transition
+      if (opacity >= 0.6) {
+        // Lower max opacity for subtler transition
         clearInterval(fadeInInterval);
         this.elements.overlay.setAttribute("material", "opacity", 0.6);
       }
@@ -896,7 +1291,10 @@ export class VRSceneManager {
   hideLoadingOverlay() {
     // Get current opacity
     const currentMaterial = this.elements.overlay.getAttribute("material");
-    let opacity = currentMaterial && currentMaterial.opacity ? currentMaterial.opacity : 0.6;
+    let opacity =
+      currentMaterial && currentMaterial.opacity
+        ? currentMaterial.opacity
+        : 0.6;
 
     // Faster fade out animation
     const fadeOutInterval = setInterval(() => {
@@ -912,24 +1310,27 @@ export class VRSceneManager {
   }
 
   // ===== SEQUENCE AUTOMATION METHODS =====
-  
+
   enableSequenceMode(sequenceId, config) {
     console.log("🎭 Enabling sequence mode:", sequenceId, config);
-    
+
     this.sequenceMode = true;
     this.sequenceId = sequenceId;
     this.sequenceConfig = config || {};
-    
+
     // Load sequence configuration if available
     if (window.SEQUENCE_CONFIGS && window.SEQUENCE_CONFIGS[sequenceId]) {
       this.currentSequenceConfig = window.SEQUENCE_CONFIGS[sequenceId];
-      console.log("📋 Loaded sequence config:", this.currentSequenceConfig.name);
+      console.log(
+        "📋 Loaded sequence config:",
+        this.currentSequenceConfig.name
+      );
     }
   }
 
   disableSequenceMode() {
     console.log("🎭 Disabling sequence mode");
-    
+
     this.sequenceMode = false;
     this.sequenceId = null;
     this.sequenceConfig = null;
@@ -964,18 +1365,25 @@ export class VRSceneManager {
   // Enhanced loadScene method for sequence mode
   async loadSceneForSequence(sceneId, sequenceContext) {
     console.log("🎬 Loading scene for sequence:", sceneId, sequenceContext);
-    
+
     // Use the existing loadScene method but with sequence awareness
     const result = await this.loadScene(sceneId);
-    
+
     if (result && sequenceContext) {
       // Additional sequence-specific handling
-      if (sequenceContext.showScreensAutomatically && sequenceContext.screenDelay) {
+      if (
+        sequenceContext.showScreensAutomatically &&
+        sequenceContext.screenDelay
+      ) {
         // Auto-show screens after delay (handled by server)
-        console.log("📺 Screens will auto-show in", sequenceContext.screenDelay, "ms");
+        console.log(
+          "📺 Screens will auto-show in",
+          sequenceContext.screenDelay,
+          "ms"
+        );
       }
     }
-    
+
     return result;
   }
 
@@ -985,7 +1393,7 @@ export class VRSceneManager {
       isSequenceMode: this.sequenceMode,
       sequenceId: this.sequenceId,
       sequenceConfig: this.sequenceConfig,
-      currentSequenceConfig: this.currentSequenceConfig
+      currentSequenceConfig: this.currentSequenceConfig,
     };
   }
 }
