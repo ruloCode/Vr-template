@@ -16,18 +16,41 @@ export function registerSolarVideoCycler() {
       this.currentVideo = null;
 
       this.show = () => {
+        // OPTIMIZED: Use object3D.visible for faster rendering
+        if (this.el.object3D) {
+          this.el.object3D.visible = true;
+        }
         this.el.setAttribute("visible", "true");
         this.isVisible = true;
-        // Small delay to ensure videos are loaded
+        // OPTIMIZED: Reduced delay from 500ms to 100ms
         setTimeout(() => {
           this.startVideoPlayback();
-        }, 500);
+        }, 100);
       };
 
       this.hide = () => {
+        // OPTIMIZED: Aggressive cleanup
+        this.stopVideoPlayback();
+
+        // OPTIMIZED: Unload all videos to free memory
+        this.videos.forEach(videoSrc => {
+          const videoElement = document.querySelector(videoSrc);
+          if (videoElement && !videoElement.paused) {
+            videoElement.pause();
+            videoElement.currentTime = 0;
+            const originalSrc = videoElement.src;
+            videoElement.removeAttribute('src');
+            videoElement.load();
+            videoElement.dataset.unloadedSrc = originalSrc;
+          }
+        });
+
+        // OPTIMIZED: Use object3D.visible for faster rendering
+        if (this.el.object3D) {
+          this.el.object3D.visible = false;
+        }
         this.el.setAttribute("visible", "false");
         this.isVisible = false;
-        this.stopVideoPlayback();
       };
 
       this.startVideoPlayback = () => {
@@ -48,6 +71,12 @@ export function registerSolarVideoCycler() {
         // Get the video element and set up event listeners
         this.currentVideo = document.querySelector(videoSrc);
         if (this.currentVideo) {
+          // OPTIMIZED: Restore video if unloaded
+          if (this.currentVideo.dataset.unloadedSrc && !this.currentVideo.src) {
+            this.currentVideo.src = this.currentVideo.dataset.unloadedSrc;
+            this.currentVideo.load();
+          }
+
           // Ensure video is muted for autoplay
           this.currentVideo.muted = true;
           this.currentVideo.volume = 0;
@@ -71,12 +100,13 @@ export function registerSolarVideoCycler() {
               console.warn("Video playback failed, retrying:", error);
               // Try to load the video again
               this.currentVideo.load();
+              // OPTIMIZED: Reduced retry delay from 1000ms to 300ms
               setTimeout(() => {
                 this.currentVideo.muted = true;
                 this.currentVideo.play().catch((retryError) => {
                   console.error("Second video play attempt failed:", retryError);
                 });
-              }, 1000);
+              }, 300);
             });
           };
 

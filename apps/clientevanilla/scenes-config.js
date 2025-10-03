@@ -500,7 +500,7 @@ const SCENES_CONFIG = {
       "Escena base por defecto cuando no hay escena específica cargada",
     assets: {
       skybox: "images/base.jpg",
-      audio: "audio/toma_01.mp3",
+      audio: null, // Base scene has no audio - toma_01 goes to escena-1
       models: [],
     },
     lighting: {
@@ -518,11 +518,11 @@ const SCENES_CONFIG = {
   },
 };
 
-// Scene transition effects
+// Scene transition effects - Optimized for fast transitions
 const TRANSITION_CONFIG = {
-  duration: 2000, // 2 seconds
+  duration: 400, // 400ms for smooth, fast transitions
   fadeColor: "#000000",
-  audioFadeTime: 1000, // 1 second audio crossfade
+  audioFadeTime: 300, // 300ms audio crossfade
 };
 
 // Export for use in other scripts

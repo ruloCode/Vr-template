@@ -89,22 +89,22 @@ export class AssetPreloader {
   }
 
   /**
-   * Adjust preloading based on current strategy
+   * Adjust preloading based on current strategy - OPTIMIZED
    */
   adjustPreloadingStrategy() {
     const strategy = this.connectionStrategy;
 
     switch (strategy) {
       case 'aggressive':
-        this.maxConcurrent = 6;
+        this.maxConcurrent = 10; // OPTIMIZED: Increased from 6 to 10
         this.preloadDistance = 3; // Preload 3 scenes ahead
         break;
       case 'moderate':
-        this.maxConcurrent = 4;
+        this.maxConcurrent = 8; // OPTIMIZED: Increased from 4 to 8
         this.preloadDistance = 2; // Preload 2 scenes ahead
         break;
       case 'conservative':
-        this.maxConcurrent = 2;
+        this.maxConcurrent = 4; // OPTIMIZED: Increased from 2 to 4
         this.preloadDistance = 1; // Only next scene
         break;
     }
@@ -121,16 +121,17 @@ export class AssetPreloader {
         const memory = performance.memory;
         const usedPercentage = (memory.usedJSHeapSize / memory.jsHeapSizeLimit) * 100;
 
-        if (usedPercentage > 85) {
+        // OPTIMIZED: More aggressive memory management
+        if (usedPercentage > 75) { // OPTIMIZED: Reduced from 85% to 75%
           console.warn('⚠️ High memory usage detected:', usedPercentage.toFixed(1) + '%');
           this.pausePreloading();
-        } else if (usedPercentage < 70 && this.isPaused) {
+        } else if (usedPercentage < 60 && this.isPaused) { // OPTIMIZED: Reduced from 70% to 60%
           console.log('✅ Memory usage normalized, resuming preload');
           this.resumePreloading();
         }
       };
 
-      setInterval(checkMemory, 10000); // Check every 10 seconds
+      setInterval(checkMemory, 5000); // OPTIMIZED: Check every 5 seconds (reduced from 10)
     }
   }
 
@@ -273,8 +274,8 @@ export class AssetPreloader {
       this.loadingAssets.delete(asset.url);
       this.notifyProgress();
 
-      // Continue processing queue
-      setTimeout(() => this.processQueue(), 10);
+      // OPTIMIZED: Continue processing queue immediately
+      setTimeout(() => this.processQueue(), 0);
     }
   }
 

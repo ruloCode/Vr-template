@@ -168,7 +168,7 @@ export class VRSceneManager {
   }
 
   /**
-   * Clean up Three.js textures to prevent GPU memory leaks
+   * Clean up Three.js textures to prevent GPU memory leaks - OPTIMIZED
    */
   cleanupThreeJSTextures() {
     try {
@@ -179,6 +179,10 @@ export class VRSceneManager {
         const mesh = skyboxEl.getObject3D("mesh");
         if (mesh.material && mesh.material.map) {
           mesh.material.map.dispose();
+          // Also dispose geometry if exists
+          if (mesh.geometry) {
+            mesh.geometry.dispose();
+          }
           this.previousTextures.add(mesh.material.map);
         }
       }
@@ -190,6 +194,9 @@ export class VRSceneManager {
           const mesh = screen.getObject3D("mesh");
           if (mesh.material && mesh.material.map) {
             mesh.material.map.dispose();
+            // Dispose material and geometry
+            if (mesh.material) mesh.material.dispose();
+            if (mesh.geometry) mesh.geometry.dispose();
             this.previousTextures.add(mesh.material.map);
           }
         }
@@ -205,7 +212,7 @@ export class VRSceneManager {
   }
 
   /**
-   * Pause all video elements except those needed for current scene to free GPU resources
+   * Pause all video elements except those needed for current scene to free GPU resources - OPTIMIZED
    */
   pauseAllVideos() {
     const videos = document.querySelectorAll("video");
@@ -221,6 +228,11 @@ export class VRSceneManager {
       if (!isCurrentSceneVideo && !video.paused) {
         video.pause();
         video.currentTime = 0;
+        // AGGRESSIVE: Unload video to free memory completely
+        const originalSrc = video.src;
+        video.removeAttribute('src');
+        video.load(); // Force unload
+        video.dataset.originalSrc = originalSrc; // Store for potential reload
         // Remove from DOM rendering to free GPU memory
         video.style.display = "none";
       }
@@ -228,15 +240,20 @@ export class VRSceneManager {
   }
 
   /**
-   * Resume videos needed for current scene
+   * Resume videos needed for current scene - OPTIMIZED
    */
   resumeSceneVideos(sceneId) {
-    const sceneNumber = sceneId.replace("escena-", "");
+    const sceneNumber = sceneId.replace("escena-", "").replace("guajira-", "guajira");
     const sceneVideos = document.querySelectorAll(
-      `video[id*="escena${sceneNumber}"]`
+      `video[id*="${sceneNumber}"]`
     );
 
     sceneVideos.forEach((video) => {
+      // Restore video src if it was unloaded
+      if (video.dataset.originalSrc && !video.src) {
+        video.src = video.dataset.originalSrc;
+        video.load();
+      }
       // Make video available for rendering again
       video.style.display = "";
       // Note: We don't auto-play here as video cyclers handle that
@@ -311,10 +328,10 @@ export class VRSceneManager {
       return false;
     } finally {
       this.isLoading = false;
-      // Reduced delay for faster transitions
+      // OPTIMIZED: Minimal delay for fastest transitions
       setTimeout(() => {
         this.hideLoadingOverlay();
-      }, 100);
+      }, 30);
     }
   }
 
@@ -334,27 +351,36 @@ export class VRSceneManager {
 
   async updateAssets(sceneConfig) {
     try {
+      console.log("📦 updateAssets called for scene:", sceneConfig.id);
+
       // Update audio asset with cache checking
       const audioElement = document.querySelector("#current-audio");
       if (audioElement && sceneConfig.assets.audio) {
+        console.log("🎵 Updating audio asset:", sceneConfig.assets.audio);
+
         const cachedAudio = await cacheManager.getAsset(
           sceneConfig.assets.audio
         );
 
         if (cachedAudio) {
-          console.log("🎵 Using cached audio:", sceneConfig.assets.audio);
+          console.log("✅ Using cached audio:", sceneConfig.assets.audio);
           // Create blob URL from cached data and store it for cleanup
           this.currentAudioBlobUrl = URL.createObjectURL(cachedAudio.data);
           audioElement.src = this.currentAudioBlobUrl;
+          console.log("🎵 Audio src set to blob URL:", this.currentAudioBlobUrl.substring(0, 50) + "...");
         } else {
           console.log(
             "🌐 Loading audio from network:",
             sceneConfig.assets.audio
           );
           audioElement.src = sceneConfig.assets.audio;
+          console.log("🎵 Audio src set to path:", sceneConfig.assets.audio);
         }
 
         audioElement.load();
+        console.log("🎵 Audio element load() called");
+      } else {
+        console.warn("⚠️ Audio element or audio config missing");
       }
 
       // Update skybox asset with cache checking
@@ -374,8 +400,8 @@ export class VRSceneManager {
         this.elements.assets.skybox.setAttribute("src", skyboxUrl);
       }
 
-      // Wait for assets to load
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      // OPTIMIZED: Minimal wait for assets to load
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
       console.log("✅ Assets updated for scene:", sceneConfig.id);
     } catch (error) {
@@ -393,18 +419,23 @@ export class VRSceneManager {
         sceneConfig.assets.skybox
       );
 
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // OPTIMIZED: Reduced fallback delay
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
   }
 
   updateSkybox(sceneConfig) {
-    // Force A-Frame to reload the texture by temporarily removing and re-adding the src
-    this.elements.skybox.removeAttribute("src");
+    // OPTIMIZED: Direct update without remove/readd cycle
+    // Just update the src attribute directly - A-Frame will handle the texture change
+    this.elements.skybox.setAttribute("src", "#current-skybox");
 
-    // Use a small delay to ensure the removal is processed
-    setTimeout(() => {
-      this.elements.skybox.setAttribute("src", "#current-skybox");
-    }, 100);
+    // Force material update for immediate visual change
+    if (this.elements.skybox.getObject3D && this.elements.skybox.getObject3D("mesh")) {
+      const mesh = this.elements.skybox.getObject3D("mesh");
+      if (mesh.material) {
+        mesh.material.needsUpdate = true;
+      }
+    }
   }
 
   updateLighting(sceneConfig) {
@@ -443,6 +474,9 @@ export class VRSceneManager {
   }
 
   updateAudio(sceneConfig) {
+    console.log("🎵 updateAudio called for scene:", sceneConfig.id);
+    console.log("🎵 Audio path:", sceneConfig.assets.audio);
+
     // Stop current audio if playing
     try {
       const soundComponent = this.elements.sound.components.sound;
@@ -450,56 +484,70 @@ export class VRSceneManager {
         soundComponent.stopSound();
       }
     } catch (error) {
-      // Error stopping current sound
+      console.warn("⚠️ Error stopping current sound:", error);
     }
 
-    // Force A-Frame to reload the audio asset by removing and re-adding src (like skybox)
+    // If scene has no audio (e.g., base scene), just stop and return
+    if (!sceneConfig.assets.audio) {
+      console.log("🔇 Scene has no audio, keeping sound stopped");
+      const audioElement = document.querySelector("#current-audio");
+      if (audioElement) {
+        audioElement.pause();
+        audioElement.currentTime = 0;
+      }
+      return;
+    }
+
+    // FIXED: Don't update audio src here - updateAssets() already did it
+    // This prevents overwriting cached blob URLs and eliminates duplication
+    const audioElement = document.querySelector("#current-audio");
+    if (audioElement) {
+      console.log("🎵 Current audio element src:", audioElement.src);
+      console.log("🎵 Audio enabled:", window.audioEnabled);
+    } else {
+      console.error("❌ Audio element not found!");
+      return;
+    }
+
+    // Force A-Frame to detect the audio change by removing and re-adding src
     this.elements.sound.removeAttribute("src");
 
-    // Update the HTML audio element
-    const audioElement = document.querySelector("#current-audio");
-    if (audioElement && sceneConfig.assets.audio) {
-      audioElement.pause();
-      audioElement.currentTime = 0;
-      audioElement.src = sceneConfig.assets.audio;
-      audioElement.load(); // Force reload of the audio element
-    }
-
-    // Re-add the src attribute after a delay to force A-Frame to reload the asset
+    // Small delay to ensure A-Frame processes the removal
     setTimeout(() => {
       this.elements.sound.setAttribute("src", "#current-audio");
+      console.log("🎵 A-Frame sound component updated");
 
-      // Only attempt to play if audio is enabled
-      if (!window.audioEnabled) {
-        // Audio not enabled yet
-        return;
-      }
-
-      // Start playing the new audio after ensuring it's loaded
+      // OPTIMIZED: Balanced delay for audio playback (safe loading time)
       setTimeout(() => {
+        // Only attempt to play if audio is enabled
+        if (!window.audioEnabled) {
+          console.warn("⚠️ Audio not enabled, skipping playback");
+          return;
+        }
+
+        console.log("🎵 Attempting to play audio for scene:", sceneConfig.id);
+
+        // Start playing the new audio
         try {
           const newSoundComponent = this.elements.sound.components.sound;
           if (newSoundComponent) {
             newSoundComponent.playSound();
-            // Audio started for scene: ${sceneConfig.id}
+            console.log("✅ Audio playback started via sound component");
           } else {
-            // Sound component not found, fallback to direct audio play
-            try {
-              if (audioElement) {
-                audioElement.currentTime = 0;
-                audioElement.play().catch((playError) => {
-                  // Direct audio play failed
-                });
-              }
-            } catch (fallbackError) {
-              // Fallback audio play failed
+            // Fallback to direct audio play
+            console.warn("⚠️ Sound component not found, using fallback");
+            if (audioElement) {
+              audioElement.currentTime = 0;
+              audioElement.play()
+                .then(() => console.log("✅ Audio playback started via direct play"))
+                .catch((error) => console.error("❌ Audio play failed:", error));
             }
           }
         } catch (error) {
-          // Error playing new audio
+          console.error("❌ Error playing new audio:", error);
         }
-      }, 300); // Increased delay to ensure A-Frame has processed the new asset
-    }, 150); // Delay to ensure removal is processed before re-adding
+      }, 300); // OPTIMIZED: 300ms - balanced between speed and reliability
+    }, 50); // Small delay to ensure removal is processed
   }
 
   updateFloatingScreens(sceneConfig) {
@@ -1291,43 +1339,56 @@ export class VRSceneManager {
     } catch (error) {}
   }
 
-  // Loading overlay methods
+  // Loading overlay methods - OPTIMIZED with requestAnimationFrame
   showLoadingOverlay(sceneId = null) {
     this.elements.overlay.setAttribute("visible", "true");
 
-    // Faster fade in animation with lower max opacity for subtlety
-    let opacity = 0;
-    const fadeInInterval = setInterval(() => {
-      opacity += 0.1; // Faster fade
+    // OPTIMIZED: Use requestAnimationFrame for smoother, faster fade
+    let startTime = null;
+    const duration = 150; // 150ms fade in
+    const maxOpacity = 0.5; // Lower opacity for subtler transition
+
+    const fadeIn = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      const opacity = progress * maxOpacity;
       this.elements.overlay.setAttribute("material", "opacity", opacity);
 
-      if (opacity >= 0.6) {
-        // Lower max opacity for subtler transition
-        clearInterval(fadeInInterval);
-        this.elements.overlay.setAttribute("material", "opacity", 0.6);
+      if (progress < 1) {
+        requestAnimationFrame(fadeIn);
       }
-    }, 15); // Faster interval
+    };
+
+    requestAnimationFrame(fadeIn);
   }
 
   hideLoadingOverlay() {
-    // Get current opacity
+    // OPTIMIZED: Use requestAnimationFrame for smoother, faster fade
     const currentMaterial = this.elements.overlay.getAttribute("material");
-    let opacity =
-      currentMaterial && currentMaterial.opacity
-        ? currentMaterial.opacity
-        : 0.6;
+    const startOpacity = currentMaterial?.opacity || 0.5;
 
-    // Faster fade out animation
-    const fadeOutInterval = setInterval(() => {
-      opacity -= 0.1; // Faster fade
+    let startTime = null;
+    const duration = 150; // 150ms fade out
+
+    const fadeOut = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      const opacity = startOpacity * (1 - progress);
       this.elements.overlay.setAttribute("material", "opacity", opacity);
 
-      if (opacity <= 0) {
-        clearInterval(fadeOutInterval);
+      if (progress < 1) {
+        requestAnimationFrame(fadeOut);
+      } else {
         this.elements.overlay.setAttribute("material", "opacity", 0);
         this.elements.overlay.setAttribute("visible", "false");
       }
-    }, 15); // Faster interval
+    };
+
+    requestAnimationFrame(fadeOut);
   }
 
   // ===== SEQUENCE AUTOMATION METHODS =====

@@ -15,11 +15,11 @@ export class CacheManager {
       analytics: 'analytics'      // Usage statistics
     };
 
-    // Cache size limits (in MB)
+    // Cache size limits (in MB) - OPTIMIZED for lower memory usage
     this.limits = {
-      maxTotalSize: 1000,    // 1GB total cache
-      maxAssetSize: 100,     // 100MB per asset
-      lowStorageThreshold: 100 // 100MB minimum free space
+      maxTotalSize: 300,    // OPTIMIZED: 300MB total cache (reduced from 1GB)
+      maxAssetSize: 50,     // OPTIMIZED: 50MB per asset (reduced from 100MB)
+      lowStorageThreshold: 50 // OPTIMIZED: 50MB minimum free space
     };
 
     this.initPromise = this.initialize();
@@ -413,14 +413,14 @@ export class CacheManager {
       const corrupted = [];
       const old = [];
       const now = Date.now();
-      const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
+      const maxAge = 2 * 24 * 60 * 60 * 1000; // OPTIMIZED: 2 days (reduced from 7 days)
 
       if (cursor) {
         do {
           const metadata = cursor.value;
 
-          // Check for old assets
-          if (now - metadata.storedAt > maxAge && metadata.accessCount < 2) {
+          // OPTIMIZED: More aggressive cleanup - remove old assets with low access count
+          if (now - metadata.storedAt > maxAge && metadata.accessCount < 3) {
             old.push(metadata.url);
           }
 

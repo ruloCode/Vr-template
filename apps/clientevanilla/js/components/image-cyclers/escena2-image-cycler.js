@@ -1,5 +1,5 @@
 /**
- * Escena 2 - Petroleo Image Cycler Component
+ * Escena 2 - Petroleo Image Cycler Component - OPTIMIZED
  * A-Frame component for automatic image cycling in Scene 2
  */
 
@@ -16,22 +16,33 @@ export function registerEscena2ImageCycler() {
       this.cycleInterval = null;
 
       this.show = () => {
+        // OPTIMIZED: Use object3D.visible for faster rendering
+        if (this.el.object3D) {
+          this.el.object3D.visible = true;
+        }
         this.el.setAttribute("visible", "true");
         this.isVisible = true;
         this.startImageCycling();
       };
 
       this.hide = () => {
+        // OPTIMIZED: Stop cycling immediately
+        this.stopImageCycling();
+
+        // OPTIMIZED: Use object3D.visible for faster rendering
+        if (this.el.object3D) {
+          this.el.object3D.visible = false;
+        }
         this.el.setAttribute("visible", "false");
         this.isVisible = false;
-        this.stopImageCycling();
       };
 
       this.startImageCycling = () => {
         this.showCurrentImage();
+        // OPTIMIZED: Reduced from 3s to 2.5s
         this.cycleInterval = setInterval(() => {
           this.nextImage();
-        }, 3000); // Cambiar imagen cada 3 segundos
+        }, 2500);
       };
 
       this.stopImageCycling = () => {
@@ -44,6 +55,14 @@ export function registerEscena2ImageCycler() {
       this.showCurrentImage = () => {
         const imageSrc = this.images[this.currentImageIndex];
         this.el.setAttribute("src", imageSrc);
+
+        // OPTIMIZED: Force material update for immediate rendering
+        if (this.el.getObject3D && this.el.getObject3D("mesh")) {
+          const mesh = this.el.getObject3D("mesh");
+          if (mesh.material) {
+            mesh.material.needsUpdate = true;
+          }
+        }
       };
 
       this.nextImage = () => {
