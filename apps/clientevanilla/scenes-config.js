@@ -269,7 +269,7 @@ const SCENES_CONFIG = {
     description: "Vista panorámica de operaciones petroleras en La Guajira",
     assets: {
       skybox: "images/e_guajira_1.png",
-      audio: "audio/toma_01.mp3",
+      audio: "audio/guajira_toma_1.mp3",
       models: [],
     },
     lighting: {
@@ -292,7 +292,7 @@ const SCENES_CONFIG = {
     description: "Vista panorámica de instalaciones industriales en La Guajira",
     assets: {
       skybox: "images/e_guajira_1.png",
-      audio: "audio/toma_02.mp3",
+      audio: "audio/guajira_toma_2.mp3",
       models: [],
     },
     lighting: {
@@ -315,7 +315,7 @@ const SCENES_CONFIG = {
     description: "Vista panorámica de operaciones de campo en La Guajira",
     assets: {
       skybox: "images/e_guajira_1.png",
-      audio: "audio/toma_03.mp3",
+      audio: "audio/guajira_toma_3.mp3",
       models: [],
     },
     lighting: {
@@ -338,7 +338,7 @@ const SCENES_CONFIG = {
     description: "Vista panorámica de tecnología avanzada en La Guajira",
     assets: {
       skybox: "images/e_guajira_1.png",
-      audio: "audio/toma_04.mp3",
+      audio: "audio/guajira_toma_4.mp3",
       models: [],
     },
     lighting: {
@@ -361,7 +361,7 @@ const SCENES_CONFIG = {
     description: "Vista panorámica de operaciones especializadas en La Guajira",
     assets: {
       skybox: "images/e_guajira_1.png",
-      audio: "audio/toma_05.mp3",
+      audio: "audio/guajira_toma_5.mp3",
       models: [],
     },
     lighting: {
@@ -384,7 +384,7 @@ const SCENES_CONFIG = {
     description: "Vista panorámica de infraestructura moderna en La Guajira",
     assets: {
       skybox: "images/e_guajira_1.png",
-      audio: "audio/toma_06.mp3",
+      audio: "audio/guajira_toma_6.mp3",
       models: [],
     },
     lighting: {
@@ -407,7 +407,7 @@ const SCENES_CONFIG = {
     description: "Vista panorámica de operaciones de producción en La Guajira",
     assets: {
       skybox: "images/e_guajira_1.png",
-      audio: "audio/toma_07.mp3",
+      audio: "audio/guajira_toma_7.mp3",
       models: [],
     },
     lighting: {
@@ -430,7 +430,7 @@ const SCENES_CONFIG = {
     description: "Vista panorámica de equipos especializados en La Guajira",
     assets: {
       skybox: "images/e_guajira_1.png",
-      audio: "audio/toma_08.mp3",
+      audio: "audio/guajira_toma_8.mp3",
       models: [],
     },
     lighting: {
@@ -453,7 +453,7 @@ const SCENES_CONFIG = {
     description: "Vista panorámica de instalaciones avanzadas en La Guajira",
     assets: {
       skybox: "images/e_guajira_1.png",
-      audio: "audio/toma_09.mp3",
+      audio: "audio/guajira_toma_9.mp3",
       models: [],
     },
     lighting: {
@@ -476,7 +476,7 @@ const SCENES_CONFIG = {
     description: "Vista panorámica completa de operaciones en La Guajira",
     assets: {
       skybox: "images/e_guajira_1.png",
-      audio: "audio/toma_10.mp3",
+      audio: "audio/guajira_toma_10.mp3",
       models: [],
     },
     lighting: {
