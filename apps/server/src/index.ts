@@ -9,6 +9,7 @@ import fs from "fs";
 import { WebSocketManager } from "./websocket/manager.js";
 import { createApiRoutes } from "./routes/api.js";
 import { createDashboardRoutes } from "./dashboard/routes.js";
+import { createVideoDashboardRoutes } from "./dashboard/video-routes.js";
 import { config, isDevelopment } from "./utils/config.js";
 import { logger } from "./utils/logger.js";
 import { getLocalIP, generateAccessUrls } from "./utils/network.js";
@@ -117,6 +118,9 @@ class VRSyncServer {
 
     // Dashboard routes
     this.app.use("/dashboard", createDashboardRoutes(this.wsManager));
+
+    // Video Dashboard routes
+    this.app.use("/video-dashboard", createVideoDashboardRoutes(this.wsManager));
 
     // Health check (also available at root level)
     this.app.get("/health", (req, res) => {
@@ -228,27 +232,39 @@ class VRSyncServer {
         urls.network.forEach(url => logger.info(`   ${url}`));
       }
 
-      // Dashboard URLs
-      logger.info(`🎮 Dashboard Local: ${protocol}://localhost:${config.port}/dashboard`);
+      // Video Dashboard (Main)
+      logger.info("");
+      logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      logger.info("🎬 DASHBOARD DE CONTROL DE VIDEO");
+      logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      logger.info(`📺 Local:   ${protocol}://localhost:${config.port}/video-dashboard`);
       if (localIP !== "localhost") {
-        logger.info(`🎮 Dashboard Network: ${protocol}://${localIP}:${config.port}/dashboard`);
+        logger.info(`📺 Red:     ${protocol}://${localIP}:${config.port}/video-dashboard`);
       }
 
-      // WebSocket URLs  
-      logger.info(`🔌 WebSocket Local: ${wsProtocol}://localhost:${wsPort}/ws`);
+      logger.info("");
+      logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      logger.info("📱 CLIENTE DE VIDEO (Dispositivos)");
+      logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      logger.info(`   🔗 http://localhost:8085`);
       if (localIP !== "localhost") {
-        logger.info(`🔌 WebSocket Network: ${wsProtocol}://${localIP}:${wsPort}/ws`);
+        logger.info(`   🔗 http://${localIP}:8085`);
       }
 
-      logger.info(`📊 Health: ${protocol}://localhost:${config.port}/health`);
-      logger.info(`⚙️ Network Config: ${protocol}://localhost:${config.port}/api/config`);
+      logger.info("");
+      logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      logger.info("📊 Otros Dashboards y APIs");
+      logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+      logger.info(`🎮 Dashboard VR: ${protocol}://localhost:${config.port}/dashboard`);
+      logger.info(`📊 Health Check: ${protocol}://localhost:${config.port}/health`);
+      logger.info(`🔌 WebSocket:    ${wsProtocol}://localhost:${wsPort}/ws`);
+      logger.info("");
 
       if (isDevelopment) {
         logger.info("🔧 Development mode - Hot reload enabled");
-        logger.info("💡 Clients will auto-detect network configuration");
       }
 
-      logger.info("✨ Server ready for VR connections!");
+      logger.info("✨ Sistema listo para usar!");
     });
 
     server.on("error", (err: any) => {

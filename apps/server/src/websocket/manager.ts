@@ -18,7 +18,8 @@ import { config } from "../utils/config.js";
 import { SequenceManager, SequenceManagerEvents } from "../managers/sequence-manager.js";
 
 export class WebSocketManager {
-  private wss: WebSocketServer;
+  private wss: WebSocketServer; // Secure WebSocket Server (WSS)
+  private wsInsecure: WebSocketServer | null = null; // Insecure WebSocket Server (WS)
   private clients: Map<string, ClientConnection> = new Map();
   private room: RoomState;
   private heartbeatInterval: NodeJS.Timeout | null = null;
@@ -27,26 +28,20 @@ export class WebSocketManager {
 
   constructor(sslOptions: https.ServerOptions | null = null) {
     this.sslOptions = sslOptions;
-    const wsPort = config.port + 1;
+    const wssPort = config.port + 1; // 8081 for WSS
+    const wsPort = wssPort + 1; // 8082 for WS
 
-    logger.info("🔄 Initializing WebSocket server...");
-
-    const wsOptions: any = {
-      port: wsPort,
-      path: config.paths.websocket,
-    };
+    logger.info("🔄 Initializing WebSocket servers...");
 
     // If SSL is available, create HTTPS server for WSS
     if (this.sslOptions) {
       logger.info("🔐 SSL certificates detected, configuring WSS server...");
 
       const httpsServer = https.createServer(this.sslOptions);
-      wsOptions.server = httpsServer;
-      delete wsOptions.port; // Remove port when using existing server
 
-      httpsServer.listen(wsPort, config.host, () => {
-        logger.info(`🔒 WSS (Secure WebSocket) server listening on ${config.host}:${wsPort}`);
-        logger.info(`🔗 WSS URL: wss://${config.host}:${wsPort}${config.paths.websocket}`);
+      httpsServer.listen(wssPort, config.host, () => {
+        logger.info(`🔒 WSS (Secure WebSocket) server listening on ${config.host}:${wssPort}`);
+        logger.info(`🔗 WSS URL: wss://${config.host}:${wssPort}${config.paths.websocket}`);
       });
 
       httpsServer.on('error', (error) => {
@@ -54,19 +49,50 @@ export class WebSocketManager {
         logger.error("💡 Verificar certificados SSL en apps/server/ssl/");
       });
 
-    } else {
-      logger.info("🔓 No SSL certificates, using regular WebSocket server...");
-      logger.info(`🔌 WS server will listen on ${config.host}:${wsPort}`);
-      logger.info(`🔗 WS URL: ws://${config.host}:${wsPort}${config.paths.websocket}`);
-    }
+      // Create WebSocket server with error handling
+      try {
+        this.wss = new WebSocketServer({
+          server: httpsServer,
+          path: config.paths.websocket,
+        });
+        logger.info("✅ WebSocket server instance created successfully");
+      } catch (error) {
+        logger.error("❌ Failed to create WebSocket server:", error);
+        throw error;
+      }
 
-    // Create WebSocket server with error handling
-    try {
-      this.wss = new WebSocketServer(wsOptions);
-      logger.info("✅ WebSocket server instance created successfully");
-    } catch (error) {
-      logger.error("❌ Failed to create WebSocket server:", error);
-      throw error;
+      // ALSO create insecure WS server for HTTP clients (mobile compatibility)
+      logger.info("🔓 Creating additional WS (insecure) server for HTTP clients...");
+      try {
+        this.wsInsecure = new WebSocketServer({
+          port: wsPort,
+          host: config.host,
+          path: config.paths.websocket,
+        });
+        logger.info(`🔌 WS (Insecure WebSocket) server listening on ${config.host}:${wsPort}`);
+        logger.info(`🔗 WS URL: ws://${config.host}:${wsPort}${config.paths.websocket}`);
+        logger.info("✅ Insecure WebSocket server created for HTTP client compatibility");
+      } catch (error) {
+        logger.error("⚠️ Failed to create insecure WS server:", error);
+        logger.warn("💡 System will work with WSS only (HTTPS clients)");
+      }
+    } else {
+      // No SSL - create only insecure WS server
+      logger.info("🔓 No SSL certificates, using regular WebSocket server...");
+
+      try {
+        this.wss = new WebSocketServer({
+          port: wssPort,
+          host: config.host,
+          path: config.paths.websocket,
+        });
+        logger.info(`🔌 WS server listening on ${config.host}:${wssPort}`);
+        logger.info(`🔗 WS URL: ws://${config.host}:${wssPort}${config.paths.websocket}`);
+        logger.info("✅ WebSocket server instance created successfully");
+      } catch (error) {
+        logger.error("❌ Failed to create WebSocket server:", error);
+        throw error;
+      }
     }
 
     // Initialize room state
@@ -130,13 +156,14 @@ export class WebSocketManager {
     this.setupWebSocketServer();
     this.startHeartbeat();
 
-    const protocol = this.sslOptions ? "WSS" : "WS";
-    logger.info(`✅ ${protocol} WebSocket server initialized on port ${wsPort}`);
-    logger.info(`🎯 Ready to accept ${this.sslOptions ? 'secure' : 'regular'} WebSocket connections`);
+    const protocol = this.sslOptions ? "WSS + WS" : "WS";
+    logger.info(`✅ ${protocol} WebSocket server(s) initialized`);
+    logger.info(`🎯 Ready to accept secure WebSocket connections`);
   }
 
   private setupWebSocketServer(): void {
-    this.wss.on("connection", (ws: WebSocket, request) => {
+    // Setup connection handler for secure WSS server
+    const handleConnection = (ws: WebSocket, request: any, isSecure: boolean) => {
       const clientId = uuidv4();
       const clientIP = request.socket.remoteAddress || "unknown";
       const userAgent = request.headers['user-agent'] || "unknown";
@@ -145,7 +172,7 @@ export class WebSocketManager {
       logger.info(`   Client ID: ${clientId}`);
       logger.info(`   IP: ${clientIP}`);
       logger.info(`   User-Agent: ${userAgent.substring(0, 50)}...`);
-      logger.info(`   Protocol: ${this.sslOptions ? 'WSS (Secure)' : 'WS (Regular)'}`);
+      logger.info(`   Protocol: ${isSecure ? 'WSS (Secure)' : 'WS (Regular)'}`);
 
       const connection = new ClientConnection(clientId, ws, this);
       this.clients.set(clientId, connection);
@@ -163,15 +190,31 @@ export class WebSocketManager {
         logger.error(`   IP: ${clientIP}`);
         this.handleClientDisconnect(clientId);
       });
-    });
+    };
+
+    // Setup WSS (secure) server
+    this.wss.on("connection", (ws, request) => handleConnection(ws, request, true));
 
     this.wss.on("error", (error) => {
-      logger.error("🚨 WebSocket Server Error:", error);
+      logger.error("🚨 WSS Server Error:", error);
     });
 
     this.wss.on("listening", () => {
       logger.info("👂 WebSocket server is now listening for connections");
     });
+
+    // Setup WS (insecure) server if available
+    if (this.wsInsecure) {
+      this.wsInsecure.on("connection", (ws, request) => handleConnection(ws, request, false));
+
+      this.wsInsecure.on("error", (error) => {
+        logger.error("🚨 WS (Insecure) Server Error:", error);
+      });
+
+      this.wsInsecure.on("listening", () => {
+        logger.info("👂 WS (Insecure) server is now listening for connections");
+      });
+    }
 
     logger.info("🔧 WebSocket server event handlers configured");
   }

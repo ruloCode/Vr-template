@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cliente Video Sincronizado - Ecopetrol</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Connection Status -->
+    <div id="status-bar" class="status-bar">
+        <div class="status-indicator" id="ws-status">
+            <span class="status-dot disconnected"></span>
+            <span id="status-text">Conectando...</span>
+        </div>
+        <div class="device-info">
+            <span id="device-id">Dispositivo: -</span>
+        </div>
+    </div>
+
+    <!-- Video Container -->
+    <div id="video-container" class="video-container">
+        <video
+            id="video-player"
+            class="video-player"
+            preload="auto"
+            playsinline
+            webkit-playsinline>
+            Tu navegador no soporta video HTML5.
+        </video>
+
+        <!-- Ready State Overlay -->
+        <div id="ready-overlay" class="ready-overlay hidden">
+            <div class="ready-content">
+                <div class="ready-icon">✓</div>
+                <h2 class="ready-title">Listo para Reproducir</h2>
+                <p class="ready-subtitle">Esperando comandos del dashboard</p>
+                <div class="ready-pulse"></div>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loading" class="loading-overlay hidden">
+            <div class="spinner"></div>
+            <p id="loading-text">Cargando video...</p>
+        </div>
+
+        <!-- Play Button Overlay (for mobile) -->
+        <div id="play-overlay" class="play-overlay hidden">
+            <button id="play-button" class="play-button">▶</button>
+            <p>Toca para reproducir</p>
+        </div>
+    </div>
+
+    <!-- Debug Info (dev only) -->
+    <div id="debug-info" class="debug-info hidden">
+        <div>Video: <span id="debug-video">-</span></div>
+        <div>Estado: <span id="debug-state">-</span></div>
+        <div>Tiempo: <span id="debug-time">-</span></div>
+        <div>Latencia: <span id="debug-latency">-</span></div>
+    </div>
+
+    <script src="client.js"></script>
+</body>
+</html>

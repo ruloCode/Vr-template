@@ -1,0 +1,13 @@
+{
+  "name": "@vr-ecopetrol/clientevideo",
+  "version": "1.0.0",
+  "description": "Cliente de video sincronizado simple para Ecopetrol",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

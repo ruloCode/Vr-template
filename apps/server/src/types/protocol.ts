@@ -140,6 +140,25 @@ export const ServerCommandSchema = z.object({
         }).optional(),
       }).optional(),
     }),
+    // Video sync commands
+    z.object({
+      commandType: z.literal("LOAD_VIDEO"),
+      videoUrl: z.string().min(1).max(500),
+    }),
+    z.object({
+      commandType: z.literal("PLAY_VIDEO"),
+      epochMs: z.number().int().positive().optional(),
+    }),
+    z.object({
+      commandType: z.literal("PAUSE_VIDEO"),
+    }),
+    z.object({
+      commandType: z.literal("STOP_VIDEO"),
+    }),
+    z.object({
+      commandType: z.literal("SEEK_VIDEO"),
+      currentTime: z.number().min(0),
+    }),
   ]),
 });
 
