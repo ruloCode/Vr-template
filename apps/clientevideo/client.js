@@ -31,6 +31,10 @@ class VideoSyncClient {
         this.playOverlay = document.getElementById('play-overlay');
         this.playButton = document.getElementById('play-button');
         this.readyOverlay = document.getElementById('ready-overlay');
+        this.fullscreenToggle = document.getElementById('fullscreen-toggle');
+
+        // Fullscreen state
+        this.isFullscreen = false;
 
         // Debug
         this.debugMode = window.location.search.includes('debug');
@@ -66,6 +70,14 @@ class VideoSyncClient {
         this.playButton.addEventListener('click', () => {
             this.handleUserInteraction();
         });
+
+        // Setup fullscreen toggle button
+        this.fullscreenToggle.addEventListener('click', () => {
+            this.toggleFullscreen();
+        });
+
+        // Setup fullscreen change listeners
+        this.setupFullscreenListeners();
 
         // Connect to WebSocket
         this.connect();
@@ -346,12 +358,59 @@ class VideoSyncClient {
     }
 
     // Fullscreen Methods
+    setupFullscreenListeners() {
+        // Listen for fullscreen changes
+        const fullscreenEvents = [
+            'fullscreenchange',
+            'webkitfullscreenchange',
+            'mozfullscreenchange',
+            'MSFullscreenChange'
+        ];
+
+        fullscreenEvents.forEach(event => {
+            document.addEventListener(event, () => {
+                this.handleFullscreenChange();
+            });
+        });
+    }
+
+    handleFullscreenChange() {
+        const isFullscreen = !!(
+            document.fullscreenElement ||
+            document.webkitFullscreenElement ||
+            document.mozFullScreenElement ||
+            document.msFullscreenElement
+        );
+
+        this.isFullscreen = isFullscreen;
+
+        // Update button icon
+        this.updateFullscreenButton();
+
+        // Handle orientation
+        if (isFullscreen) {
+            this.lockOrientation('landscape');
+        } else {
+            this.unlockOrientation();
+        }
+
+        console.log(`🖥️ Fullscreen ${isFullscreen ? 'activado' : 'desactivado'}`);
+    }
+
+    async toggleFullscreen() {
+        if (this.isFullscreen) {
+            await this.exitFullscreen();
+        } else {
+            await this.requestFullscreen();
+        }
+    }
+
     async requestFullscreen() {
         const container = document.getElementById('video-container');
 
         try {
             if (container.requestFullscreen) {
-                await container.requestFullscreen();
+                await container.requestFullscreen({ navigationUI: 'hide' });
             } else if (container.webkitRequestFullscreen) {
                 await container.webkitRequestFullscreen();
             } else if (container.mozRequestFullScreen) {
@@ -359,26 +418,85 @@ class VideoSyncClient {
             } else if (container.msRequestFullscreen) {
                 await container.msRequestFullscreen();
             }
+
+            // Lock to landscape orientation
+            await this.lockOrientation('landscape');
+
             console.log('🖥️ Fullscreen activado');
         } catch (error) {
             console.log('⚠️ Fullscreen no disponible:', error.message);
         }
     }
 
-    exitFullscreen() {
+    async exitFullscreen() {
         try {
             if (document.exitFullscreen) {
-                document.exitFullscreen();
+                await document.exitFullscreen();
             } else if (document.webkitExitFullscreen) {
-                document.webkitExitFullscreen();
+                await document.webkitExitFullscreen();
             } else if (document.mozCancelFullScreen) {
-                document.mozCancelFullScreen();
+                await document.mozCancelFullScreen();
             } else if (document.msExitFullscreen) {
-                document.msExitFullscreen();
+                await document.msExitFullscreen();
             }
+
+            // Unlock orientation
+            this.unlockOrientation();
+
             console.log('🖥️ Fullscreen desactivado');
         } catch (error) {
             console.log('⚠️ Error saliendo de fullscreen:', error.message);
+        }
+    }
+
+    async lockOrientation(orientation) {
+        try {
+            // Try Screen Orientation API first
+            if (screen.orientation && screen.orientation.lock) {
+                await screen.orientation.lock(orientation);
+                console.log(`📱 Orientación bloqueada a: ${orientation}`);
+            }
+            // Fallback for older browsers
+            else if (screen.lockOrientation) {
+                screen.lockOrientation(orientation);
+            } else if (screen.mozLockOrientation) {
+                screen.mozLockOrientation(orientation);
+            } else if (screen.msLockOrientation) {
+                screen.msLockOrientation(orientation);
+            }
+        } catch (error) {
+            console.log('⚠️ No se pudo bloquear orientación:', error.message);
+        }
+    }
+
+    unlockOrientation() {
+        try {
+            if (screen.orientation && screen.orientation.unlock) {
+                screen.orientation.unlock();
+            } else if (screen.unlockOrientation) {
+                screen.unlockOrientation();
+            } else if (screen.mozUnlockOrientation) {
+                screen.mozUnlockOrientation();
+            } else if (screen.msUnlockOrientation) {
+                screen.msUnlockOrientation();
+            }
+            console.log('📱 Orientación desbloqueada');
+        } catch (error) {
+            console.log('⚠️ Error desbloqueando orientación:', error.message);
+        }
+    }
+
+    updateFullscreenButton() {
+        const icon = this.fullscreenToggle.querySelector('.fullscreen-icon');
+
+        if (this.isFullscreen) {
+            // Exit fullscreen icon
+            icon.innerHTML = '<path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>';
+            this.fullscreenToggle.title = 'Salir de pantalla completa';
+        } else {
+            // Enter fullscreen icon
+            icon.innerHTML = '<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>';
+            this.fullscreenToggle.title = 'Pantalla completa';
         }
     }
 
