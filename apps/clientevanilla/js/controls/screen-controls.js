@@ -220,6 +220,36 @@ export const screenControls = {
       });
     }
 
+    // Escenas de Cartagena (1-8)
+    for (let scene = 1; scene <= 8; scene++) {
+      // Cartagena 1 y 8 no tienen pantallas adicionales
+      if (scene === 1 || scene === 8) {
+        continue;
+      }
+
+      let type = "video";
+      if (scene === 6) {
+        type = "image";
+      }
+
+      screens.push({
+        scene: `cartagena-${scene}`,
+        screen: "A",
+        id: `cartagena${scene}-screen`,
+        type: type,
+      });
+
+      // Cartagena 6 tiene una pantalla adicional de video
+      if (scene === 6) {
+        screens.push({
+          scene: `cartagena-${scene}`,
+          screen: "B",
+          id: `cartagena${scene}-video-screen`,
+          type: "video",
+        });
+      }
+    }
+
     return screens;
   },
 

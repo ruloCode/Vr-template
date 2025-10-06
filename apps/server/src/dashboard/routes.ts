@@ -736,6 +736,14 @@ function generateDashboardHTML(): string {
                         <option value="guajira-8">Guajira 8</option>
                         <option value="guajira-9">Guajira 9</option>
                         <option value="guajira-10">Guajira 10</option>
+                        <option value="cartagena-1">Cartagena 1</option>
+                        <option value="cartagena-2">Cartagena 2</option>
+                        <option value="cartagena-3">Cartagena 3 Puerto</option>
+                        <option value="cartagena-4">Cartagena 4</option>
+                        <option value="cartagena-5">Cartagena 5</option>
+                        <option value="cartagena-6">Cartagena 6</option>
+                        <option value="cartagena-7">Cartagena 7</option>
+                        <option value="cartagena-8">Cartagena 8 Final</option>
                     </select>
                     <button class="btn btn-primary" onclick="loadScene()">Cargar Escena</button>
                 </div>

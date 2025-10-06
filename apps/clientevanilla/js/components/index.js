@@ -26,6 +26,9 @@ import { registerGuajira7ImageCycler } from "./image-cyclers/guajira7-image-cycl
 import { registerGuajira8ImageCycler } from "./image-cyclers/guajira8-image-cycler.js";
 import { registerGuajira10ImageCycler } from "./image-cyclers/guajira10-image-cycler.js";
 
+// Import Cartagena image cycler components
+import { registerCartagena6ImageCycler } from "./image-cyclers/cartagena6-image-cycler.js";
+
 // Import all video cycler components
 import { registerSolarVideoCycler } from "./video-cyclers/solar-video-cycler.js";
 // import { registerEscena4VideoCycler } from './video-cyclers/escena4-video-cycler.js';
@@ -41,6 +44,14 @@ import { registerGuajira2VideoCycler } from "./video-cyclers/guajira2-video-cycl
 import { registerGuajira3VideoCycler } from "./video-cyclers/guajira3-video-cycler.js";
 import { registerGuajira5VideoCycler } from "./video-cyclers/guajira5-video-cycler.js";
 import { registerGuajira9VideoCycler } from "./video-cyclers/guajira9-video-cycler.js";
+
+// Import Cartagena video cycler components
+import { registerCartagena2VideoCycler } from "./video-cyclers/cartagena2-video-cycler.js";
+import { registerCartagena3VideoCycler } from "./video-cyclers/cartagena3-video-cycler.js";
+import { registerCartagena4VideoCycler } from "./video-cyclers/cartagena4-video-cycler.js";
+import { registerCartagena5VideoCycler } from "./video-cyclers/cartagena5-video-cycler.js";
+import { registerCartagena6VideoCycler } from "./video-cyclers/cartagena6-video-cycler.js";
+import { registerCartagena7VideoCycler } from "./video-cyclers/cartagena7-video-cycler.js";
 
 /**
  * Register all A-Frame components
@@ -72,6 +83,9 @@ export function registerAllComponents() {
   registerGuajira8ImageCycler();
   registerGuajira10ImageCycler();
 
+  // Register Cartagena image cyclers
+  registerCartagena6ImageCycler();
+
   // Register video cyclers
   registerSolarVideoCycler();
   // registerEscena4VideoCycler();
@@ -87,6 +101,14 @@ export function registerAllComponents() {
   registerGuajira3VideoCycler();
   registerGuajira5VideoCycler();
   registerGuajira9VideoCycler();
+
+  // Register Cartagena video cyclers
+  registerCartagena2VideoCycler();
+  registerCartagena3VideoCycler();
+  registerCartagena4VideoCycler();
+  registerCartagena5VideoCycler();
+  registerCartagena6VideoCycler();
+  registerCartagena7VideoCycler();
 
   console.log("✅ All A-Frame components registered successfully");
 }

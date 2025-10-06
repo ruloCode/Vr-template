@@ -46,19 +46,86 @@ export class SequenceManager {
       {
         id: "guion-completo",
         name: "Guión Completo Ecopetrol (5:32)",
-        description: "Secuencia completa optimizada de todas las escenas siguiendo el guión oficial",
+        description:
+          "Secuencia completa optimizada de todas las escenas siguiendo el guión oficial",
         scenes: [
-          { sceneId: "escena-1", duration: 10000, name: "Energías Renovables", showScreens: true, screenDelay: 3000 },
-          { sceneId: "escena-2", duration: 20000, name: "Operaciones Petroleras", showScreens: true, screenDelay: 5000 },
-          { sceneId: "escena-3", duration: 25000, name: "Operaciones de Plataforma", showScreens: true, screenDelay: 6000 },
-          { sceneId: "escena-4", duration: 20000, name: "Entorno Natural", showScreens: true, screenDelay: 5000 },
-          { sceneId: "escena-5", duration: 37000, name: "Vista Panorámica", showScreens: true, screenDelay: 8000 },
-          { sceneId: "escena-6", duration: 22000, name: "Operaciones Especializadas", showScreens: true, screenDelay: 5000 },
-          { sceneId: "escena-7", duration: 50000, name: "Vista Industrial Avanzada", showScreens: true, screenDelay: 10000 },
-          { sceneId: "escena-8", duration: 26000, name: "Operaciones Industriales", showScreens: true, screenDelay: 6000 },
-          { sceneId: "escena-9", duration: 37000, name: "Instalaciones Avanzadas", showScreens: true, screenDelay: 8000 },
-          { sceneId: "escena-10", duration: 25000, name: "Operaciones Especializadas", showScreens: true, screenDelay: 6000 },
-          { sceneId: "escena-11", duration: 20000, name: "Infraestructura Completa", showScreens: true, screenDelay: 5000 },
+          {
+            sceneId: "escena-1",
+            duration: 10000,
+            name: "Energías Renovables",
+            showScreens: true,
+            screenDelay: 3000,
+          },
+          {
+            sceneId: "escena-2",
+            duration: 20000,
+            name: "Operaciones Petroleras",
+            showScreens: true,
+            screenDelay: 5000,
+          },
+          {
+            sceneId: "escena-3",
+            duration: 25000,
+            name: "Operaciones de Plataforma",
+            showScreens: true,
+            screenDelay: 6000,
+          },
+          {
+            sceneId: "escena-4",
+            duration: 20000,
+            name: "Entorno Natural",
+            showScreens: true,
+            screenDelay: 5000,
+          },
+          {
+            sceneId: "escena-5",
+            duration: 37000,
+            name: "Vista Panorámica",
+            showScreens: true,
+            screenDelay: 8000,
+          },
+          {
+            sceneId: "escena-6",
+            duration: 22000,
+            name: "Operaciones Especializadas",
+            showScreens: true,
+            screenDelay: 5000,
+          },
+          {
+            sceneId: "escena-7",
+            duration: 50000,
+            name: "Vista Industrial Avanzada",
+            showScreens: true,
+            screenDelay: 10000,
+          },
+          {
+            sceneId: "escena-8",
+            duration: 26000,
+            name: "Operaciones Industriales",
+            showScreens: true,
+            screenDelay: 6000,
+          },
+          {
+            sceneId: "escena-9",
+            duration: 37000,
+            name: "Instalaciones Avanzadas",
+            showScreens: true,
+            screenDelay: 8000,
+          },
+          {
+            sceneId: "escena-10",
+            duration: 25000,
+            name: "Operaciones Especializadas",
+            showScreens: true,
+            screenDelay: 6000,
+          },
+          {
+            sceneId: "escena-11",
+            duration: 20000,
+            name: "Infraestructura Completa",
+            showScreens: true,
+            screenDelay: 5000,
+          },
         ],
         totalDuration: 332000, // Will be calculated
         autoLoop: false,
@@ -75,10 +142,34 @@ export class SequenceManager {
         name: "Demo Corto (5 minutos)",
         description: "Secuencia reducida para demos rápidas",
         scenes: [
-          { sceneId: "escena-1", duration: 30000, name: "Energías Renovables", showScreens: true, screenDelay: 3000 },
-          { sceneId: "escena-3", duration: 25000, name: "Operaciones de Plataforma", showScreens: true, screenDelay: 5000 },
-          { sceneId: "escena-7", duration: 35000, name: "Vista Industrial", showScreens: true, screenDelay: 5000 },
-          { sceneId: "escena-11", duration: 40000, name: "Infraestructura Final", showScreens: true, screenDelay: 8000 },
+          {
+            sceneId: "escena-1",
+            duration: 30000,
+            name: "Energías Renovables",
+            showScreens: true,
+            screenDelay: 3000,
+          },
+          {
+            sceneId: "escena-3",
+            duration: 25000,
+            name: "Operaciones de Plataforma",
+            showScreens: true,
+            screenDelay: 5000,
+          },
+          {
+            sceneId: "escena-7",
+            duration: 35000,
+            name: "Vista Industrial",
+            showScreens: true,
+            screenDelay: 5000,
+          },
+          {
+            sceneId: "escena-11",
+            duration: 40000,
+            name: "Infraestructura Final",
+            showScreens: true,
+            screenDelay: 8000,
+          },
         ],
         totalDuration: 130000,
         autoLoop: true,
@@ -90,34 +181,114 @@ export class SequenceManager {
         },
         editable: false,
       },
+      {
+        id: "cartagena-completo",
+        name: "Secuencia Completa Cartagena",
+        description: "Secuencia completa de todas las escenas de Cartagena",
+        scenes: [
+          {
+            sceneId: "cartagena-1",
+            duration: 15000,
+            name: "Escenario Base",
+            showScreens: false,
+            screenDelay: 0,
+          },
+          {
+            sceneId: "cartagena-2",
+            duration: 25000,
+            name: "Instalaciones Portuarias",
+            showScreens: true,
+            screenDelay: 5000,
+          },
+          {
+            sceneId: "cartagena-3",
+            duration: 20000,
+            name: "Operaciones de Puerto",
+            showScreens: true,
+            screenDelay: 4000,
+          },
+          {
+            sceneId: "cartagena-4",
+            duration: 22000,
+            name: "Infraestructura Portuaria",
+            showScreens: true,
+            screenDelay: 5000,
+          },
+          {
+            sceneId: "cartagena-5",
+            duration: 20000,
+            name: "Operaciones Marítimas",
+            showScreens: true,
+            screenDelay: 4000,
+          },
+          {
+            sceneId: "cartagena-6",
+            duration: 25000,
+            name: "Terminal Portuario",
+            showScreens: true,
+            screenDelay: 5000,
+          },
+          {
+            sceneId: "cartagena-7",
+            duration: 20000,
+            name: "Operaciones Logísticas",
+            showScreens: true,
+            screenDelay: 4000,
+          },
+          {
+            sceneId: "cartagena-8",
+            duration: 30000,
+            name: "Vista Panorámica Final",
+            showScreens: false,
+            screenDelay: 0,
+          },
+        ],
+        totalDuration: 169000,
+        autoLoop: false,
+        showScreensAutomatically: true,
+        transitions: {
+          fadeOutTime: SEQUENCE_TIMING.DEFAULT_FADE_TIME_MS,
+          loadTime: SEQUENCE_TIMING.DEFAULT_LOAD_TIME_MS,
+          fadeInTime: SEQUENCE_TIMING.DEFAULT_FADE_TIME_MS,
+        },
+        editable: true,
+      },
     ];
 
     // Calculate actual durations and store sequences
-    defaultSequences.forEach(sequence => {
+    defaultSequences.forEach((sequence) => {
       sequence.totalDuration = this.calculateSequenceDuration(sequence);
       this.availableSequences.set(sequence.id, sequence);
     });
 
-    logger.info(`🎬 SequenceManager initialized with ${this.availableSequences.size} sequences`);
+    logger.info(
+      `🎬 SequenceManager initialized with ${this.availableSequences.size} sequences`
+    );
   }
 
   /**
    * Calculate total duration for a sequence including transitions
    */
   private calculateSequenceDuration(sequence: SequenceConfig): number {
-    const scenesDuration = sequence.scenes.reduce((total, scene) => total + scene.duration, 0);
-    const transitionsTime = (sequence.scenes.length - 1) * (
-      sequence.transitions.fadeOutTime + 
-      sequence.transitions.loadTime + 
-      sequence.transitions.fadeInTime
+    const scenesDuration = sequence.scenes.reduce(
+      (total, scene) => total + scene.duration,
+      0
     );
+    const transitionsTime =
+      (sequence.scenes.length - 1) *
+      (sequence.transitions.fadeOutTime +
+        sequence.transitions.loadTime +
+        sequence.transitions.fadeInTime);
     return scenesDuration + transitionsTime;
   }
 
   /**
    * Start a sequence
    */
-  async startSequence(sequenceId: string, config?: { autoLoop?: boolean, showScreensAutomatically?: boolean }): Promise<boolean> {
+  async startSequence(
+    sequenceId: string,
+    config?: { autoLoop?: boolean; showScreensAutomatically?: boolean }
+  ): Promise<boolean> {
     try {
       const sequence = this.availableSequences.get(sequenceId);
       if (!sequence) {
@@ -131,7 +302,8 @@ export class SequenceManager {
       // Apply config overrides
       if (config) {
         sequence.autoLoop = config.autoLoop ?? sequence.autoLoop;
-        sequence.showScreensAutomatically = config.showScreensAutomatically ?? sequence.showScreensAutomatically;
+        sequence.showScreensAutomatically =
+          config.showScreensAutomatically ?? sequence.showScreensAutomatically;
       }
 
       this.currentSequence = sequence;
@@ -140,7 +312,9 @@ export class SequenceManager {
       this.isPaused = false;
       this.sequenceStartTime = Date.now();
 
-      logger.info(`🎬 Starting sequence '${sequence.name}' with ${sequence.scenes.length} scenes`);
+      logger.info(
+        `🎬 Starting sequence '${sequence.name}' with ${sequence.scenes.length} scenes`
+      );
 
       // Start with first scene
       await this.loadScene(0);
@@ -181,9 +355,12 @@ export class SequenceManager {
     const now = Date.now();
     const sceneElapsed = now - this.sceneStartTime;
     const currentScene = this.getCurrentScene();
-    
+
     if (currentScene) {
-      this.remainingTimeWhenPaused = Math.max(0, currentScene.duration - sceneElapsed);
+      this.remainingTimeWhenPaused = Math.max(
+        0,
+        currentScene.duration - sceneElapsed
+      );
     }
 
     this.clearAllTimers();
@@ -239,7 +416,8 @@ export class SequenceManager {
    * Jump to previous scene
    */
   async previousScene(): Promise<boolean> {
-    if (!this.isActive || !this.currentSequence || this.currentSceneIndex === 0) return false;
+    if (!this.isActive || !this.currentSequence || this.currentSceneIndex === 0)
+      return false;
 
     const prevIndex = this.currentSceneIndex - 1;
     await this.loadScene(prevIndex);
@@ -273,13 +451,19 @@ export class SequenceManager {
     this.currentSceneIndex = sceneIndex;
     this.sceneStartTime = Date.now();
 
-    logger.info(`🎬 Loading scene ${sceneIndex + 1}/${this.currentSequence.scenes.length}: ${scene.sceneId} (${scene.duration}ms)`);
+    logger.info(
+      `🎬 Loading scene ${sceneIndex + 1}/${this.currentSequence.scenes.length}: ${scene.sceneId} (${scene.duration}ms)`
+    );
 
     // Notify scene change
     this.events.onSceneChange(scene.sceneId, sceneIndex);
 
     // Schedule screens if enabled
-    if (this.currentSequence.showScreensAutomatically && scene.showScreens && scene.screenDelay > 0) {
+    if (
+      this.currentSequence.showScreensAutomatically &&
+      scene.showScreens &&
+      scene.screenDelay > 0
+    ) {
       this.scheduleScreens(scene.screenDelay);
     }
 
@@ -343,8 +527,14 @@ export class SequenceManager {
 
       const now = Date.now();
       const totalElapsed = now - this.sequenceStartTime;
-      const progress = Math.min(1, totalElapsed / this.currentSequence.totalDuration);
-      const remainingMs = Math.max(0, this.currentSequence.totalDuration - totalElapsed);
+      const progress = Math.min(
+        1,
+        totalElapsed / this.currentSequence.totalDuration
+      );
+      const remainingMs = Math.max(
+        0,
+        this.currentSequence.totalDuration - totalElapsed
+      );
 
       this.events.onProgress(progress, remainingMs);
     }, SEQUENCE_TIMING.PROGRESS_UPDATE_INTERVAL_MS);
@@ -355,7 +545,7 @@ export class SequenceManager {
    */
   private clearAllTimers(): void {
     this.clearSceneTimers();
-    
+
     if (this.progressTimer) {
       clearInterval(this.progressTimer);
       this.progressTimer = null;
@@ -381,7 +571,11 @@ export class SequenceManager {
    * Get current scene
    */
   private getCurrentScene(): SequenceScene | null {
-    if (!this.currentSequence || this.currentSceneIndex < 0 || this.currentSceneIndex >= this.currentSequence.scenes.length) {
+    if (
+      !this.currentSequence ||
+      this.currentSceneIndex < 0 ||
+      this.currentSceneIndex >= this.currentSequence.scenes.length
+    ) {
       return null;
     }
     return this.currentSequence.scenes[this.currentSceneIndex];
@@ -403,8 +597,14 @@ export class SequenceManager {
 
     const now = Date.now();
     const totalElapsed = now - this.sequenceStartTime;
-    const progress = Math.min(1, totalElapsed / this.currentSequence.totalDuration);
-    const remainingMs = Math.max(0, this.currentSequence.totalDuration - totalElapsed);
+    const progress = Math.min(
+      1,
+      totalElapsed / this.currentSequence.totalDuration
+    );
+    const remainingMs = Math.max(
+      0,
+      this.currentSequence.totalDuration - totalElapsed
+    );
 
     return {
       isActive: true,
@@ -442,7 +642,7 @@ export class SequenceManager {
     if (this.isActive && this.currentSequence?.id === sequenceId) {
       this.stopSequence();
     }
-    
+
     const removed = this.availableSequences.delete(sequenceId);
     if (removed) {
       logger.info(`🗑️ Removed sequence '${sequenceId}'`);

@@ -486,6 +486,111 @@
         <img id="guajira10-4-image" src="images/guajira/escena_10.4.JPG" />
         <img id="guajira10-5-image" src="images/guajira/escena_10.5.JPG" />
         <img id="guajira10-6-image" src="images/guajira/escena_10.6.JPG" />
+
+        <!-- Assets for Cartagena scenes -->
+        <!-- Cartagena 2 - Videos -->
+        <video
+          id="cartagena2-1-video"
+          src="images/cartagena/escena_2.1.mov"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="cartagena2-2-video"
+          src="images/cartagena/escena_2.2.mov"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="cartagena2-3-video"
+          src="images/cartagena/escena_2.3.mov"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+
+        <!-- Cartagena 3 - Video -->
+        <video
+          id="cartagena3-1-video"
+          src="images/cartagena/escena_3.1.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+
+        <!-- Cartagena 4 - Video -->
+        <video
+          id="cartagena4-1-video"
+          src="images/cartagena/esncea_4.1.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+
+        <!-- Cartagena 5 - Video -->
+        <video
+          id="cartagena5-1-video"
+          src="images/cartagena/escena_5.1.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+
+        <!-- Cartagena 6 - Images and Video -->
+        <img id="cartagena6-1-image" src="images/cartagena/esncea_6.1.jpg" />
+        <img id="cartagena6-2-image" src="images/cartagena/esncea_6.2.jpg" />
+        <video
+          id="cartagena6-3-video"
+          src="images/cartagena/escena_6.3.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+
+        <!-- Cartagena 7 - Videos -->
+        <video
+          id="cartagena7-1-video"
+          src="images/cartagena/escena_7.1.mov"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="cartagena7-2-video"
+          src="images/cartagena/escena_7.2.mov"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="cartagena7-3-video"
+          src="images/cartagena/escena_7.3.mov"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
       </a-assets>
 
       <!-- Scene loading overlay -->
@@ -905,6 +1010,98 @@
         material="shader: flat; side: double"
         visible="false"
         guajira10-image-cycler
+      ></a-plane>
+
+      <!-- Pantallas flotantes para escenas de Cartagena -->
+      <!-- Cartagena 2 - Videos -->
+      <a-plane
+        id="cartagena2-screen"
+        src="#cartagena2-1-video"
+        position="-120 20 20"
+        rotation="10 90 0"
+        width="180"
+        height="100"
+        material="shader: flat; side: double"
+        visible="false"
+        cartagena2-video-cycler
+      ></a-plane>
+
+      <!-- Cartagena 3 - Video -->
+      <a-plane
+        id="cartagena3-screen"
+        src="#cartagena3-1-video"
+        position="-120 20 20"
+        rotation="10 90 0"
+        width="200"
+        height="120"
+        material="shader: flat; side: double"
+        visible="false"
+        cartagena3-video-cycler
+      ></a-plane>
+
+      <!-- Cartagena 4 - Video -->
+      <a-plane
+        id="cartagena4-screen"
+        src="#cartagena4-1-video"
+        position="120 20 20"
+        rotation="-30 90 0"
+        width="200"
+        height="120"
+        material="shader: flat; side: double"
+        visible="false"
+        cartagena4-video-cycler
+      ></a-plane>
+
+      <!-- Cartagena 5 - Video -->
+      <a-plane
+        id="cartagena5-screen"
+        src="#cartagena5-1-video"
+        position="-120 20 20"
+        rotation="10 90 0"
+        width="160"
+        height="90"
+        material="shader: flat; side: double"
+        visible="false"
+        cartagena5-video-cycler
+      ></a-plane>
+
+      <!-- Cartagena 6 - Images and Video -->
+      <a-plane
+        id="cartagena6-screen"
+        src="#cartagena6-1-image"
+        position="120 20 20"
+        rotation="-30 90 0"
+        width="160"
+        height="90"
+        material="shader: flat; side: double"
+        visible="false"
+        cartagena6-image-cycler
+      ></a-plane>
+
+      <!-- Cartagena 6 - Video (second screen) -->
+      <a-plane
+        id="cartagena6-video-screen"
+        src="#cartagena6-3-video"
+        position="-120 20 20"
+        rotation="10 90 0"
+        width="120"
+        height="80"
+        material="shader: flat; side: double"
+        visible="false"
+        cartagena6-video-cycler
+      ></a-plane>
+
+      <!-- Cartagena 7 - Videos -->
+      <a-plane
+        id="cartagena7-screen"
+        src="#cartagena7-1-video"
+        position="-120 20 20"
+        rotation="10 90 0"
+        width="200"
+        height="110"
+        material="shader: flat; side: double"
+        visible="false"
+        cartagena7-video-cycler
       ></a-plane>
 
       <!-- Lighting system -->

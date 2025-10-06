@@ -72,6 +72,15 @@ export class VRSceneManager {
       guajira8Screen: document.querySelector("#guajira8-screen"),
       guajira9Screen: document.querySelector("#guajira9-screen"),
       guajira10Screen: document.querySelector("#guajira10-screen"),
+      // Cartagena screens
+      cartagena2Screen: document.querySelector("#cartagena2-screen"),
+      cartagena3Screen: document.querySelector("#cartagena3-screen"),
+      cartagena4Screen: document.querySelector("#cartagena4-screen"),
+      cartagena5Screen: document.querySelector("#cartagena5-screen"),
+      cartagena6Screen: document.querySelector("#cartagena6-screen"),
+      cartagena6VideoScreen: document.querySelector("#cartagena6-video-screen"),
+      cartagena7Screen: document.querySelector("#cartagena7-screen"),
+      // Cartagena 1 y 8 no tienen pantallas adicionales
       assets: {
         audio: document.querySelector("#current-audio"),
         skybox: document.querySelector("#current-skybox"),
@@ -535,6 +544,14 @@ export class VRSceneManager {
     this.hideGuajira8Screen();
     this.hideGuajira9Screen();
     this.hideGuajira10Screen();
+    // Hide Cartagena screens
+    // Cartagena 1 y 8 no tienen pantallas adicionales
+    this.hideCartagena2Screen();
+    this.hideCartagena3Screen();
+    this.hideCartagena4Screen();
+    this.hideCartagena5Screen();
+    this.hideCartagena6Screen();
+    this.hideCartagena7Screen();
 
     // Show screens based on scene
     if (sceneConfig.id === "escena-1") {
@@ -589,6 +606,22 @@ export class VRSceneManager {
       this.showGuajira9Screen();
     } else if (sceneConfig.id === "guajira-10") {
       this.showGuajira10Screen();
+    } else if (sceneConfig.id === "cartagena-1") {
+      // Cartagena 1 solo muestra el escenario base, sin pantallas adicionales
+    } else if (sceneConfig.id === "cartagena-2") {
+      this.showCartagena2Screen();
+    } else if (sceneConfig.id === "cartagena-3") {
+      this.showCartagena3Screen();
+    } else if (sceneConfig.id === "cartagena-4") {
+      this.showCartagena4Screen();
+    } else if (sceneConfig.id === "cartagena-5") {
+      this.showCartagena5Screen();
+    } else if (sceneConfig.id === "cartagena-6") {
+      this.showCartagena6Screen();
+    } else if (sceneConfig.id === "cartagena-7") {
+      this.showCartagena7Screen();
+    } else if (sceneConfig.id === "cartagena-8") {
+      // Cartagena 8 solo muestra el escenario con escena_11.png, sin pantallas adicionales
     }
   }
 
@@ -1288,6 +1321,161 @@ export class VRSceneManager {
       component?.hide
         ? component.hide()
         : this.elements.guajira10Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  // Cartagena screen control methods
+  showCartagena2Screen() {
+    if (!this.elements.cartagena2Screen) return;
+    try {
+      const component =
+        this.elements.cartagena2Screen.components["cartagena2-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.cartagena2Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideCartagena2Screen() {
+    if (!this.elements.cartagena2Screen) return;
+    try {
+      const component =
+        this.elements.cartagena2Screen.components["cartagena2-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.cartagena2Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showCartagena3Screen() {
+    if (!this.elements.cartagena3Screen) return;
+    try {
+      const component =
+        this.elements.cartagena3Screen.components["cartagena3-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.cartagena3Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideCartagena3Screen() {
+    if (!this.elements.cartagena3Screen) return;
+    try {
+      const component =
+        this.elements.cartagena3Screen.components["cartagena3-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.cartagena3Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showCartagena4Screen() {
+    if (!this.elements.cartagena4Screen) return;
+    try {
+      const component =
+        this.elements.cartagena4Screen.components["cartagena4-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.cartagena4Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideCartagena4Screen() {
+    if (!this.elements.cartagena4Screen) return;
+    try {
+      const component =
+        this.elements.cartagena4Screen.components["cartagena4-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.cartagena4Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showCartagena5Screen() {
+    if (!this.elements.cartagena5Screen) return;
+    try {
+      const component =
+        this.elements.cartagena5Screen.components["cartagena5-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.cartagena5Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideCartagena5Screen() {
+    if (!this.elements.cartagena5Screen) return;
+    try {
+      const component =
+        this.elements.cartagena5Screen.components["cartagena5-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.cartagena5Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showCartagena6Screen() {
+    if (!this.elements.cartagena6Screen) return;
+    try {
+      const component =
+        this.elements.cartagena6Screen.components["cartagena6-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.cartagena6Screen.setAttribute("visible", "true");
+    } catch (error) {}
+    // Show video screen as well
+    if (!this.elements.cartagena6VideoScreen) return;
+    try {
+      const component =
+        this.elements.cartagena6VideoScreen.components[
+          "cartagena6-video-cycler"
+        ];
+      component?.show
+        ? component.show()
+        : this.elements.cartagena6VideoScreen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideCartagena6Screen() {
+    if (!this.elements.cartagena6Screen) return;
+    try {
+      const component =
+        this.elements.cartagena6Screen.components["cartagena6-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.cartagena6Screen.setAttribute("visible", "false");
+    } catch (error) {}
+    // Hide video screen as well
+    if (!this.elements.cartagena6VideoScreen) return;
+    try {
+      const component =
+        this.elements.cartagena6VideoScreen.components[
+          "cartagena6-video-cycler"
+        ];
+      component?.hide
+        ? component.hide()
+        : this.elements.cartagena6VideoScreen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showCartagena7Screen() {
+    if (!this.elements.cartagena7Screen) return;
+    try {
+      const component =
+        this.elements.cartagena7Screen.components["cartagena7-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.cartagena7Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideCartagena7Screen() {
+    if (!this.elements.cartagena7Screen) return;
+    try {
+      const component =
+        this.elements.cartagena7Screen.components["cartagena7-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.cartagena7Screen.setAttribute("visible", "false");
     } catch (error) {}
   }
 

@@ -493,6 +493,191 @@ const SCENES_CONFIG = {
     timeOfDay: "day",
   },
 
+  // Escenas de Cartagena - Todas con el mismo fondo e_cartagena_1.png
+  "cartagena-1": {
+    id: "cartagena-1",
+    name: "Cartagena 1 - Escenario Base",
+    description: "Escenario base de Cartagena sin contenido adicional",
+    assets: {
+      skybox: "images/e_cartagena_1.png",
+      audio: "audio/toma_01.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "cartagena-2": {
+    id: "cartagena-2",
+    name: "Cartagena 2 - Instalaciones Portuarias",
+    description: "Vista panorámica de instalaciones portuarias en Cartagena",
+    assets: {
+      skybox: "images/e_cartagena_1.png",
+      audio: "audio/toma_02.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "cartagena-3": {
+    id: "cartagena-3",
+    name: "Cartagena 3 - Operaciones de Puerto",
+    description: "Vista panorámica de operaciones de puerto en Cartagena",
+    assets: {
+      skybox: "images/e_cartagena_1.png",
+      audio: "audio/toma_03.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "cartagena-4": {
+    id: "cartagena-4",
+    name: "Cartagena 4 - Infraestructura Portuaria",
+    description: "Vista panorámica de infraestructura portuaria en Cartagena",
+    assets: {
+      skybox: "images/e_cartagena_1.png",
+      audio: "audio/toma_04.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "cartagena-5": {
+    id: "cartagena-5",
+    name: "Cartagena 5 - Operaciones Marítimas",
+    description: "Vista panorámica de operaciones marítimas en Cartagena",
+    assets: {
+      skybox: "images/e_cartagena_1.png",
+      audio: "audio/toma_05.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "cartagena-6": {
+    id: "cartagena-6",
+    name: "Cartagena 6 - Terminal Portuario",
+    description: "Vista panorámica del terminal portuario en Cartagena",
+    assets: {
+      skybox: "images/e_cartagena_1.png",
+      audio: "audio/toma_06.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "cartagena-7": {
+    id: "cartagena-7",
+    name: "Cartagena 7 - Operaciones Logísticas",
+    description: "Vista panorámica de operaciones logísticas en Cartagena",
+    assets: {
+      skybox: "images/e_cartagena_1.png",
+      audio: "audio/toma_07.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "cartagena-8": {
+    id: "cartagena-8",
+    name: "Cartagena 8 - Vista Panorámica Final",
+    description: "Vista panorámica final de Cartagena con escena 11",
+    assets: {
+      skybox: "images/escena_11.png",
+      audio: "audio/toma_08.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
   base: {
     id: "base",
     name: "Escena Base",
