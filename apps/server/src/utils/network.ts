@@ -52,18 +52,19 @@ export function getAllLocalIPs(): string[] {
 /**
  * Genera URLs de acceso para dispositivos
  */
-export function generateAccessUrls(port: number): {
+export function generateAccessUrls(port: number, useHttps: boolean = false): {
   local: string;
   network: string[];
 } {
   const localIP = getLocalIP();
   const allIPs = getAllLocalIPs();
-  
+  const protocol = useHttps ? "https" : "http";
+
   return {
-    local: `http://localhost:${port}`,
+    local: `${protocol}://localhost:${port}`,
     network: allIPs.map(ip => {
       const cleanIP = ip.split(' ')[0]; // Remover nombre de interfaz
-      return `http://${cleanIP}:${port}`;
+      return `${protocol}://${cleanIP}:${port}`;
     })
   };
 }

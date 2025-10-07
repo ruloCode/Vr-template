@@ -34,11 +34,35 @@ const HTTP_PORT = 8085;
 const HTTPS_PORT = 8445;
 const HOST = '0.0.0.0';
 
-// Serve static files
-app.use(express.static(__dirname));
+// CORS middleware for offline LAN operation
+app.use((req, res, next) => {
+    // Allow all origins for LAN deployment (offline mode)
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.header('Access-Control-Allow-Credentials', 'true');
+
+    // Handle preflight requests
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200);
+    }
+
+    next();
+});
+
+// Serve static files with aggressive caching for offline mode
+app.use(express.static(__dirname, {
+    maxAge: '1d',
+    etag: true,
+    lastModified: true
+}));
 
 // Serve videos from local videos folder
-app.use('/videos', express.static(path.join(__dirname, 'videos')));
+app.use('/videos', express.static(path.join(__dirname, 'videos'), {
+    maxAge: '1d',
+    etag: true,
+    lastModified: true
+}));
 
 // Main route
 app.get('/', (req, res) => {
@@ -95,16 +119,17 @@ httpServer.listen(HTTP_PORT, HOST, () => {
     const localIP = getLocalIP();
 
     console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('📱 CLIENTE DE VIDEO SINCRONIZADO');
+    console.log('📱 CLIENTE DE VIDEO SINCRONIZADO - HTTP');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('');
-    console.log('🔗 URLs de Acceso:');
+    console.log('🔗 URLs de Acceso HTTP (Testing):');
     console.log(`   Local:  http://localhost:${HTTP_PORT}`);
     if (localIP !== 'localhost') {
         console.log(`   Red:    http://${localIP}:${HTTP_PORT}`);
     }
     console.log('');
-    console.log('📹 Videos disponibles: apps/clientevideo/videos/');
+    console.log('📹 Videos servidos desde: apps/clientevideo/videos/');
+    console.log('🌐 CORS: ✅ Enabled (Offline LAN mode)');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 });
 
@@ -114,28 +139,49 @@ if (sslOptions) {
     const localIP = getLocalIP();
 
     httpsServer.listen(HTTPS_PORT, HOST, () => {
-        console.log('🔒 HTTPS Server (Seguro - Recomendado):');
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.log('🔒 CLIENTE DE VIDEO SINCRONIZADO - HTTPS');
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.log('');
+        console.log('🔐 URLs de Acceso HTTPS (Recomendado):');
         console.log(`   Local:  https://localhost:${HTTPS_PORT}`);
         if (localIP !== 'localhost') {
             console.log(`   Red:    https://${localIP}:${HTTPS_PORT}`);
         }
         console.log('');
-        console.log('📱 Acceso desde dispositivos en la red:');
+        console.log('📱 Desde Dispositivos Móviles:');
         console.log(`   🌐 https://${localIP}:${HTTPS_PORT}`);
         console.log('');
-        console.log('⚠️  Nota: Aceptar certificado SSL en cada dispositivo');
-        console.log('    (Los navegadores mostrarán advertencia de seguridad)');
-        console.log('═══════════════════════════════════════════\n');
+        console.log('🔐 SSL Certificate: ✅ Loaded');
+        console.log('🌐 CORS: ✅ Enabled (Offline LAN mode)');
+        console.log('📹 Videos: ✅ Serving from local directory');
+        console.log('');
+        console.log('⚠️  IMPORTANTE:');
+        console.log('   Los navegadores mostrarán advertencia de certificado');
+        console.log('   En cada dispositivo:');
+        console.log('   1. Click "Avanzado" o "Advanced"');
+        console.log('   2. Click "Continuar al sitio" o "Proceed to site"');
+        console.log('   3. El sitio funcionará completamente OFFLINE');
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
     });
 
     httpsServer.on('error', (error) => {
         console.error('❌ HTTPS Server error:', error);
+        console.error('💡 Verify SSL certificates in apps/server/ssl/\n');
     });
 } else {
-    console.log('⚠️ HTTPS not available - no SSL certificates found');
-    console.log('💡 To enable HTTPS:');
-    console.log('   1. Generate certificates: mkcert -key-file key.pem -cert-file cert.pem localhost');
-    console.log('   2. Place in apps/server/ssl/ or apps/clientevanilla/\n');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('⚠️  HTTPS NOT AVAILABLE');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('');
+    console.log('SSL certificates not found');
+    console.log('');
+    console.log('💡 To enable HTTPS, generate certificates:');
+    console.log('   cd apps/server');
+    console.log('   pnpm ssl:generate');
+    console.log('');
+    console.log('The server will auto-detect and use them on next restart');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 }
 
 httpServer.on('error', (error) => {

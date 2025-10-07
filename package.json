@@ -18,6 +18,8 @@
     "build": "pnpm --filter server build",
     "start": "pnpm --filter server start",
     "start:production": "NODE_ENV=production pnpm --filter server start",
+    "ssl:generate": "node apps/server/scripts/generate-ssl.js",
+    "ssl:verify": "node apps/server/scripts/verify-ssl.js",
     "lint": "pnpm --filter \"./apps/*\" lint",
     "type-check": "pnpm --filter \"./apps/*\" type-check",
     "clean": "rm -rf apps/*/dist apps/*/build apps/*/.turbo node_modules apps/*/node_modules",
