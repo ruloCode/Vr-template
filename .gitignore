@@ -59,6 +59,10 @@ Thumbs.db
 apps/clientevideo/videos/**/*.mp4
 apps/clientevideo/videos/**/*.webm
 
+# Video files from clientevanilla (large assets)
+apps/clientevanilla/videos/**/*.mp4
+apps/clientevanilla/videos/**/*.webm
+
 # PWA generated files
 apps/client/public/sw.js.map
 apps/client/public/workbox-*.js
