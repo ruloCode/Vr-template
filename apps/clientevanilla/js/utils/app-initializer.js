@@ -12,10 +12,57 @@ export class AppInitializer {
     this.serviceWorkerReady = false;
     this.assetsPreloaded = false;
     this.startTime = Date.now();
+    this.offlineMode = false;
+
+    // Detect offline mode early
+    this.detectOfflineMode();
 
     // Load asset manifest
     this.manifest = null;
     this.loadManifest();
+  }
+
+  /**
+   * Detect if we're running in offline mode (no server available)
+   */
+  detectOfflineMode() {
+    // Check if explicitly set
+    if (window.OFFLINE_MODE === true) {
+      this.offlineMode = true;
+      console.log("🔌 Offline mode explicitly enabled");
+      return;
+    }
+
+    // Check navigator.onLine (rough heuristic)
+    if (!navigator.onLine) {
+      this.offlineMode = true;
+      window.OFFLINE_MODE = true;
+      console.log("🔌 Browser offline mode detected");
+      return;
+    }
+
+    // Default to online, will switch if server connection fails
+    console.log("🌐 Starting in online mode (will auto-switch if server unavailable)");
+
+    // Listen for connectivity changes
+    this.setupConnectivityListeners();
+  }
+
+  /**
+   * Set up listeners for connectivity changes
+   */
+  setupConnectivityListeners() {
+    window.addEventListener('online', () => {
+      console.log("🌐 Network connection restored");
+      this.offlineMode = false;
+      window.OFFLINE_MODE = false;
+    });
+
+    window.addEventListener('offline', () => {
+      console.log("🔌 Network connection lost - switching to offline mode");
+      this.offlineMode = true;
+      window.OFFLINE_MODE = true;
+    });
   }
 
   /**
@@ -464,8 +511,10 @@ export class AppInitializer {
       initialized: this.initialized,
       serviceWorkerReady: this.serviceWorkerReady,
       assetsPreloaded: this.assetsPreloaded,
+      offlineMode: this.offlineMode,
       totalTime: Date.now() - this.startTime,
       manifest: !!this.manifest,
+      navigatorOnline: navigator.onLine,
     };
   }
 

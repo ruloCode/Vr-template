@@ -16,6 +16,15 @@ let sceneManager = null;
 export async function initializeWebSocket(sceneManagerInstance) {
   sceneManager = sceneManagerInstance;
 
+  // Check if offline mode is enabled
+  const offlineMode = window.OFFLINE_MODE || false;
+
+  if (offlineMode) {
+    console.log("🔌 Modo offline detectado - WebSocket deshabilitado");
+    console.log("✅ Cliente funcionando en modo standalone sin sincronización");
+    return; // Exit early in offline mode
+  }
+
   console.log("🔍 Obteniendo configuración de red del servidor...");
 
   try {
@@ -48,24 +57,14 @@ export async function initializeWebSocket(sceneManagerInstance) {
     }
   } catch (error) {
     console.warn(
-      "⚠️ Error obteniendo configuración dinámica, usando fallback:"
+      "⚠️ Servidor no disponible - continuando en modo offline"
     );
-    console.error(error);
+    console.log("📱 El cliente funcionará sin sincronización de red");
+    console.log("✅ Todas las funcionalidades locales disponibles");
 
-    // Fallback to manual detection based on main server
-    const currentHost = window.location.hostname;
-    const mainServerPort = getMainServerPort();
-    const wsPort = parseInt(mainServerPort) + 1; // WebSocket is typically main server port + 1
-
-    // Determine WebSocket protocol based on main server capabilities
-    const wsProtocol = await detectWebSocketProtocol(currentHost, wsPort);
-    const serverUrl = `${wsProtocol}://${currentHost}:${wsPort}/ws`;
-
-    console.log("🔗 Conectando con configuración fallback:", serverUrl);
-    console.log("📡 Servidor principal detectado en puerto:", mainServerPort);
-    console.log("🔌 WebSocket detectado en puerto:", wsPort);
-
-    await connectWithConfig(serverUrl, null);
+    // Don't throw error - allow app to continue in offline mode
+    // Store offline state
+    window.OFFLINE_MODE = true;
   }
 }
 
@@ -84,12 +83,26 @@ async function getNetworkConfig() {
     configUrl
   );
 
-  const response = await fetch(configUrl);
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-  }
+  // Use AbortController for timeout - fail fast if server not available
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 3000); // 3 second timeout
 
-  return await response.json();
+  try {
+    const response = await fetch(configUrl, { signal: controller.signal });
+    clearTimeout(timeout);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    clearTimeout(timeout);
+    if (error.name === 'AbortError') {
+      throw new Error('Server connection timeout - switching to offline mode');
+    }
+    throw error;
+  }
 }
 
 /**

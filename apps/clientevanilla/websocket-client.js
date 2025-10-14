@@ -428,10 +428,6 @@ class VRWebSocketClient {
 // Export for use in other scripts
 window.VRWebSocketClient = VRWebSocketClient;
 
-// Auto-connect if in development
-if (
-  window.location.hostname === "localhost" ||
-  window.location.hostname === "192.168.40.31"
-) {
-  console.log("🚀 Auto-initializing WebSocket client for development...");
-}
+// Auto-connect DISABLED - WebSocket is now opt-in via initializeWebSocket()
+// This ensures the client can function fully offline without attempting connections
+console.log("📡 VRWebSocketClient class disponible (conexión opt-in)");
