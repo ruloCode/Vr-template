@@ -12,6 +12,10 @@ class VideoSyncClient {
         this.maxReconnectAttempts = 10;
         this.reconnectDelay = 3000;
 
+        // Offline mode support
+        this.offlineMode = false;
+        this.isOnline = navigator.onLine;
+
         // Video state
         this.videoPlayer = document.getElementById('video-player');
         this.currentVideoUrl = null;
@@ -79,11 +83,42 @@ class VideoSyncClient {
         // Setup fullscreen change listeners
         this.setupFullscreenListeners();
 
-        // Connect to WebSocket
-        this.connect();
+        // Setup online/offline detection
+        this.setupNetworkListeners();
+
+        // Connect to WebSocket if online
+        if (this.isOnline) {
+            this.connect();
+        } else {
+            console.log('📴 Starting in offline mode');
+            this.offlineMode = true;
+            this.updateStatus('disconnected', 'Modo Offline');
+        }
 
         // Start ping interval
         setInterval(() => this.sendPing(), 5000);
+    }
+
+    setupNetworkListeners() {
+        // Listen for online/offline events
+        window.addEventListener('online', () => {
+            console.log('🌐 Network back online');
+            this.isOnline = true;
+            this.offlineMode = false;
+
+            // Try to reconnect if not already connected
+            if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+                this.reconnectAttempts = 0;
+                this.connect();
+            }
+        });
+
+        window.addEventListener('offline', () => {
+            console.log('📴 Network went offline');
+            this.isOnline = false;
+            this.offlineMode = true;
+            this.updateStatus('disconnected', 'Modo Offline');
+        });
     }
 
     setupVideoEvents() {
@@ -134,6 +169,12 @@ class VideoSyncClient {
     }
 
     connect() {
+        // Skip connection if offline
+        if (!this.isOnline) {
+            console.log('📴 Skipping WebSocket connection - offline mode');
+            return;
+        }
+
         try {
             console.log('🔄 Conectando a WebSocket...');
             this.updateStatus('disconnected', 'Conectando...');
@@ -197,6 +238,14 @@ class VideoSyncClient {
     }
 
     scheduleReconnect() {
+        // Don't attempt reconnection if offline
+        if (!this.isOnline) {
+            console.log('📴 Skipping reconnection - offline mode');
+            this.offlineMode = true;
+            this.updateStatus('disconnected', 'Modo Offline');
+            return;
+        }
+
         if (this.reconnectAttempts >= this.maxReconnectAttempts) {
             console.error('❌ Máximo de intentos de reconexión alcanzado');
             this.updateStatus('disconnected', 'Error de conexión');
@@ -267,6 +316,14 @@ class VideoSyncClient {
             this.currentVideoUrl = videoUrl;
             this.videoPlayer.src = videoUrl;
 
+            // Request preload via Service Worker if available
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'PRELOAD_VIDEO',
+                    videoUrl: videoUrl
+                });
+            }
+
             // Wait for video to be ready
             await new Promise((resolve, reject) => {
                 this.videoPlayer.addEventListener('canplay', resolve, { once: true });
@@ -275,7 +332,11 @@ class VideoSyncClient {
 
             console.log('✅ Video cargado');
             this.hideLoading();
-            this.sendReady();
+
+            // Only send ready if connected
+            if (!this.offlineMode) {
+                this.sendReady();
+            }
 
         } catch (error) {
             console.error('❌ Error cargando video:', error);
@@ -290,8 +351,8 @@ class VideoSyncClient {
             // Request fullscreen
             await this.requestFullscreen();
 
-            if (epochMs) {
-                // Scheduled playback
+            if (epochMs && !this.offlineMode) {
+                // Scheduled playback (only when connected)
                 const delay = epochMs - (Date.now() + this.serverTimeOffset);
                 console.log(`⏱️ Esperando ${delay}ms para sincronización`);
 
@@ -306,9 +367,11 @@ class VideoSyncClient {
                     this.sendState();
                 }
             } else {
-                // Immediate playback
+                // Immediate playback (offline mode or no sync)
                 await this.videoPlayer.play();
-                this.sendState();
+                if (!this.offlineMode) {
+                    this.sendState();
+                }
             }
 
         } catch (error) {
@@ -324,7 +387,9 @@ class VideoSyncClient {
     pauseVideo() {
         console.log('⏸️ Pausando video');
         this.videoPlayer.pause();
-        this.sendState();
+        if (!this.offlineMode) {
+            this.sendState();
+        }
     }
 
     stopVideo() {
@@ -335,13 +400,17 @@ class VideoSyncClient {
         this.currentVideoUrl = null;
         this.exitFullscreen();
         this.showReady(); // Show ready overlay again
-        this.sendState();
+        if (!this.offlineMode) {
+            this.sendState();
+        }
     }
 
     seekVideo(currentTime) {
         console.log('⏩ Seeking a:', currentTime);
         this.videoPlayer.currentTime = currentTime;
-        this.sendState();
+        if (!this.offlineMode) {
+            this.sendState();
+        }
     }
 
     async handleUserInteraction() {
@@ -351,7 +420,9 @@ class VideoSyncClient {
         try {
             await this.videoPlayer.play();
             await this.requestFullscreen();
-            this.sendState();
+            if (!this.offlineMode) {
+                this.sendState();
+            }
         } catch (error) {
             console.error('❌ Error en interacción de usuario:', error);
         }

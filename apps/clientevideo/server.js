@@ -69,9 +69,22 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// Serve PWA manifest
+app.get('/manifest.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/manifest+json');
+    res.sendFile(path.join(__dirname, 'manifest.json'));
+});
+
+// Serve Service Worker
+app.get('/sw.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.setHeader('Service-Worker-Allowed', '/');
+    res.sendFile(path.join(__dirname, 'sw.js'));
+});
+
 // Health check
 app.get('/health', (req, res) => {
-    res.json({ status: 'ok', service: 'clientevideo' });
+    res.json({ status: 'ok', service: 'clientevideo', offline_support: true });
 });
 
 // Try to load SSL certificates

@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cliente Video Sincronizado - Ecopetrol</title>
+
+    <!-- PWA Meta tags -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Video Ecopetrol">
+    <meta name="description" content="Cliente de video sincronizado para eventos educativos de Ecopetrol">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -64,6 +75,43 @@
         <div>Tiempo: <span id="debug-time">-</span></div>
         <div>Latencia: <span id="debug-latency">-</span></div>
     </div>
+
+    <!-- Service Worker Registration -->
+    <script>
+        // Register Service Worker for offline support
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('/sw.js');
+                    console.log('✅ Service Worker registered:', registration.scope);
+
+                    // Listen for SW messages
+                    navigator.serviceWorker.addEventListener('message', (event) => {
+                        const { type, data } = event.data;
+
+                        switch (type) {
+                            case 'SW_ACTIVATED':
+                                console.log('🚀 Service Worker activated, version:', data?.version);
+                                break;
+                            case 'PRELOAD_COMPLETE':
+                                console.log('✅ Video preloaded:', data?.videoUrl, 'Cached:', data?.cached);
+                                break;
+                            case 'PRELOAD_ERROR':
+                                console.error('❌ Video preload error:', data?.videoUrl, data?.error);
+                                break;
+                            case 'CACHE_CLEARED':
+                                console.log('🗑️ Cache cleared for:', data?.cacheNames);
+                                break;
+                        }
+                    });
+                } catch (error) {
+                    console.error('❌ Service Worker registration failed:', error);
+                }
+            });
+        } else {
+            console.warn('⚠️ Service Workers are not supported in this browser');
+        }
+    </script>
 
     <script src="client.js"></script>
 </body>

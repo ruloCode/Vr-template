@@ -1,0 +1,36 @@
+{
+  "name": "Cliente Video Sincronizado - Ecopetrol",
+  "short_name": "Video Ecopetrol",
+  "description": "Cliente de video sincronizado para eventos educativos de Ecopetrol",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#667eea",
+  "orientation": "landscape",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "entertainment"],
+  "screenshots": [],
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "offline_enabled": true,
+  "features": [
+    "video playback",
+    "fullscreen",
+    "offline support",
+    "websocket sync"
+  ]
+}
