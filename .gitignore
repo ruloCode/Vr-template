@@ -55,6 +55,10 @@ Thumbs.db
 # apps/client/public/audio/*.wav
 # apps/client/public/audio/*.ogg
 
+# Video files from clientevideo (large assets)
+apps/clientevideo/videos/**/*.mp4
+apps/clientevideo/videos/**/*.webm
+
 # PWA generated files
 apps/client/public/sw.js.map
 apps/client/public/workbox-*.js
