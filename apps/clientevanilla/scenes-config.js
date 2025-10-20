@@ -678,6 +678,168 @@ const SCENES_CONFIG = {
     timeOfDay: "day",
   },
 
+  // Escenas de Meta - Todas con el mismo fondo e_meta_1.png
+  "meta-1": {
+    id: "meta-1",
+    name: "Meta 1 - Escenario Base",
+    description: "Escenario base de Meta sin contenido adicional",
+    assets: {
+      skybox: "images/e_meta_1.png",
+      audio: "audio/toma_01.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "meta-2": {
+    id: "meta-2",
+    name: "Meta 2 - Instalaciones Industriales",
+    description: "Vista panorámica de instalaciones industriales en Meta",
+    assets: {
+      skybox: "images/e_meta_1.png",
+      audio: "audio/toma_02.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "meta-3": {
+    id: "meta-3",
+    name: "Meta 3 - Operaciones de Campo",
+    description: "Vista panorámica de operaciones de campo en Meta",
+    assets: {
+      skybox: "images/e_meta_1.png",
+      audio: "audio/toma_03.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "meta-4": {
+    id: "meta-4",
+    name: "Meta 4 - Tecnología Avanzada",
+    description: "Vista panorámica de tecnología avanzada en Meta",
+    assets: {
+      skybox: "images/e_meta_1.png",
+      audio: "audio/toma_04.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "meta-5": {
+    id: "meta-5",
+    name: "Meta 5 - Operaciones Especializadas",
+    description: "Vista panorámica de operaciones especializadas en Meta",
+    assets: {
+      skybox: "images/e_meta_1.png",
+      audio: "audio/toma_05.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "meta-6": {
+    id: "meta-6",
+    name: "Meta 6 - Infraestructura Moderna",
+    description: "Vista panorámica de infraestructura moderna en Meta",
+    assets: {
+      skybox: "images/e_meta_1.png",
+      audio: "audio/toma_06.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "meta-7": {
+    id: "meta-7",
+    name: "Meta 7 - Operaciones de Producción",
+    description: "Vista panorámica de operaciones de producción en Meta",
+    assets: {
+      skybox: "images/e_meta_1.png",
+      audio: "audio/toma_07.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
   base: {
     id: "base",
     name: "Escena Base",

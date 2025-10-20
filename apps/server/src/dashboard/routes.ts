@@ -744,6 +744,13 @@ function generateDashboardHTML(): string {
                         <option value="cartagena-6">Cartagena 6</option>
                         <option value="cartagena-7">Cartagena 7</option>
                         <option value="cartagena-8">Cartagena 8 Final</option>
+                        <option value="meta-1">Meta 1</option>
+                        <option value="meta-2">Meta 2</option>
+                        <option value="meta-3">Meta 3</option>
+                        <option value="meta-4">Meta 4</option>
+                        <option value="meta-5">Meta 5</option>
+                        <option value="meta-6">Meta 6</option>
+                        <option value="meta-7">Meta 7</option>
                     </select>
                     <button class="btn btn-primary" onclick="loadScene()">Cargar Escena</button>
                 </div>
@@ -1014,6 +1021,27 @@ function generateDashboardHTML(): string {
                     break;
                 case 'guajira-10':
                     screenInfo = '🖼️ Guajira 10: Imágenes disponibles';
+                    break;
+                case 'meta-1':
+                    screenInfo = '📍 Meta 1: Escenario base';
+                    break;
+                case 'meta-2':
+                    screenInfo = '🖼️🎬 Meta 2: Imágenes y Videos disponibles';
+                    break;
+                case 'meta-3':
+                    screenInfo = '🎬🖼️ Meta 3: Videos e Imagen disponibles';
+                    break;
+                case 'meta-4':
+                    screenInfo = '🖼️🎬 Meta 4: Imágenes y Video disponibles';
+                    break;
+                case 'meta-5':
+                    screenInfo = '🎬 Meta 5: Videos disponibles';
+                    break;
+                case 'meta-6':
+                    screenInfo = '🎬🖼️ Meta 6: Videos e Imágenes disponibles';
+                    break;
+                case 'meta-7':
+                    screenInfo = '🎬🖼️ Meta 7: Video e Imágenes disponibles';
                     break;
                 default:
                     screenInfo = 'Sin pantallas flotantes';

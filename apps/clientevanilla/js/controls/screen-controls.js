@@ -250,6 +250,34 @@ export const screenControls = {
       }
     }
 
+    // Escenas de Meta (1-7)
+    for (let scene = 1; scene <= 7; scene++) {
+      // Meta 1 no tiene pantallas adicionales
+      if (scene === 1) {
+        continue;
+      }
+
+      // Meta 2, 3, 4, 6 y 7 tienen pantallas de imágenes
+      if (scene === 2 || scene === 3 || scene === 4 || scene === 6 || scene === 7) {
+        screens.push({
+          scene: `meta-${scene}`,
+          screen: "A",
+          id: `meta${scene}-image-screen`,
+          type: "image",
+        });
+      }
+
+      // Meta 2, 3, 4, 5, 6 y 7 tienen pantallas de videos
+      if (scene === 2 || scene === 3 || scene === 4 || scene === 5 || scene === 6 || scene === 7) {
+        screens.push({
+          scene: `meta-${scene}`,
+          screen: "B",
+          id: `meta${scene}-video-screen`,
+          type: "video",
+        });
+      }
+    }
+
     return screens;
   },
 

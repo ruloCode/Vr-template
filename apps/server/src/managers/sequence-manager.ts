@@ -253,6 +253,71 @@ export class SequenceManager {
         },
         editable: true,
       },
+      {
+        id: "meta-completo",
+        name: "Secuencia Completa Meta",
+        description: "Secuencia completa de todas las escenas de Meta",
+        scenes: [
+          {
+            sceneId: "meta-1",
+            duration: 15000,
+            name: "Escenario Base",
+            showScreens: false,
+            screenDelay: 0,
+          },
+          {
+            sceneId: "meta-2",
+            duration: 25000,
+            name: "Instalaciones Industriales",
+            showScreens: true,
+            screenDelay: 5000,
+          },
+          {
+            sceneId: "meta-3",
+            duration: 20000,
+            name: "Operaciones de Campo",
+            showScreens: true,
+            screenDelay: 4000,
+          },
+          {
+            sceneId: "meta-4",
+            duration: 22000,
+            name: "Tecnología Avanzada",
+            showScreens: true,
+            screenDelay: 5000,
+          },
+          {
+            sceneId: "meta-5",
+            duration: 20000,
+            name: "Operaciones Especializadas",
+            showScreens: true,
+            screenDelay: 4000,
+          },
+          {
+            sceneId: "meta-6",
+            duration: 25000,
+            name: "Infraestructura Moderna",
+            showScreens: true,
+            screenDelay: 5000,
+          },
+          {
+            sceneId: "meta-7",
+            duration: 25000,
+            name: "Operaciones de Producción",
+            showScreens: true,
+            screenDelay: 5000,
+          },
+        ],
+        totalDuration: 152000,
+        autoLoop: false,
+        showScreensAutomatically: true,
+        transitions: {
+          fadeOutTime: SEQUENCE_TIMING.DEFAULT_FADE_TIME_MS,
+          loadTime: SEQUENCE_TIMING.DEFAULT_LOAD_TIME_MS,
+          fadeInTime: SEQUENCE_TIMING.DEFAULT_FADE_TIME_MS,
+        },
+        editable: true,
+      },
     ];
 
     // Calculate actual durations and store sequences

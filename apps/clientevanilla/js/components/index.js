@@ -29,6 +29,13 @@ import { registerGuajira10ImageCycler } from "./image-cyclers/guajira10-image-cy
 // Import Cartagena image cycler components
 import { registerCartagena6ImageCycler } from "./image-cyclers/cartagena6-image-cycler.js";
 
+// Import Meta image cycler components
+import { registerMeta2ImageCycler } from "./image-cyclers/meta2-image-cycler.js";
+import { registerMeta3ImageCycler } from "./image-cyclers/meta3-image-cycler.js";
+import { registerMeta4ImageCycler } from "./image-cyclers/meta4-image-cycler.js";
+import { registerMeta6ImageCycler } from "./image-cyclers/meta6-image-cycler.js";
+import { registerMeta7ImageCycler } from "./image-cyclers/meta7-image-cycler.js";
+
 // Import all video cycler components
 import { registerSolarVideoCycler } from "./video-cyclers/solar-video-cycler.js";
 // import { registerEscena4VideoCycler } from './video-cyclers/escena4-video-cycler.js';
@@ -52,6 +59,14 @@ import { registerCartagena4VideoCycler } from "./video-cyclers/cartagena4-video-
 import { registerCartagena5VideoCycler } from "./video-cyclers/cartagena5-video-cycler.js";
 import { registerCartagena6VideoCycler } from "./video-cyclers/cartagena6-video-cycler.js";
 import { registerCartagena7VideoCycler } from "./video-cyclers/cartagena7-video-cycler.js";
+
+// Import Meta video cycler components
+import { registerMeta2VideoCycler } from "./video-cyclers/meta2-video-cycler.js";
+import { registerMeta3VideoCycler } from "./video-cyclers/meta3-video-cycler.js";
+import { registerMeta4VideoCycler } from "./video-cyclers/meta4-video-cycler.js";
+import { registerMeta5VideoCycler } from "./video-cyclers/meta5-video-cycler.js";
+import { registerMeta6VideoCycler } from "./video-cyclers/meta6-video-cycler.js";
+import { registerMeta7VideoCycler } from "./video-cyclers/meta7-video-cycler.js";
 
 /**
  * Register all A-Frame components
@@ -86,6 +101,13 @@ export function registerAllComponents() {
   // Register Cartagena image cyclers
   registerCartagena6ImageCycler();
 
+  // Register Meta image cyclers
+  registerMeta2ImageCycler();
+  registerMeta3ImageCycler();
+  registerMeta4ImageCycler();
+  registerMeta6ImageCycler();
+  registerMeta7ImageCycler();
+
   // Register video cyclers
   registerSolarVideoCycler();
   // registerEscena4VideoCycler();
@@ -109,6 +131,14 @@ export function registerAllComponents() {
   registerCartagena5VideoCycler();
   registerCartagena6VideoCycler();
   registerCartagena7VideoCycler();
+
+  // Register Meta video cyclers
+  registerMeta2VideoCycler();
+  registerMeta3VideoCycler();
+  registerMeta4VideoCycler();
+  registerMeta5VideoCycler();
+  registerMeta6VideoCycler();
+  registerMeta7VideoCycler();
 
   console.log("✅ All A-Frame components registered successfully");
 }

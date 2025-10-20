@@ -81,6 +81,19 @@ export class VRSceneManager {
       cartagena6VideoScreen: document.querySelector("#cartagena6-video-screen"),
       cartagena7Screen: document.querySelector("#cartagena7-screen"),
       // Cartagena 1 y 8 no tienen pantallas adicionales
+      // Meta screens
+      meta2ImageScreen: document.querySelector("#meta2-image-screen"),
+      meta2VideoScreen: document.querySelector("#meta2-video-screen"),
+      meta3ImageScreen: document.querySelector("#meta3-image-screen"),
+      meta3VideoScreen: document.querySelector("#meta3-video-screen"),
+      meta4ImageScreen: document.querySelector("#meta4-image-screen"),
+      meta4VideoScreen: document.querySelector("#meta4-video-screen"),
+      meta5VideoScreen: document.querySelector("#meta5-video-screen"),
+      meta6ImageScreen: document.querySelector("#meta6-image-screen"),
+      meta6VideoScreen: document.querySelector("#meta6-video-screen"),
+      meta7ImageScreen: document.querySelector("#meta7-image-screen"),
+      meta7VideoScreen: document.querySelector("#meta7-video-screen"),
+      // Meta 1 no tiene pantallas adicionales
       assets: {
         audio: document.querySelector("#current-audio"),
         skybox: document.querySelector("#current-skybox"),
@@ -552,6 +565,14 @@ export class VRSceneManager {
     this.hideCartagena5Screen();
     this.hideCartagena6Screen();
     this.hideCartagena7Screen();
+    // Hide Meta screens
+    // Meta 1 no tiene pantallas adicionales
+    this.hideMeta2Screen();
+    this.hideMeta3Screen();
+    this.hideMeta4Screen();
+    this.hideMeta5Screen();
+    this.hideMeta6Screen();
+    this.hideMeta7Screen();
 
     // Show screens based on scene
     if (sceneConfig.id === "escena-1") {
@@ -622,6 +643,20 @@ export class VRSceneManager {
       this.showCartagena7Screen();
     } else if (sceneConfig.id === "cartagena-8") {
       // Cartagena 8 solo muestra el escenario con escena_11.png, sin pantallas adicionales
+    } else if (sceneConfig.id === "meta-1") {
+      // Meta 1 solo muestra el escenario base, sin pantallas adicionales
+    } else if (sceneConfig.id === "meta-2") {
+      this.showMeta2Screen();
+    } else if (sceneConfig.id === "meta-3") {
+      this.showMeta3Screen();
+    } else if (sceneConfig.id === "meta-4") {
+      this.showMeta4Screen();
+    } else if (sceneConfig.id === "meta-5") {
+      this.showMeta5Screen();
+    } else if (sceneConfig.id === "meta-6") {
+      this.showMeta6Screen();
+    } else if (sceneConfig.id === "meta-7") {
+      this.showMeta7Screen();
     }
   }
 
@@ -1476,6 +1511,239 @@ export class VRSceneManager {
       component?.hide
         ? component.hide()
         : this.elements.cartagena7Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  // Meta screen control methods
+  showMeta2Screen() {
+    if (!this.elements.meta2ImageScreen) return;
+    try {
+      const component =
+        this.elements.meta2ImageScreen.components["meta2-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.meta2ImageScreen.setAttribute("visible", "true");
+    } catch (error) {}
+
+    // Show video screen
+    if (!this.elements.meta2VideoScreen) return;
+    try {
+      const videoComponent =
+        this.elements.meta2VideoScreen.components["meta2-video-cycler"];
+      videoComponent?.show
+        ? videoComponent.show()
+        : this.elements.meta2VideoScreen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideMeta2Screen() {
+    if (!this.elements.meta2ImageScreen) return;
+    try {
+      const component =
+        this.elements.meta2ImageScreen.components["meta2-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.meta2ImageScreen.setAttribute("visible", "false");
+    } catch (error) {}
+
+    // Hide video screen
+    if (!this.elements.meta2VideoScreen) return;
+    try {
+      const videoComponent =
+        this.elements.meta2VideoScreen.components["meta2-video-cycler"];
+      videoComponent?.hide
+        ? videoComponent.hide()
+        : this.elements.meta2VideoScreen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showMeta3Screen() {
+    if (!this.elements.meta3VideoScreen) return;
+    try {
+      const component =
+        this.elements.meta3VideoScreen.components["meta3-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.meta3VideoScreen.setAttribute("visible", "true");
+    } catch (error) {}
+
+    // Show image screen
+    if (!this.elements.meta3ImageScreen) return;
+    try {
+      const imageComponent =
+        this.elements.meta3ImageScreen.components["meta3-image-cycler"];
+      imageComponent?.show
+        ? imageComponent.show()
+        : this.elements.meta3ImageScreen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideMeta3Screen() {
+    if (!this.elements.meta3VideoScreen) return;
+    try {
+      const component =
+        this.elements.meta3VideoScreen.components["meta3-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.meta3VideoScreen.setAttribute("visible", "false");
+    } catch (error) {}
+
+    // Hide image screen
+    if (!this.elements.meta3ImageScreen) return;
+    try {
+      const imageComponent =
+        this.elements.meta3ImageScreen.components["meta3-image-cycler"];
+      imageComponent?.hide
+        ? imageComponent.hide()
+        : this.elements.meta3ImageScreen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showMeta4Screen() {
+    if (!this.elements.meta4ImageScreen) return;
+    try {
+      const component =
+        this.elements.meta4ImageScreen.components["meta4-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.meta4ImageScreen.setAttribute("visible", "true");
+    } catch (error) {}
+
+    // Show video screen
+    if (!this.elements.meta4VideoScreen) return;
+    try {
+      const videoComponent =
+        this.elements.meta4VideoScreen.components["meta4-video-cycler"];
+      videoComponent?.show
+        ? videoComponent.show()
+        : this.elements.meta4VideoScreen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideMeta4Screen() {
+    if (!this.elements.meta4ImageScreen) return;
+    try {
+      const component =
+        this.elements.meta4ImageScreen.components["meta4-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.meta4ImageScreen.setAttribute("visible", "false");
+    } catch (error) {}
+
+    // Hide video screen
+    if (!this.elements.meta4VideoScreen) return;
+    try {
+      const videoComponent =
+        this.elements.meta4VideoScreen.components["meta4-video-cycler"];
+      videoComponent?.hide
+        ? videoComponent.hide()
+        : this.elements.meta4VideoScreen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showMeta5Screen() {
+    if (!this.elements.meta5VideoScreen) return;
+    try {
+      const component =
+        this.elements.meta5VideoScreen.components["meta5-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.meta5VideoScreen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideMeta5Screen() {
+    if (!this.elements.meta5VideoScreen) return;
+    try {
+      const component =
+        this.elements.meta5VideoScreen.components["meta5-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.meta5VideoScreen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showMeta6Screen() {
+    if (!this.elements.meta6VideoScreen) return;
+    try {
+      const component =
+        this.elements.meta6VideoScreen.components["meta6-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.meta6VideoScreen.setAttribute("visible", "true");
+    } catch (error) {}
+
+    // Show image screen
+    if (!this.elements.meta6ImageScreen) return;
+    try {
+      const imageComponent =
+        this.elements.meta6ImageScreen.components["meta6-image-cycler"];
+      imageComponent?.show
+        ? imageComponent.show()
+        : this.elements.meta6ImageScreen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideMeta6Screen() {
+    if (!this.elements.meta6VideoScreen) return;
+    try {
+      const component =
+        this.elements.meta6VideoScreen.components["meta6-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.meta6VideoScreen.setAttribute("visible", "false");
+    } catch (error) {}
+
+    // Hide image screen
+    if (!this.elements.meta6ImageScreen) return;
+    try {
+      const imageComponent =
+        this.elements.meta6ImageScreen.components["meta6-image-cycler"];
+      imageComponent?.hide
+        ? imageComponent.hide()
+        : this.elements.meta6ImageScreen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showMeta7Screen() {
+    if (!this.elements.meta7VideoScreen) return;
+    try {
+      const component =
+        this.elements.meta7VideoScreen.components["meta7-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.meta7VideoScreen.setAttribute("visible", "true");
+    } catch (error) {}
+
+    // Show image screen
+    if (!this.elements.meta7ImageScreen) return;
+    try {
+      const imageComponent =
+        this.elements.meta7ImageScreen.components["meta7-image-cycler"];
+      imageComponent?.show
+        ? imageComponent.show()
+        : this.elements.meta7ImageScreen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideMeta7Screen() {
+    if (!this.elements.meta7VideoScreen) return;
+    try {
+      const component =
+        this.elements.meta7VideoScreen.components["meta7-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.meta7VideoScreen.setAttribute("visible", "false");
+    } catch (error) {}
+
+    // Hide image screen
+    if (!this.elements.meta7ImageScreen) return;
+    try {
+      const imageComponent =
+        this.elements.meta7ImageScreen.components["meta7-image-cycler"];
+      imageComponent?.hide
+        ? imageComponent.hide()
+        : this.elements.meta7ImageScreen.setAttribute("visible", "false");
     } catch (error) {}
   }
 
