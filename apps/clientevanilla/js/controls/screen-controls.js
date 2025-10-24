@@ -278,6 +278,51 @@ export const screenControls = {
       }
     }
 
+    // Escenas de Barrancabermeja (1-7)
+    for (let scene = 1; scene <= 7; scene++) {
+      // Barranca 1, 4 y 7 tienen una sola pantalla de video
+      if (scene === 1 || scene === 4 || scene === 7) {
+        screens.push({
+          scene: `barranca-${scene}`,
+          screen: "A",
+          id: `barranca${scene}-screen`,
+          type: "video",
+        });
+      }
+      
+      // Barranca 2 y 6 tienen dos pantallas de video
+      if (scene === 2 || scene === 6) {
+        screens.push({
+          scene: `barranca-${scene}`,
+          screen: "A",
+          id: `barranca${scene}-screen`,
+          type: "video",
+        });
+        screens.push({
+          scene: `barranca-${scene}`,
+          screen: "B",
+          id: `barranca${scene}B-screen`,
+          type: "video",
+        });
+      }
+      
+      // Barranca 3 y 5 tienen tres videos (2 en un lado, 1 en otro)
+      if (scene === 3 || scene === 5) {
+        screens.push({
+          scene: `barranca-${scene}`,
+          screen: "A",
+          id: `barranca${scene}-screen`,
+          type: "video",
+        });
+        screens.push({
+          scene: `barranca-${scene}`,
+          screen: "B",
+          id: `barranca${scene}B-screen`,
+          type: "video",
+        });
+      }
+    }
+
     return screens;
   },
 

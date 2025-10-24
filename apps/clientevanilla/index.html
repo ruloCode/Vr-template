@@ -735,6 +735,126 @@
         ></video>
         <img id="meta7-2-image" src="images/meta/escena_7.2.jpeg" />
         <img id="meta7-3-image" src="images/meta/escena_7.3.jpeg" />
+
+        <!-- Assets for Barrancabermeja scenes -->
+        <!-- Barrancabermeja - Videos -->
+        <video
+          id="barranca1-1-video"
+          src="images/barrancabermeja/escena_1.1.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="barranca2-1-video"
+          src="images/barrancabermeja/escena_2.1.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="barranca2-2-video"
+          src="images/barrancabermeja/escena_2.2.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="barranca3-1-video"
+          src="images/barrancabermeja/escena_3.1.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="barranca3-2-video"
+          src="images/barrancabermeja/escena_3.2.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="barranca3-3-video"
+          src="images/barrancabermeja/escena_3.3.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="barranca4-1-video"
+          src="images/barrancabermeja/escena_4.1.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="barranca5-1-video"
+          src="images/barrancabermeja/escena_5.1.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="barranca5-2-video"
+          src="images/barrancabermeja/escena_5.2.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="barranca5-3-video"
+          src="images/barrancabermeja/escena_5.3.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="barranca6-1-video"
+          src="images/barrancabermeja/escena_6.1.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="barranca6-2-video"
+          src="images/barrancabermeja/escena_6.2.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="barranca7-1-video"
+          src="images/barrancabermeja/escena_7.1.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
       </a-assets>
 
       <!-- Scene loading overlay -->
@@ -1390,6 +1510,142 @@
         material="shader: flat; side: double"
         visible="false"
         meta7-image-cycler
+      ></a-plane>
+
+      <!-- Barrancabermeja screens -->
+      <!-- Barranca 1 - Video -->
+      <a-plane
+        id="barranca1-screen"
+        src="#barranca1-1-video"
+        position="-120 20 20"
+        rotation="30 90 0"
+        width="200"
+        height="110"
+        material="shader: flat; side: double"
+        visible="false"
+        barranca1-video-cycler
+      ></a-plane>
+
+      <!-- Barranca 2 - Videos (2 videos) -->
+      <a-plane
+        id="barranca2-screen"
+        src="#barranca2-1-video"
+        position="-120 20 20"
+        rotation="30 90 0"
+        width="200"
+        height="110"
+        material="shader: flat; side: double"
+        visible="false"
+        barranca2-video-cycler
+      ></a-plane>
+      <a-plane
+        id="barranca2B-screen"
+        src="#barranca2-2-video"
+        position="120 20 20"
+        rotation="-30 90 0"
+        width="200"
+        height="110"
+        material="shader: flat; side: double"
+        visible="false"
+        barranca2B-video-cycler
+      ></a-plane>
+
+      <!-- Barranca 3 - Videos (3 videos: 2 en un lado, 1 en otro) -->
+      <a-plane
+        id="barranca3-screen"
+        src="#barranca3-1-video"
+        position="-120 20 20"
+        rotation="30 90 0"
+        width="200"
+        height="110"
+        material="shader: flat; side: double"
+        visible="false"
+        barranca3-video-cycler
+      ></a-plane>
+      <a-plane
+        id="barranca3B-screen"
+        src="#barranca3-2-video"
+        position="120 20 20"
+        rotation="-30 90 0"
+        width="200"
+        height="110"
+        material="shader: flat; side: double"
+        visible="false"
+        barranca3B-video-cycler
+      ></a-plane>
+
+      <!-- Barranca 4 - Video -->
+      <a-plane
+        id="barranca4-screen"
+        src="#barranca4-1-video"
+        position="-120 20 20"
+        rotation="30 90 0"
+        width="200"
+        height="110"
+        material="shader: flat; side: double"
+        visible="false"
+        barranca4-video-cycler
+      ></a-plane>
+
+      <!-- Barranca 5 - Videos (3 videos: 2 en un lado, 1 en otro) -->
+      <a-plane
+        id="barranca5-screen"
+        src="#barranca5-1-video"
+        position="-120 20 20"
+        rotation="30 90 0"
+        width="200"
+        height="110"
+        material="shader: flat; side: double"
+        visible="false"
+        barranca5-video-cycler
+      ></a-plane>
+      <a-plane
+        id="barranca5B-screen"
+        src="#barranca5-2-video"
+        position="120 20 20"
+        rotation="-30 90 0"
+        width="200"
+        height="110"
+        material="shader: flat; side: double"
+        visible="false"
+        barranca5B-video-cycler
+      ></a-plane>
+
+      <!-- Barranca 6 - Videos (2 videos) -->
+      <a-plane
+        id="barranca6-screen"
+        src="#barranca6-1-video"
+        position="-120 20 20"
+        rotation="30 90 0"
+        width="200"
+        height="110"
+        material="shader: flat; side: double"
+        visible="false"
+        barranca6-video-cycler
+      ></a-plane>
+      <a-plane
+        id="barranca6B-screen"
+        src="#barranca6-2-video"
+        position="120 20 20"
+        rotation="-30 90 0"
+        width="200"
+        height="110"
+        material="shader: flat; side: double"
+        visible="false"
+        barranca6B-video-cycler
+      ></a-plane>
+
+      <!-- Barranca 7 - Video -->
+      <a-plane
+        id="barranca7-screen"
+        src="#barranca7-1-video"
+        position="-120 20 20"
+        rotation="30 90 0"
+        width="200"
+        height="110"
+        material="shader: flat; side: double"
+        visible="false"
+        barranca7-video-cycler
       ></a-plane>
 
       <!-- Lighting system -->

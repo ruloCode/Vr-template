@@ -318,6 +318,71 @@ export class SequenceManager {
         },
         editable: true,
       },
+      {
+        id: "barrancabermeja-completo",
+        name: "Secuencia Completa Barrancabermeja",
+        description: "Secuencia completa de todas las escenas de Barrancabermeja",
+        scenes: [
+          {
+            sceneId: "barranca-1",
+            duration: 20000,
+            name: "Operaciones Iniciales",
+            showScreens: true,
+            screenDelay: 3000,
+          },
+          {
+            sceneId: "barranca-2",
+            duration: 25000,
+            name: "Procesos Industriales",
+            showScreens: true,
+            screenDelay: 4000,
+          },
+          {
+            sceneId: "barranca-3",
+            duration: 30000,
+            name: "Operaciones Avanzadas",
+            showScreens: true,
+            screenDelay: 5000,
+          },
+          {
+            sceneId: "barranca-4",
+            duration: 20000,
+            name: "Tecnología Moderna",
+            showScreens: true,
+            screenDelay: 3000,
+          },
+          {
+            sceneId: "barranca-5",
+            duration: 30000,
+            name: "Operaciones Especializadas",
+            showScreens: true,
+            screenDelay: 5000,
+          },
+          {
+            sceneId: "barranca-6",
+            duration: 25000,
+            name: "Infraestructura",
+            showScreens: true,
+            screenDelay: 4000,
+          },
+          {
+            sceneId: "barranca-7",
+            duration: 20000,
+            name: "Operaciones Finales",
+            showScreens: true,
+            screenDelay: 3000,
+          },
+        ],
+        totalDuration: 170000,
+        autoLoop: false,
+        showScreensAutomatically: true,
+        transitions: {
+          fadeOutTime: SEQUENCE_TIMING.DEFAULT_FADE_TIME_MS,
+          loadTime: SEQUENCE_TIMING.DEFAULT_LOAD_TIME_MS,
+          fadeInTime: SEQUENCE_TIMING.DEFAULT_FADE_TIME_MS,
+        },
+        editable: true,
+      },
     ];
 
     // Calculate actual durations and store sequences

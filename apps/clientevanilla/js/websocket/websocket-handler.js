@@ -419,6 +419,19 @@ function handleShowScreenCommand(screenType) {
     escena10B: () => sceneManager.showEscena10BScreen(),
     escena11: () => sceneManager.showEscena11Screen(),
     escena11B: () => sceneManager.showEscena11BScreen(),
+
+    // Barrancabermeja screens
+    barranca1: () => sceneManager.showBarranca1Screen(),
+    barranca2: () => sceneManager.showBarranca2Screen(),
+    barranca2B: () => sceneManager.showBarranca2BScreen(),
+    barranca3: () => sceneManager.showBarranca3Screen(),
+    barranca3B: () => sceneManager.showBarranca3BScreen(),
+    barranca4: () => sceneManager.showBarranca4Screen(),
+    barranca5: () => sceneManager.showBarranca5Screen(),
+    barranca5B: () => sceneManager.showBarranca5BScreen(),
+    barranca6: () => sceneManager.showBarranca6Screen(),
+    barranca6B: () => sceneManager.showBarranca6BScreen(),
+    barranca7: () => sceneManager.showBarranca7Screen(),
   };
 
   const method = screenMethods[screenType];
@@ -460,6 +473,19 @@ function handleHideScreenCommand(screenType) {
     escena10B: () => sceneManager.hideEscena10BScreen(),
     escena11: () => sceneManager.hideEscena11Screen(),
     escena11B: () => sceneManager.hideEscena11BScreen(),
+
+    // Barrancabermeja screens
+    barranca1: () => sceneManager.hideBarranca1Screen(),
+    barranca2: () => sceneManager.hideBarranca2Screen(),
+    barranca2B: () => sceneManager.hideBarranca2BScreen(),
+    barranca3: () => sceneManager.hideBarranca3Screen(),
+    barranca3B: () => sceneManager.hideBarranca3BScreen(),
+    barranca4: () => sceneManager.hideBarranca4Screen(),
+    barranca5: () => sceneManager.hideBarranca5Screen(),
+    barranca5B: () => sceneManager.hideBarranca5BScreen(),
+    barranca6: () => sceneManager.hideBarranca6Screen(),
+    barranca6B: () => sceneManager.hideBarranca6BScreen(),
+    barranca7: () => sceneManager.hideBarranca7Screen(),
   };
 
   const method = screenMethods[screenType];
@@ -703,6 +729,75 @@ function handleToggleScreenCommand(screenType) {
         () => sceneManager.showEscena11BScreen(),
         () => sceneManager.hideEscena11BScreen()
       ),
+
+    // Barrancabermeja screens
+    barranca1: () =>
+      toggleScreen(
+        "barranca1-screen",
+        () => sceneManager.showBarranca1Screen(),
+        () => sceneManager.hideBarranca1Screen()
+      ),
+    barranca2: () =>
+      toggleScreen(
+        "barranca2-screen",
+        () => sceneManager.showBarranca2Screen(),
+        () => sceneManager.hideBarranca2Screen()
+      ),
+    barranca2B: () =>
+      toggleScreen(
+        "barranca2B-screen",
+        () => sceneManager.showBarranca2BScreen(),
+        () => sceneManager.hideBarranca2BScreen()
+      ),
+    barranca3: () =>
+      toggleScreen(
+        "barranca3-screen",
+        () => sceneManager.showBarranca3Screen(),
+        () => sceneManager.hideBarranca3Screen()
+      ),
+    barranca3B: () =>
+      toggleScreen(
+        "barranca3B-screen",
+        () => sceneManager.showBarranca3BScreen(),
+        () => sceneManager.hideBarranca3BScreen()
+      ),
+    barranca4: () =>
+      toggleScreen(
+        "barranca4-screen",
+        () => sceneManager.showBarranca4Screen(),
+        () => sceneManager.hideBarranca4Screen()
+      ),
+    barranca5: () =>
+      toggleScreen(
+        "barranca5-screen",
+        () => sceneManager.showBarranca5Screen(),
+        () => sceneManager.hideBarranca5Screen()
+      ),
+    barranca5B: () =>
+      toggleScreen(
+        "barranca5B-screen",
+        () => sceneManager.showBarranca5BScreen(),
+        () => sceneManager.hideBarranca5BScreen()
+      ),
+    barranca6: () =>
+      toggleScreen(
+        "barranca6-screen",
+        () => sceneManager.showBarranca6Screen(),
+        () => sceneManager.hideBarranca6Screen()
+      ),
+    barranca6B: () =>
+      toggleScreen(
+        "barranca6B-screen",
+        () => sceneManager.showBarranca6BScreen(),
+        () => sceneManager.hideBarranca6BScreen()
+      ),
+    barranca7: () =>
+      toggleScreen(
+        "barranca7-screen",
+        () => sceneManager.showBarranca7Screen(),
+        () => sceneManager.hideBarranca7Screen()
+      ),
+
     // Guajira screens
     guajira1: () =>
       toggleScreen(

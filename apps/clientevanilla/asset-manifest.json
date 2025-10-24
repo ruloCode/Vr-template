@@ -1,8 +1,8 @@
 {
   "version": "1.0.0",
   "generatedAt": "2024-09-24T21:30:00.000Z",
-  "totalAssets": 74,
-  "totalSize": 683500000,
+  "totalAssets": 89,
+  "totalSize": 1209500000,
   "scenes": {
     "base": {
       "id": "base",
@@ -97,24 +97,139 @@
       ],
       "totalSize": 28900000,
       "assetCount": 2
+    },
+    "barrancabermeja": {
+      "id": "barrancabermeja",
+      "name": "Barrancabermeja - Operaciones Petroleras",
+      "priority": 2,
+      "preloadStrategy": "moderate",
+      "assets": [
+        {
+          "url": "/images/escena_3.png",
+          "type": "images",
+          "size": 25000000,
+          "critical": false,
+          "hash": "barranca-skybox-hash"
+        },
+        {
+          "url": "/audio/toma_03.mp3",
+          "type": "audio",
+          "size": 800000,
+          "critical": true,
+          "hash": "barranca-audio-hash"
+        },
+        {
+          "url": "/images/barrancabermeja/escena_1.1.mp4",
+          "type": "videos",
+          "size": 34000000,
+          "critical": false,
+          "hash": "barranca1-1-video-hash"
+        },
+        {
+          "url": "/images/barrancabermeja/escena_2.1.mp4",
+          "type": "videos",
+          "size": 36000000,
+          "critical": false,
+          "hash": "barranca2-1-video-hash"
+        },
+        {
+          "url": "/images/barrancabermeja/escena_2.2.mp4",
+          "type": "videos",
+          "size": 40000000,
+          "critical": false,
+          "hash": "barranca2-2-video-hash"
+        },
+        {
+          "url": "/images/barrancabermeja/escena_3.1.mp4",
+          "type": "videos",
+          "size": 27000000,
+          "critical": false,
+          "hash": "barranca3-1-video-hash"
+        },
+        {
+          "url": "/images/barrancabermeja/escena_3.2.mp4",
+          "type": "videos",
+          "size": 29000000,
+          "critical": false,
+          "hash": "barranca3-2-video-hash"
+        },
+        {
+          "url": "/images/barrancabermeja/escena_3.3.mp4",
+          "type": "videos",
+          "size": 22000000,
+          "critical": false,
+          "hash": "barranca3-3-video-hash"
+        },
+        {
+          "url": "/images/barrancabermeja/escena_4.1.mp4",
+          "type": "videos",
+          "size": 32000000,
+          "critical": false,
+          "hash": "barranca4-1-video-hash"
+        },
+        {
+          "url": "/images/barrancabermeja/escena_5.1.mp4",
+          "type": "videos",
+          "size": 50000000,
+          "critical": false,
+          "hash": "barranca5-1-video-hash"
+        },
+        {
+          "url": "/images/barrancabermeja/escena_5.2.mp4",
+          "type": "videos",
+          "size": 41000000,
+          "critical": false,
+          "hash": "barranca5-2-video-hash"
+        },
+        {
+          "url": "/images/barrancabermeja/escena_5.3.mp4",
+          "type": "videos",
+          "size": 44000000,
+          "critical": false,
+          "hash": "barranca5-3-video-hash"
+        },
+        {
+          "url": "/images/barrancabermeja/escena_6.1.mp4",
+          "type": "videos",
+          "size": 31000000,
+          "critical": false,
+          "hash": "barranca6-1-video-hash"
+        },
+        {
+          "url": "/images/barrancabermeja/escena_6.2.mp4",
+          "type": "videos",
+          "size": 39000000,
+          "critical": false,
+          "hash": "barranca6-2-video-hash"
+        },
+        {
+          "url": "/images/barrancabermeja/escena_7.1.mp4",
+          "type": "videos",
+          "size": 36000000,
+          "critical": false,
+          "hash": "barranca7-1-video-hash"
+        }
+      ],
+      "totalSize": 500000000,
+      "assetCount": 15
     }
   },
   "categories": {
     "images": {
-      "count": 45,
-      "size": 260000000
+      "count": 46,
+      "size": 285000000
     },
     "videos": {
-      "count": 18,
-      "size": 414000000
+      "count": 31,
+      "size": 914000000
     },
     "audio": {
-      "count": 11,
-      "size": 9500000
+      "count": 12,
+      "size": 10300000
     },
     "critical": {
-      "count": 8,
-      "size": 50000000
+      "count": 9,
+      "size": 58000000
     }
   },
   "preloadStrategies": {

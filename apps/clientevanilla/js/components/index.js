@@ -68,6 +68,19 @@ import { registerMeta5VideoCycler } from "./video-cyclers/meta5-video-cycler.js"
 import { registerMeta6VideoCycler } from "./video-cyclers/meta6-video-cycler.js";
 import { registerMeta7VideoCycler } from "./video-cyclers/meta7-video-cycler.js";
 
+// Import Barrancabermeja video cycler components
+import { registerBarranca1VideoCycler } from "./video-cyclers/barranca1-video-cycler.js";
+import { registerBarranca2VideoCycler } from "./video-cyclers/barranca2-video-cycler.js";
+import { registerBarranca2BVideoCycler } from "./video-cyclers/barranca2B-video-cycler.js";
+import { registerBarranca3VideoCycler } from "./video-cyclers/barranca3-video-cycler.js";
+import { registerBarranca3BVideoCycler } from "./video-cyclers/barranca3B-video-cycler.js";
+import { registerBarranca4VideoCycler } from "./video-cyclers/barranca4-video-cycler.js";
+import { registerBarranca5VideoCycler } from "./video-cyclers/barranca5-video-cycler.js";
+import { registerBarranca5BVideoCycler } from "./video-cyclers/barranca5B-video-cycler.js";
+import { registerBarranca6VideoCycler } from "./video-cyclers/barranca6-video-cycler.js";
+import { registerBarranca6BVideoCycler } from "./video-cyclers/barranca6B-video-cycler.js";
+import { registerBarranca7VideoCycler } from "./video-cyclers/barranca7-video-cycler.js";
+
 /**
  * Register all A-Frame components
  * This function should be called after A-Frame is loaded but before the scene is initialized
@@ -139,6 +152,19 @@ export function registerAllComponents() {
   registerMeta5VideoCycler();
   registerMeta6VideoCycler();
   registerMeta7VideoCycler();
+
+  // Register Barrancabermeja video cyclers
+  registerBarranca1VideoCycler();
+  registerBarranca2VideoCycler();
+  registerBarranca2BVideoCycler();
+  registerBarranca3VideoCycler();
+  registerBarranca3BVideoCycler();
+  registerBarranca4VideoCycler();
+  registerBarranca5VideoCycler();
+  registerBarranca5BVideoCycler();
+  registerBarranca6VideoCycler();
+  registerBarranca6BVideoCycler();
+  registerBarranca7VideoCycler();
 
   console.log("✅ All A-Frame components registered successfully");
 }

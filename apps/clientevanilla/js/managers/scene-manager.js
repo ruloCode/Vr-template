@@ -93,7 +93,20 @@ export class VRSceneManager {
       meta6VideoScreen: document.querySelector("#meta6-video-screen"),
       meta7ImageScreen: document.querySelector("#meta7-image-screen"),
       meta7VideoScreen: document.querySelector("#meta7-video-screen"),
-      // Meta 1 no tiene pantallas adicionales
+
+      // Barrancabermeja screens
+      barranca1Screen: document.querySelector("#barranca1-screen"),
+      barranca2Screen: document.querySelector("#barranca2-screen"),
+      barranca2BScreen: document.querySelector("#barranca2B-screen"),
+      barranca3Screen: document.querySelector("#barranca3-screen"),
+      barranca3BScreen: document.querySelector("#barranca3B-screen"),
+      barranca4Screen: document.querySelector("#barranca4-screen"),
+      barranca5Screen: document.querySelector("#barranca5-screen"),
+      barranca5BScreen: document.querySelector("#barranca5B-screen"),
+      barranca6Screen: document.querySelector("#barranca6-screen"),
+      barranca6BScreen: document.querySelector("#barranca6B-screen"),
+      barranca7Screen: document.querySelector("#barranca7-screen"),
+
       assets: {
         audio: document.querySelector("#current-audio"),
         skybox: document.querySelector("#current-skybox"),
@@ -574,6 +587,19 @@ export class VRSceneManager {
     this.hideMeta6Screen();
     this.hideMeta7Screen();
 
+    // Hide Barrancabermeja screens
+    this.hideBarranca1Screen();
+    this.hideBarranca2Screen();
+    this.hideBarranca2BScreen();
+    this.hideBarranca3Screen();
+    this.hideBarranca3BScreen();
+    this.hideBarranca4Screen();
+    this.hideBarranca5Screen();
+    this.hideBarranca5BScreen();
+    this.hideBarranca6Screen();
+    this.hideBarranca6BScreen();
+    this.hideBarranca7Screen();
+
     // Show screens based on scene
     if (sceneConfig.id === "escena-1") {
       this.showEscena1Screen();
@@ -657,6 +683,24 @@ export class VRSceneManager {
       this.showMeta6Screen();
     } else if (sceneConfig.id === "meta-7") {
       this.showMeta7Screen();
+    } else if (sceneConfig.id === "barranca-1") {
+      this.showBarranca1Screen();
+    } else if (sceneConfig.id === "barranca-2") {
+      this.showBarranca2Screen();
+      this.showBarranca2BScreen();
+    } else if (sceneConfig.id === "barranca-3") {
+      this.showBarranca3Screen();
+      this.showBarranca3BScreen();
+    } else if (sceneConfig.id === "barranca-4") {
+      this.showBarranca4Screen();
+    } else if (sceneConfig.id === "barranca-5") {
+      this.showBarranca5Screen();
+      this.showBarranca5BScreen();
+    } else if (sceneConfig.id === "barranca-6") {
+      this.showBarranca6Screen();
+      this.showBarranca6BScreen();
+    } else if (sceneConfig.id === "barranca-7") {
+      this.showBarranca7Screen();
     }
   }
 
@@ -1744,6 +1788,249 @@ export class VRSceneManager {
       imageComponent?.hide
         ? imageComponent.hide()
         : this.elements.meta7ImageScreen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  // Barrancabermeja Screen control methods
+  showBarranca1Screen() {
+    if (!this.elements.barranca1Screen) return;
+    try {
+      const component =
+        this.elements.barranca1Screen.components["barranca1-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.barranca1Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideBarranca1Screen() {
+    if (!this.elements.barranca1Screen) return;
+    try {
+      const component =
+        this.elements.barranca1Screen.components["barranca1-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.barranca1Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showBarranca2Screen() {
+    if (!this.elements.barranca2Screen) return;
+    try {
+      const component =
+        this.elements.barranca2Screen.components["barranca2-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.barranca2Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideBarranca2Screen() {
+    if (!this.elements.barranca2Screen) return;
+    try {
+      const component =
+        this.elements.barranca2Screen.components["barranca2-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.barranca2Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showBarranca2BScreen() {
+    if (!this.elements.barranca2BScreen) return;
+    try {
+      const component =
+        this.elements.barranca2BScreen.components["barranca2B-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.barranca2BScreen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideBarranca2BScreen() {
+    if (!this.elements.barranca2BScreen) return;
+    try {
+      const component =
+        this.elements.barranca2BScreen.components["barranca2B-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.barranca2BScreen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showBarranca3Screen() {
+    if (!this.elements.barranca3Screen) return;
+    try {
+      const component =
+        this.elements.barranca3Screen.components["barranca3-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.barranca3Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideBarranca3Screen() {
+    if (!this.elements.barranca3Screen) return;
+    try {
+      const component =
+        this.elements.barranca3Screen.components["barranca3-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.barranca3Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showBarranca3BScreen() {
+    if (!this.elements.barranca3BScreen) return;
+    try {
+      const component =
+        this.elements.barranca3BScreen.components["barranca3B-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.barranca3BScreen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideBarranca3BScreen() {
+    if (!this.elements.barranca3BScreen) return;
+    try {
+      const component =
+        this.elements.barranca3BScreen.components["barranca3B-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.barranca3BScreen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showBarranca4Screen() {
+    if (!this.elements.barranca4Screen) return;
+    try {
+      const component =
+        this.elements.barranca4Screen.components["barranca4-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.barranca4Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideBarranca4Screen() {
+    if (!this.elements.barranca4Screen) return;
+    try {
+      const component =
+        this.elements.barranca4Screen.components["barranca4-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.barranca4Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showBarranca5Screen() {
+    if (!this.elements.barranca5Screen) return;
+    try {
+      const component =
+        this.elements.barranca5Screen.components["barranca5-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.barranca5Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideBarranca5Screen() {
+    if (!this.elements.barranca5Screen) return;
+    try {
+      const component =
+        this.elements.barranca5Screen.components["barranca5-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.barranca5Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showBarranca5BScreen() {
+    if (!this.elements.barranca5BScreen) return;
+    try {
+      const component =
+        this.elements.barranca5BScreen.components["barranca5B-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.barranca5BScreen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideBarranca5BScreen() {
+    if (!this.elements.barranca5BScreen) return;
+    try {
+      const component =
+        this.elements.barranca5BScreen.components["barranca5B-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.barranca5BScreen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showBarranca6Screen() {
+    if (!this.elements.barranca6Screen) return;
+    try {
+      const component =
+        this.elements.barranca6Screen.components["barranca6-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.barranca6Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideBarranca6Screen() {
+    if (!this.elements.barranca6Screen) return;
+    try {
+      const component =
+        this.elements.barranca6Screen.components["barranca6-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.barranca6Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showBarranca6BScreen() {
+    if (!this.elements.barranca6BScreen) return;
+    try {
+      const component =
+        this.elements.barranca6BScreen.components["barranca6B-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.barranca6BScreen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideBarranca6BScreen() {
+    if (!this.elements.barranca6BScreen) return;
+    try {
+      const component =
+        this.elements.barranca6BScreen.components["barranca6B-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.barranca6BScreen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showBarranca7Screen() {
+    if (!this.elements.barranca7Screen) return;
+    try {
+      const component =
+        this.elements.barranca7Screen.components["barranca7-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.barranca7Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideBarranca7Screen() {
+    if (!this.elements.barranca7Screen) return;
+    try {
+      const component =
+        this.elements.barranca7Screen.components["barranca7-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.barranca7Screen.setAttribute("visible", "false");
     } catch (error) {}
   }
 

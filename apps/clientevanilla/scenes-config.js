@@ -863,6 +863,190 @@ const SCENES_CONFIG = {
     },
     timeOfDay: "day",
   },
+
+  "barrancabermeja": {
+    id: "barrancabermeja",
+    name: "Barrancabermeja - Operaciones Petroleras",
+    description: "Vista panorámica de las operaciones petroleras en Barrancabermeja",
+    assets: {
+      skybox: "images/escena_3.png",
+      audio: "audio/toma_03.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.8,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 0.9,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "barranca-1": {
+    id: "barranca-1",
+    name: "Barrancabermeja 1 - Operaciones Iniciales",
+    description: "Vista panorámica de las operaciones iniciales en Barrancabermeja",
+    assets: {
+      skybox: "images/escena_3.png",
+      audio: "audio/toma_03.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.8,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 0.9,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "barranca-2": {
+    id: "barranca-2",
+    name: "Barrancabermeja 2 - Procesos Industriales",
+    description: "Vista panorámica de los procesos industriales en Barrancabermeja",
+    assets: {
+      skybox: "images/escena_3.png",
+      audio: "audio/toma_03.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.8,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 0.9,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "barranca-3": {
+    id: "barranca-3",
+    name: "Barrancabermeja 3 - Operaciones Avanzadas",
+    description: "Vista panorámica de las operaciones avanzadas en Barrancabermeja",
+    assets: {
+      skybox: "images/escena_3.png",
+      audio: "audio/toma_03.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.8,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 0.9,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "barranca-4": {
+    id: "barranca-4",
+    name: "Barrancabermeja 4 - Tecnología Moderna",
+    description: "Vista panorámica de la tecnología moderna en Barrancabermeja",
+    assets: {
+      skybox: "images/escena_3.png",
+      audio: "audio/toma_03.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.8,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 0.9,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "barranca-5": {
+    id: "barranca-5",
+    name: "Barrancabermeja 5 - Operaciones Especializadas",
+    description: "Vista panorámica de las operaciones especializadas en Barrancabermeja",
+    assets: {
+      skybox: "images/escena_3.png",
+      audio: "audio/toma_03.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.8,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 0.9,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "barranca-6": {
+    id: "barranca-6",
+    name: "Barrancabermeja 6 - Infraestructura",
+    description: "Vista panorámica de la infraestructura en Barrancabermeja",
+    assets: {
+      skybox: "images/escena_3.png",
+      audio: "audio/toma_03.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.8,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 0.9,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "barranca-7": {
+    id: "barranca-7",
+    name: "Barrancabermeja 7 - Operaciones Finales",
+    description: "Vista panorámica de las operaciones finales en Barrancabermeja",
+    assets: {
+      skybox: "images/escena_3.png",
+      audio: "audio/toma_03.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.8,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 0.9,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
 };
 
 // Scene transition effects

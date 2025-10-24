@@ -296,6 +296,72 @@ const SEQUENCE_CONFIGS = {
     },
     editable: true,
   },
+
+  "barrancabermeja-completo": {
+    id: "barrancabermeja-completo",
+    name: "Barrancabermeja Completo (2:30)",
+    description: "Secuencia completa de todas las escenas de Barrancabermeja",
+    scenes: [
+      {
+        sceneId: "barranca-1",
+        duration: 20000, // 20 segundos
+        name: "Operaciones Iniciales",
+        showScreens: true,
+        screenDelay: 3000,
+      },
+      {
+        sceneId: "barranca-2",
+        duration: 25000, // 25 segundos
+        name: "Procesos Industriales",
+        showScreens: true,
+        screenDelay: 4000,
+      },
+      {
+        sceneId: "barranca-3",
+        duration: 30000, // 30 segundos
+        name: "Operaciones Avanzadas",
+        showScreens: true,
+        screenDelay: 5000,
+      },
+      {
+        sceneId: "barranca-4",
+        duration: 20000, // 20 segundos
+        name: "Tecnología Moderna",
+        showScreens: true,
+        screenDelay: 3000,
+      },
+      {
+        sceneId: "barranca-5",
+        duration: 30000, // 30 segundos
+        name: "Operaciones Especializadas",
+        showScreens: true,
+        screenDelay: 5000,
+      },
+      {
+        sceneId: "barranca-6",
+        duration: 25000, // 25 segundos
+        name: "Infraestructura",
+        showScreens: true,
+        screenDelay: 4000,
+      },
+      {
+        sceneId: "barranca-7",
+        duration: 20000, // 20 segundos
+        name: "Operaciones Finales",
+        showScreens: true,
+        screenDelay: 3000,
+      },
+    ],
+    totalDuration: 170000, // 2:50 minutos
+    autoLoop: false,
+    showScreensAutomatically: true,
+    transitions: {
+      fadeOutTime: 1000,
+      loadTime: 2000,
+      fadeInTime: 1000,
+    },
+    editable: true,
+  },
 };
 
 // Scene duration limits for validation

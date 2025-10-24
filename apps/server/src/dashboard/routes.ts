@@ -751,6 +751,13 @@ function generateDashboardHTML(): string {
                         <option value="meta-5">Meta 5</option>
                         <option value="meta-6">Meta 6</option>
                         <option value="meta-7">Meta 7</option>
+                        <option value="barranca-1">Barrancabermeja 1</option>
+                        <option value="barranca-2">Barrancabermeja 2</option>
+                        <option value="barranca-3">Barrancabermeja 3</option>
+                        <option value="barranca-4">Barrancabermeja 4</option>
+                        <option value="barranca-5">Barrancabermeja 5</option>
+                        <option value="barranca-6">Barrancabermeja 6</option>
+                        <option value="barranca-7">Barrancabermeja 7</option>
                     </select>
                     <button class="btn btn-primary" onclick="loadScene()">Cargar Escena</button>
                 </div>
@@ -1042,6 +1049,27 @@ function generateDashboardHTML(): string {
                     break;
                 case 'meta-7':
                     screenInfo = '🎬🖼️ Meta 7: Video e Imágenes disponibles';
+                    break;
+                case 'barranca-1':
+                    screenInfo = '🎬 Barranca 1: Video disponible';
+                    break;
+                case 'barranca-2':
+                    screenInfo = '🎬🎬 Barranca 2: Videos disponibles';
+                    break;
+                case 'barranca-3':
+                    screenInfo = '🎬🎬🎬 Barranca 3: Videos disponibles';
+                    break;
+                case 'barranca-4':
+                    screenInfo = '🎬 Barranca 4: Video disponible';
+                    break;
+                case 'barranca-5':
+                    screenInfo = '🎬🎬🎬 Barranca 5: Videos disponibles';
+                    break;
+                case 'barranca-6':
+                    screenInfo = '🎬🎬 Barranca 6: Videos disponibles';
+                    break;
+                case 'barranca-7':
+                    screenInfo = '🎬 Barranca 7: Video disponible';
                     break;
                 default:
                     screenInfo = 'Sin pantallas flotantes';
