@@ -855,6 +855,140 @@
           muted
           playsinline
         ></video>
+
+        <!-- Assets for Casanare scenes -->
+        <!-- Casanare 1 - Videos -->
+        <video
+          id="casanare1-1-video"
+          src="images/casanare/escena_1.1.MP4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="casanare1-2-video"
+          src="images/casanare/escena_1.2.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="casanare1-3-video"
+          src="images/casanare/escena_1.3.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="casanare1-4-video"
+          src="images/casanare/escena_1.4.MP4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="casanare1-5-video"
+          src="images/casanare/escena_1.5.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+
+        <!-- Casanare 2 - Images and Videos -->
+        <img id="casanare2-1-image" src="images/casanare/escena_2.1.jpg" />
+        <img id="casanare2-2-image" src="images/casanare/escena_2.2.jpg" />
+        <img id="casanare2-3-image" src="images/casanare/escena_2.3.jpg" />
+        <video
+          id="casanare2-4-video"
+          src="images/casanare/escena_2.4.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="casanare2-5-video"
+          src="images/casanare/escena_2.5.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="casanare2-6-video"
+          src="images/casanare/escena_2.6.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+
+        <!-- Casanare 3 - Images and Video -->
+        <img id="casanare3-1-image" src="images/casanare/escena_3.1.JPG" />
+        <img id="casanare3-2-image" src="images/casanare/escena_3.2.jpg" />
+        <img id="casanare3-3-image" src="images/casanare/escena_3.3.jpg" />
+        <img id="casanare3-4-image" src="images/casanare/escena_3.4.jpg" />
+        <video
+          id="casanare3-5-video"
+          src="images/casanare/escena_3.5.MP4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+
+        <!-- Casanare 4 - Images -->
+        <img id="casanare4-1-image" src="images/casanare/escena_4.1.jpg" />
+        <img id="casanare4-2-image" src="images/casanare/escena_4.2.JPG" />
+        <img id="casanare4-3-image" src="images/casanare/escena_4.3.JPG" />
+        <img id="casanare4-4-image" src="images/casanare/escena_4.4.JPG" />
+        <img id="casanare4-5-image" src="images/casanare/escena_4.5.JPG" />
+        <img id="casanare4-6-image" src="images/casanare/escena_4.6.JPG" />
+
+        <!-- Casanare 5 - Images and Video -->
+        <img id="casanare5-1-image" src="images/casanare/escena_5.1.jpg" />
+        <img id="casanare5-2-image" src="images/casanare/escena_5.2.png" />
+        <img id="casanare5-3-image" src="images/casanare/escena_5.3.JPG" />
+        <video
+          id="casanare5-4-video"
+          src="images/casanare/escena_5.4.MP4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <img id="casanare5-5-image" src="images/casanare/escena_5.5.JPG" />
+        <img id="casanare5-6-image" src="images/casanare/escena_5.6.JPG" />
+
+        <!-- Casanare 6 - Images and Video -->
+        <img id="casanare6-1-image" src="images/casanare/escena_6.1.jpg" />
+        <img id="casanare6-2-image" src="images/casanare/escena_6.2.jpg" />
+        <img id="casanare6-3-image" src="images/casanare/escena_6.3.jpg" />
+        <img id="casanare6-4-image" src="images/casanare/escena_6.4.jpg" />
+        <video
+          id="casanare6-5-video"
+          src="images/casanare/escena_6.5.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
       </a-assets>
 
       <!-- Scene loading overlay -->
@@ -1646,6 +1780,189 @@
         material="shader: flat; side: double"
         visible="false"
         barranca7-video-cycler
+      ></a-plane>
+
+      <!-- Pantallas flotantes para escenas de Casanare -->
+      <!-- Casanare 1 - Videos -->
+      <a-plane
+        id="casanare1-screen"
+        src="#casanare1-1-video"
+        position="-120 20 20"
+        rotation="10 90 0"
+        width="200"
+        height="110"
+        material="shader: flat; side: double"
+        visible="false"
+        casanare1-video-cycler
+      ></a-plane>
+
+      <!-- Casanare 2 - Images -->
+      <a-plane
+        id="casanare2-image-screen"
+        src="#casanare2-1-image"
+        position="-120 20 20"
+        rotation="30 90 0"
+        width="180"
+        height="100"
+        material="shader: flat; side: double"
+        visible="false"
+        casanare2-image-cycler
+      ></a-plane>
+
+      <!-- Casanare 2 - Videos -->
+      <a-plane
+        id="casanare2-video-screen"
+        src="#casanare2-4-video"
+        position="120 20 20"
+        rotation="-30 90 0"
+        width="180"
+        height="100"
+        material="shader: flat; side: double"
+        visible="false"
+        casanare2-video-cycler
+      ></a-plane>
+
+      <!-- Casanare 3 - Images A -->
+      <a-plane
+        id="casanare3-image-screen"
+        src="#casanare3-1-image"
+        position="-120 20 20"
+        rotation="30 90 0"
+        width="200"
+        height="120"
+        material="shader: flat; side: double"
+        visible="false"
+        casanare3-image-cycler
+      ></a-plane>
+
+      <!-- Casanare 3 - Images B -->
+      <a-plane
+        id="casanare3-image-screen-b"
+        src="#casanare3-4-image"
+        position="120 20 20"
+        rotation="-30 90 0"
+        width="160"
+        height="90"
+        material="shader: flat; side: double"
+        visible="false"
+        casanare3-image-cycler-b
+      ></a-plane>
+
+      <!-- Casanare 3 - Video -->
+      <a-plane
+        id="casanare3-video-screen"
+        src="#casanare3-5-video"
+        position="120 20 20"
+        rotation="-30 90 0"
+        width="160"
+        height="90"
+        material="shader: flat; side: double"
+        visible="false"
+        casanare3-video-cycler
+      ></a-plane>
+
+      <!-- Casanare 4 - Images A -->
+      <a-plane
+        id="casanare4-image-screen"
+        src="#casanare4-1-image"
+        position="-120 20 20"
+        rotation="30 90 0"
+        width="200"
+        height="120"
+        material="shader: flat; side: double"
+        visible="false"
+        casanare4-image-cycler
+      ></a-plane>
+
+      <!-- Casanare 4 - Images B -->
+      <a-plane
+        id="casanare4-image-screen-b"
+        src="#casanare4-4-image"
+        position="120 20 20"
+        rotation="-30 90 0"
+        width="180"
+        height="100"
+        material="shader: flat; side: double"
+        visible="false"
+        casanare4-image-cycler-b
+      ></a-plane>
+
+      <!-- Casanare 5 - Images A -->
+      <a-plane
+        id="casanare5-image-screen"
+        src="#casanare5-1-image"
+        position="-120 20 20"
+        rotation="30 90 0"
+        width="180"
+        height="100"
+        material="shader: flat; side: double"
+        visible="false"
+        casanare5-image-cycler
+      ></a-plane>
+
+      <!-- Casanare 5 - Images B -->
+      <a-plane
+        id="casanare5-image-screen-b"
+        src="#casanare5-5-image"
+        position="120 20 20"
+        rotation="-30 90 0"
+        width="160"
+        height="90"
+        material="shader: flat; side: double"
+        visible="false"
+        casanare5-image-cycler-b
+      ></a-plane>
+
+      <!-- Casanare 5 - Video -->
+      <a-plane
+        id="casanare5-video-screen"
+        src="#casanare5-4-video"
+        position="120 20 20"
+        rotation="-30 90 0"
+        width="160"
+        height="90"
+        material="shader: flat; side: double"
+        visible="false"
+        casanare5-video-cycler
+      ></a-plane>
+
+      <!-- Casanare 6 - Images A -->
+      <a-plane
+        id="casanare6-image-screen"
+        src="#casanare6-1-image"
+        position="-120 20 20"
+        rotation="30 90 0"
+        width="180"
+        height="100"
+        material="shader: flat; side: double"
+        visible="false"
+        casanare6-image-cycler
+      ></a-plane>
+
+      <!-- Casanare 6 - Images B -->
+      <a-plane
+        id="casanare6-image-screen-b"
+        src="#casanare6-4-image"
+        position="120 20 20"
+        rotation="-30 90 0"
+        width="160"
+        height="90"
+        material="shader: flat; side: double"
+        visible="false"
+        casanare6-image-cycler-b
+      ></a-plane>
+
+      <!-- Casanare 6 - Video -->
+      <a-plane
+        id="casanare6-video-screen"
+        src="#casanare6-5-video"
+        position="120 20 20"
+        rotation="-30 90 0"
+        width="160"
+        height="90"
+        material="shader: flat; side: double"
+        visible="false"
+        casanare6-video-cycler
       ></a-plane>
 
       <!-- Lighting system -->

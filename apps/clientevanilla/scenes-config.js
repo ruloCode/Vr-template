@@ -1047,6 +1047,145 @@ const SCENES_CONFIG = {
     },
     timeOfDay: "day",
   },
+
+  // Escenas de Casanare - Todas con el mismo fondo e_casanare_1.png
+  "casanare-1": {
+    id: "casanare-1",
+    name: "Casanare 1 - Videos de Operaciones",
+    description: "Vista panorámica de operaciones petroleras en Casanare con videos",
+    assets: {
+      skybox: "images/e_casanare_1.png",
+      audio: "audio/toma_01.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "casanare-2": {
+    id: "casanare-2",
+    name: "Casanare 2 - Instalaciones Industriales",
+    description: "Vista panorámica de instalaciones industriales en Casanare",
+    assets: {
+      skybox: "images/e_casanare_1.png",
+      audio: "audio/toma_02.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "casanare-3": {
+    id: "casanare-3",
+    name: "Casanare 3 - Operaciones de Campo",
+    description: "Vista panorámica de operaciones de campo en Casanare",
+    assets: {
+      skybox: "images/e_casanare_1.png",
+      audio: "audio/toma_03.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "casanare-4": {
+    id: "casanare-4",
+    name: "Casanare 4 - Tecnología Avanzada",
+    description: "Vista panorámica de tecnología avanzada en Casanare",
+    assets: {
+      skybox: "images/e_casanare_1.png",
+      audio: "audio/toma_04.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "casanare-5": {
+    id: "casanare-5",
+    name: "Casanare 5 - Operaciones Especializadas",
+    description: "Vista panorámica de operaciones especializadas en Casanare",
+    assets: {
+      skybox: "images/e_casanare_1.png",
+      audio: "audio/toma_05.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "casanare-6": {
+    id: "casanare-6",
+    name: "Casanare 6 - Infraestructura Moderna",
+    description: "Vista panorámica de infraestructura moderna en Casanare",
+    assets: {
+      skybox: "images/e_casanare_1.png",
+      audio: "audio/toma_06.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
 };
 
 // Scene transition effects

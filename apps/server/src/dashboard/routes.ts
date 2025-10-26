@@ -758,6 +758,12 @@ function generateDashboardHTML(): string {
                         <option value="barranca-5">Barrancabermeja 5</option>
                         <option value="barranca-6">Barrancabermeja 6</option>
                         <option value="barranca-7">Barrancabermeja 7</option>
+                        <option value="casanare-1">Casanare 1 - Videos de Operaciones</option>
+                        <option value="casanare-2">Casanare 2 - Instalaciones Industriales</option>
+                        <option value="casanare-3">Casanare 3 - Operaciones Petroleras</option>
+                        <option value="casanare-4">Casanare 4 - Infraestructura</option>
+                        <option value="casanare-5">Casanare 5 - Operaciones Avanzadas</option>
+                        <option value="casanare-6">Casanare 6 - Vista Completa</option>
                     </select>
                     <button class="btn btn-primary" onclick="loadScene()">Cargar Escena</button>
                 </div>
@@ -1070,6 +1076,24 @@ function generateDashboardHTML(): string {
                     break;
                 case 'barranca-7':
                     screenInfo = '🎬 Barranca 7: Video disponible';
+                    break;
+                case 'casanare-1':
+                    screenInfo = '🎬 Casanare 1: Videos disponibles';
+                    break;
+                case 'casanare-2':
+                    screenInfo = '🖼️🎬 Casanare 2: Imágenes y Videos disponibles';
+                    break;
+                case 'casanare-3':
+                    screenInfo = '🖼️🖼️🎬 Casanare 3: Imágenes A, B y Videos disponibles';
+                    break;
+                case 'casanare-4':
+                    screenInfo = '🖼️🖼️ Casanare 4: Imágenes A y B disponibles';
+                    break;
+                case 'casanare-5':
+                    screenInfo = '🖼️🖼️🎬 Casanare 5: Imágenes A, B y Videos disponibles';
+                    break;
+                case 'casanare-6':
+                    screenInfo = '🖼️🖼️🎬 Casanare 6: Imágenes A, B y Videos disponibles';
                     break;
                 default:
                     screenInfo = 'Sin pantallas flotantes';

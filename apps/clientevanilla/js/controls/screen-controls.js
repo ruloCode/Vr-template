@@ -323,6 +323,112 @@ export const screenControls = {
       }
     }
 
+    // Escenas de Casanare (1-6)
+    for (let scene = 1; scene <= 6; scene++) {
+      // Casanare 1 no tiene pantallas adicionales
+      if (scene === 1) {
+        continue;
+      }
+
+        // Casanare 2 tiene pantallas de imágenes y videos
+        if (scene === 2) {
+          screens.push({
+            scene: `casanare-${scene}`,
+            screen: "A",
+            id: `casanare${scene}-image-screen`,
+            type: "image",
+          });
+          screens.push({
+            scene: `casanare-${scene}`,
+            screen: "B",
+            id: `casanare${scene}-video-screen`,
+            type: "video",
+          });
+        }
+
+        // Casanare 3 tiene pantallas de imágenes A y B, y pantalla de videos
+        if (scene === 3) {
+          screens.push({
+            scene: `casanare-${scene}`,
+            screen: "A",
+            id: `casanare${scene}-image-screen`,
+            type: "image",
+          });
+          screens.push({
+            scene: `casanare-${scene}`,
+            screen: "B",
+            id: `casanare${scene}-image-screen-b`,
+            type: "image",
+          });
+          screens.push({
+            scene: `casanare-${scene}`,
+            screen: "C",
+            id: `casanare${scene}-video-screen`,
+            type: "video",
+          });
+        }
+
+        // Casanare 4 tiene pantallas de imágenes A y B
+        if (scene === 4) {
+          screens.push({
+            scene: `casanare-${scene}`,
+            screen: "A",
+            id: `casanare${scene}-image-screen`,
+            type: "image",
+          });
+          screens.push({
+            scene: `casanare-${scene}`,
+            screen: "B",
+            id: `casanare${scene}-image-screen-b`,
+            type: "image",
+          });
+        }
+
+        // Casanare 5 tiene pantallas de imágenes A y B, y pantalla de videos
+        if (scene === 5) {
+          screens.push({
+            scene: `casanare-${scene}`,
+            screen: "A",
+            id: `casanare${scene}-image-screen`,
+            type: "image",
+          });
+          screens.push({
+            scene: `casanare-${scene}`,
+            screen: "B",
+            id: `casanare${scene}-image-screen-b`,
+            type: "image",
+          });
+          screens.push({
+            scene: `casanare-${scene}`,
+            screen: "C",
+            id: `casanare${scene}-video-screen`,
+            type: "video",
+          });
+        }
+
+        // Casanare 6 tiene pantallas de imágenes A y B, y pantalla de videos
+        if (scene === 6) {
+          screens.push({
+            scene: `casanare-${scene}`,
+            screen: "A",
+            id: `casanare${scene}-image-screen`,
+            type: "image",
+          });
+          screens.push({
+            scene: `casanare-${scene}`,
+            screen: "B",
+            id: `casanare${scene}-image-screen-b`,
+            type: "image",
+          });
+          screens.push({
+            scene: `casanare-${scene}`,
+            screen: "C",
+            id: `casanare${scene}-video-screen`,
+            type: "video",
+          });
+        }
+    }
+
     return screens;
   },
 

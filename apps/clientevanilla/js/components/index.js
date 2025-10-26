@@ -36,6 +36,17 @@ import { registerMeta4ImageCycler } from "./image-cyclers/meta4-image-cycler.js"
 import { registerMeta6ImageCycler } from "./image-cyclers/meta6-image-cycler.js";
 import { registerMeta7ImageCycler } from "./image-cyclers/meta7-image-cycler.js";
 
+// Import Casanare image cycler components
+import { registerCasanare2ImageCycler } from "./image-cyclers/casanare2-image-cycler.js";
+import { registerCasanare3ImageCycler } from "./image-cyclers/casanare3-image-cycler.js";
+import { registerCasanare3ImageCyclerB } from "./image-cyclers/casanare3-image-cycler-b.js";
+import { registerCasanare4ImageCycler } from "./image-cyclers/casanare4-image-cycler.js";
+import { registerCasanare4ImageCyclerB } from "./image-cyclers/casanare4-image-cycler-b.js";
+import { registerCasanare5ImageCycler } from "./image-cyclers/casanare5-image-cycler.js";
+import { registerCasanare5ImageCyclerB } from "./image-cyclers/casanare5-image-cycler-b.js";
+import { registerCasanare6ImageCycler } from "./image-cyclers/casanare6-image-cycler.js";
+import { registerCasanare6ImageCyclerB } from "./image-cyclers/casanare6-image-cycler-b.js";
+
 // Import all video cycler components
 import { registerSolarVideoCycler } from "./video-cyclers/solar-video-cycler.js";
 // import { registerEscena4VideoCycler } from './video-cyclers/escena4-video-cycler.js';
@@ -81,6 +92,13 @@ import { registerBarranca6VideoCycler } from "./video-cyclers/barranca6-video-cy
 import { registerBarranca6BVideoCycler } from "./video-cyclers/barranca6B-video-cycler.js";
 import { registerBarranca7VideoCycler } from "./video-cyclers/barranca7-video-cycler.js";
 
+// Import Casanare video cycler components
+import { registerCasanare1VideoCycler } from "./video-cyclers/casanare1-video-cycler.js";
+import { registerCasanare2VideoCycler } from "./video-cyclers/casanare2-video-cycler.js";
+import { registerCasanare3VideoCycler } from "./video-cyclers/casanare3-video-cycler.js";
+import { registerCasanare5VideoCycler } from "./video-cyclers/casanare5-video-cycler.js";
+import { registerCasanare6VideoCycler } from "./video-cyclers/casanare6-video-cycler.js";
+
 /**
  * Register all A-Frame components
  * This function should be called after A-Frame is loaded but before the scene is initialized
@@ -120,6 +138,17 @@ export function registerAllComponents() {
   registerMeta4ImageCycler();
   registerMeta6ImageCycler();
   registerMeta7ImageCycler();
+
+  // Register Casanare image cyclers
+  registerCasanare2ImageCycler();
+  registerCasanare3ImageCycler();
+  registerCasanare3ImageCyclerB();
+  registerCasanare4ImageCycler();
+  registerCasanare4ImageCyclerB();
+  registerCasanare5ImageCycler();
+  registerCasanare5ImageCyclerB();
+  registerCasanare6ImageCycler();
+  registerCasanare6ImageCyclerB();
 
   // Register video cyclers
   registerSolarVideoCycler();
@@ -165,6 +194,13 @@ export function registerAllComponents() {
   registerBarranca6VideoCycler();
   registerBarranca6BVideoCycler();
   registerBarranca7VideoCycler();
+
+  // Register Casanare video cyclers
+  registerCasanare1VideoCycler();
+  registerCasanare2VideoCycler();
+  registerCasanare3VideoCycler();
+  registerCasanare5VideoCycler();
+  registerCasanare6VideoCycler();
 
   console.log("✅ All A-Frame components registered successfully");
 }

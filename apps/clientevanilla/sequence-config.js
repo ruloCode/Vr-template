@@ -362,6 +362,65 @@ const SEQUENCE_CONFIGS = {
     },
     editable: true,
   },
+
+  "casanare-completo": {
+    id: "casanare-completo",
+    name: "Secuencia Completa Casanare",
+    description: "Secuencia completa de todas las escenas de Casanare",
+    scenes: [
+      {
+        sceneId: "casanare-1",
+        duration: 15000, // 15 segundos - Escenario Base
+        name: "Escenario Base",
+        showScreens: false,
+        screenDelay: 0,
+      },
+      {
+        sceneId: "casanare-2",
+        duration: 25000, // 25 segundos - Instalaciones Industriales
+        name: "Instalaciones Industriales",
+        showScreens: true,
+        screenDelay: 5000,
+      },
+      {
+        sceneId: "casanare-3",
+        duration: 20000, // 20 segundos - Operaciones de Campo
+        name: "Operaciones de Campo",
+        showScreens: true,
+        screenDelay: 4000,
+      },
+      {
+        sceneId: "casanare-4",
+        duration: 22000, // 22 segundos - Tecnología Avanzada
+        name: "Tecnología Avanzada",
+        showScreens: true,
+        screenDelay: 5000,
+      },
+      {
+        sceneId: "casanare-5",
+        duration: 20000, // 20 segundos - Operaciones Especializadas
+        name: "Operaciones Especializadas",
+        showScreens: true,
+        screenDelay: 4000,
+      },
+      {
+        sceneId: "casanare-6",
+        duration: 25000, // 25 segundos - Infraestructura Moderna
+        name: "Infraestructura Moderna",
+        showScreens: true,
+        screenDelay: 5000,
+      },
+    ],
+    totalDuration: 129000, // 2:09 minutos
+    autoLoop: false,
+    showScreensAutomatically: true,
+    transitions: {
+      fadeOutTime: 1000,
+      loadTime: 2000,
+      fadeInTime: 1000,
+    },
+    editable: true,
+  },
 };
 
 // Scene duration limits for validation

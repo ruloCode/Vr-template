@@ -107,11 +107,40 @@ export class VRSceneManager {
       barranca6BScreen: document.querySelector("#barranca6B-screen"),
       barranca7Screen: document.querySelector("#barranca7-screen"),
 
+      // Casanare screens
+      casanare1Screen: document.querySelector("#casanare1-screen"),
+      casanare2ImageScreen: document.querySelector("#casanare2-image-screen"),
+      casanare2VideoScreen: document.querySelector("#casanare2-video-screen"),
+      casanare3ImageScreen: document.querySelector("#casanare3-image-screen"),
+      casanare3ImageScreenB: document.querySelector("#casanare3-image-screen-b"),
+      casanare3VideoScreen: document.querySelector("#casanare3-video-screen"),
+      casanare4ImageScreen: document.querySelector("#casanare4-image-screen"),
+      casanare4ImageScreenB: document.querySelector("#casanare4-image-screen-b"),
+      casanare5ImageScreen: document.querySelector("#casanare5-image-screen"),
+      casanare5ImageScreenB: document.querySelector("#casanare5-image-screen-b"),
+      casanare5VideoScreen: document.querySelector("#casanare5-video-screen"),
+      casanare6ImageScreen: document.querySelector("#casanare6-image-screen"),
+      casanare6ImageScreenB: document.querySelector("#casanare6-image-screen-b"),
+      casanare6VideoScreen: document.querySelector("#casanare6-video-screen"),
+
       assets: {
         audio: document.querySelector("#current-audio"),
         skybox: document.querySelector("#current-skybox"),
       },
     };
+    
+    // Debug: Log Casanare elements
+    console.log("🎬 Scene Manager: Casanare elements initialized:", {
+      casanare2ImageScreen: !!this.elements.casanare2ImageScreen,
+      casanare3ImageScreen: !!this.elements.casanare3ImageScreen,
+      casanare3ImageScreenB: !!this.elements.casanare3ImageScreenB,
+      casanare4ImageScreen: !!this.elements.casanare4ImageScreen,
+      casanare4ImageScreenB: !!this.elements.casanare4ImageScreenB,
+      casanare5ImageScreen: !!this.elements.casanare5ImageScreen,
+      casanare5ImageScreenB: !!this.elements.casanare5ImageScreenB,
+      casanare6ImageScreen: !!this.elements.casanare6ImageScreen,
+      casanare6ImageScreenB: !!this.elements.casanare6ImageScreenB,
+    });
   }
 
   /**
@@ -600,6 +629,22 @@ export class VRSceneManager {
     this.hideBarranca6BScreen();
     this.hideBarranca7Screen();
 
+    // Hide Casanare screens
+    this.hideCasanare1Screen();
+    this.hideCasanare2ImageScreen();
+    this.hideCasanare2VideoScreen();
+    this.hideCasanare3ImageScreen();
+    this.hideCasanare3ImageScreenB();
+    this.hideCasanare3VideoScreen();
+    this.hideCasanare4ImageScreen();
+    this.hideCasanare4ImageScreenB();
+    this.hideCasanare5ImageScreen();
+    this.hideCasanare5ImageScreenB();
+    this.hideCasanare5VideoScreen();
+    this.hideCasanare6ImageScreen();
+    this.hideCasanare6ImageScreenB();
+    this.hideCasanare6VideoScreen();
+
     // Show screens based on scene
     if (sceneConfig.id === "escena-1") {
       this.showEscena1Screen();
@@ -701,6 +746,26 @@ export class VRSceneManager {
       this.showBarranca6BScreen();
     } else if (sceneConfig.id === "barranca-7") {
       this.showBarranca7Screen();
+    } else if (sceneConfig.id === "casanare-1") {
+      this.showCasanare1Screen();
+    } else if (sceneConfig.id === "casanare-2") {
+      this.showCasanare2ImageScreen();
+      this.showCasanare2VideoScreen();
+    } else if (sceneConfig.id === "casanare-3") {
+      this.showCasanare3ImageScreen();
+      this.showCasanare3ImageScreenB();
+      this.showCasanare3VideoScreen();
+    } else if (sceneConfig.id === "casanare-4") {
+      this.showCasanare4ImageScreen();
+      this.showCasanare4ImageScreenB();
+    } else if (sceneConfig.id === "casanare-5") {
+      this.showCasanare5ImageScreen();
+      this.showCasanare5ImageScreenB();
+      this.showCasanare5VideoScreen();
+    } else if (sceneConfig.id === "casanare-6") {
+      this.showCasanare6ImageScreen();
+      this.showCasanare6ImageScreenB();
+      this.showCasanare6VideoScreen();
     }
   }
 
@@ -2031,6 +2096,357 @@ export class VRSceneManager {
       component?.hide
         ? component.hide()
         : this.elements.barranca7Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  // Casanare screen control methods
+  showCasanare1Screen() {
+    console.log("🎬 Scene Manager: showCasanare1Screen() called");
+    if (!this.elements.casanare1Screen) {
+      console.error("❌ Scene Manager: casanare1Screen element not found");
+      return;
+    }
+    try {
+      const component =
+        this.elements.casanare1Screen.components["casanare1-video-cycler"];
+      console.log("🎬 Scene Manager: component found", component);
+      component?.show
+        ? component.show()
+        : this.elements.casanare1Screen.setAttribute("visible", "true");
+    } catch (error) {
+      console.error("❌ Scene Manager: Error in showCasanare1Screen", error);
+    }
+  }
+
+  hideCasanare1Screen() {
+    if (!this.elements.casanare1Screen) return;
+    try {
+      const component =
+        this.elements.casanare1Screen.components["casanare1-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.casanare1Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showCasanare2ImageScreen() {
+    console.log("🎬 Scene Manager: showCasanare2ImageScreen() called");
+    if (!this.elements.casanare2ImageScreen) {
+      console.error("❌ Scene Manager: casanare2ImageScreen element not found");
+      return;
+    }
+    try {
+      const component =
+        this.elements.casanare2ImageScreen.components["casanare2-image-cycler"];
+      console.log("🎬 Scene Manager: component found", component);
+      component?.show
+        ? component.show()
+        : this.elements.casanare2ImageScreen.setAttribute("visible", "true");
+    } catch (error) {
+      console.error("❌ Scene Manager: Error in showCasanare2ImageScreen", error);
+    }
+  }
+
+  hideCasanare2ImageScreen() {
+    if (!this.elements.casanare2ImageScreen) return;
+    try {
+      const component =
+        this.elements.casanare2ImageScreen.components["casanare2-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.casanare2ImageScreen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showCasanare2VideoScreen() {
+    if (!this.elements.casanare2VideoScreen) return;
+    try {
+      const component =
+        this.elements.casanare2VideoScreen.components["casanare2-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.casanare2VideoScreen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideCasanare2VideoScreen() {
+    if (!this.elements.casanare2VideoScreen) return;
+    try {
+      const component =
+        this.elements.casanare2VideoScreen.components["casanare2-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.casanare2VideoScreen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showCasanare3ImageScreen() {
+    if (!this.elements.casanare3ImageScreen) return;
+    try {
+      const component =
+        this.elements.casanare3ImageScreen.components["casanare3-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.casanare3ImageScreen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideCasanare3ImageScreen() {
+    if (!this.elements.casanare3ImageScreen) return;
+    try {
+      const component =
+        this.elements.casanare3ImageScreen.components["casanare3-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.casanare3ImageScreen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showCasanare3ImageScreenB() {
+    console.log("🎬 Scene Manager: showCasanare3ImageScreenB() called");
+    if (!this.elements.casanare3ImageScreenB) {
+      console.error("❌ Scene Manager: casanare3ImageScreenB element not found");
+      return;
+    }
+    try {
+      const component =
+        this.elements.casanare3ImageScreenB.components["casanare3-image-cycler-b"];
+      console.log("🎬 Scene Manager: component found", component);
+      component?.show
+        ? component.show()
+        : this.elements.casanare3ImageScreenB.setAttribute("visible", "true");
+    } catch (error) {
+      console.error("❌ Scene Manager: Error in showCasanare3ImageScreenB", error);
+    }
+  }
+
+  hideCasanare3ImageScreenB() {
+    if (!this.elements.casanare3ImageScreenB) return;
+    try {
+      const component =
+        this.elements.casanare3ImageScreenB.components["casanare3-image-cycler-b"];
+      component?.hide
+        ? component.hide()
+        : this.elements.casanare3ImageScreenB.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showCasanare3VideoScreen() {
+    if (!this.elements.casanare3VideoScreen) return;
+    try {
+      const component =
+        this.elements.casanare3VideoScreen.components["casanare3-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.casanare3VideoScreen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideCasanare3VideoScreen() {
+    if (!this.elements.casanare3VideoScreen) return;
+    try {
+      const component =
+        this.elements.casanare3VideoScreen.components["casanare3-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.casanare3VideoScreen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showCasanare4ImageScreen() {
+    if (!this.elements.casanare4ImageScreen) return;
+    try {
+      const component =
+        this.elements.casanare4ImageScreen.components["casanare4-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.casanare4ImageScreen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideCasanare4ImageScreen() {
+    if (!this.elements.casanare4ImageScreen) return;
+    try {
+      const component =
+        this.elements.casanare4ImageScreen.components["casanare4-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.casanare4ImageScreen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showCasanare4ImageScreenB() {
+    console.log("🎬 Scene Manager: showCasanare4ImageScreenB() called");
+    if (!this.elements.casanare4ImageScreenB) {
+      console.error("❌ Scene Manager: casanare4ImageScreenB element not found");
+      return;
+    }
+    try {
+      const component =
+        this.elements.casanare4ImageScreenB.components["casanare4-image-cycler-b"];
+      console.log("🎬 Scene Manager: component found", component);
+      component?.show
+        ? component.show()
+        : this.elements.casanare4ImageScreenB.setAttribute("visible", "true");
+    } catch (error) {
+      console.error("❌ Scene Manager: Error in showCasanare4ImageScreenB", error);
+    }
+  }
+
+  hideCasanare4ImageScreenB() {
+    if (!this.elements.casanare4ImageScreenB) return;
+    try {
+      const component =
+        this.elements.casanare4ImageScreenB.components["casanare4-image-cycler-b"];
+      component?.hide
+        ? component.hide()
+        : this.elements.casanare4ImageScreenB.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showCasanare5ImageScreen() {
+    if (!this.elements.casanare5ImageScreen) return;
+    try {
+      const component =
+        this.elements.casanare5ImageScreen.components["casanare5-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.casanare5ImageScreen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideCasanare5ImageScreen() {
+    if (!this.elements.casanare5ImageScreen) return;
+    try {
+      const component =
+        this.elements.casanare5ImageScreen.components["casanare5-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.casanare5ImageScreen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showCasanare5ImageScreenB() {
+    console.log("🎬 Scene Manager: showCasanare5ImageScreenB() called");
+    if (!this.elements.casanare5ImageScreenB) {
+      console.error("❌ Scene Manager: casanare5ImageScreenB element not found");
+      return;
+    }
+    try {
+      const component =
+        this.elements.casanare5ImageScreenB.components["casanare5-image-cycler-b"];
+      console.log("🎬 Scene Manager: component found", component);
+      component?.show
+        ? component.show()
+        : this.elements.casanare5ImageScreenB.setAttribute("visible", "true");
+    } catch (error) {
+      console.error("❌ Scene Manager: Error in showCasanare5ImageScreenB", error);
+    }
+  }
+
+  hideCasanare5ImageScreenB() {
+    if (!this.elements.casanare5ImageScreenB) return;
+    try {
+      const component =
+        this.elements.casanare5ImageScreenB.components["casanare5-image-cycler-b"];
+      component?.hide
+        ? component.hide()
+        : this.elements.casanare5ImageScreenB.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showCasanare5VideoScreen() {
+    if (!this.elements.casanare5VideoScreen) return;
+    try {
+      const component =
+        this.elements.casanare5VideoScreen.components["casanare5-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.casanare5VideoScreen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideCasanare5VideoScreen() {
+    if (!this.elements.casanare5VideoScreen) return;
+    try {
+      const component =
+        this.elements.casanare5VideoScreen.components["casanare5-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.casanare5VideoScreen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showCasanare6ImageScreen() {
+    if (!this.elements.casanare6ImageScreen) return;
+    try {
+      const component =
+        this.elements.casanare6ImageScreen.components["casanare6-image-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.casanare6ImageScreen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideCasanare6ImageScreen() {
+    if (!this.elements.casanare6ImageScreen) return;
+    try {
+      const component =
+        this.elements.casanare6ImageScreen.components["casanare6-image-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.casanare6ImageScreen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showCasanare6ImageScreenB() {
+    console.log("🎬 Scene Manager: showCasanare6ImageScreenB() called");
+    if (!this.elements.casanare6ImageScreenB) {
+      console.error("❌ Scene Manager: casanare6ImageScreenB element not found");
+      return;
+    }
+    try {
+      const component =
+        this.elements.casanare6ImageScreenB.components["casanare6-image-cycler-b"];
+      console.log("🎬 Scene Manager: component found", component);
+      component?.show
+        ? component.show()
+        : this.elements.casanare6ImageScreenB.setAttribute("visible", "true");
+    } catch (error) {
+      console.error("❌ Scene Manager: Error in showCasanare6ImageScreenB", error);
+    }
+  }
+
+  hideCasanare6ImageScreenB() {
+    if (!this.elements.casanare6ImageScreenB) return;
+    try {
+      const component =
+        this.elements.casanare6ImageScreenB.components["casanare6-image-cycler-b"];
+      component?.hide
+        ? component.hide()
+        : this.elements.casanare6ImageScreenB.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showCasanare6VideoScreen() {
+    if (!this.elements.casanare6VideoScreen) return;
+    try {
+      const component =
+        this.elements.casanare6VideoScreen.components["casanare6-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.casanare6VideoScreen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideCasanare6VideoScreen() {
+    if (!this.elements.casanare6VideoScreen) return;
+    try {
+      const component =
+        this.elements.casanare6VideoScreen.components["casanare6-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.casanare6VideoScreen.setAttribute("visible", "false");
     } catch (error) {}
   }
 
