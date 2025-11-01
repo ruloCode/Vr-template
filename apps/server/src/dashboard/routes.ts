@@ -764,6 +764,13 @@ function generateDashboardHTML(): string {
                         <option value="casanare-4">Casanare 4 - Infraestructura</option>
                         <option value="casanare-5">Casanare 5 - Operaciones Avanzadas</option>
                         <option value="casanare-6">Casanare 6 - Vista Completa</option>
+                        <option value="huila-1">Huila 1</option>
+                        <option value="huila-2">Huila 2</option>
+                        <option value="huila-3">Huila 3</option>
+                        <option value="huila-4">Huila 4</option>
+                        <option value="huila-5">Huila 5</option>
+                        <option value="huila-6">Huila 6</option>
+                        <option value="huila-7">Huila 7</option>
                     </select>
                     <button class="btn btn-primary" onclick="loadScene()">Cargar Escena</button>
                 </div>
@@ -1078,22 +1085,43 @@ function generateDashboardHTML(): string {
                     screenInfo = '🎬 Barranca 7: Video disponible';
                     break;
                 case 'casanare-1':
-                    screenInfo = '🎬 Casanare 1: Videos disponibles';
+                    screenInfo = '📍 Casanare 1';
                     break;
                 case 'casanare-2':
-                    screenInfo = '🖼️🎬 Casanare 2: Imágenes y Videos disponibles';
+                    screenInfo = '🖼️🎬 Casanare 2';
                     break;
                 case 'casanare-3':
-                    screenInfo = '🖼️🖼️🎬 Casanare 3: Imágenes A, B y Videos disponibles';
+                    screenInfo = '🖼️🖼️🎬 Casanare 3';
                     break;
                 case 'casanare-4':
-                    screenInfo = '🖼️🖼️ Casanare 4: Imágenes A y B disponibles';
+                    screenInfo = '🖼️🖼️ Casanare 4';
                     break;
                 case 'casanare-5':
-                    screenInfo = '🖼️🖼️🎬 Casanare 5: Imágenes A, B y Videos disponibles';
+                    screenInfo = '🖼️🖼️🎬 Casanare 5';
                     break;
                 case 'casanare-6':
-                    screenInfo = '🖼️🖼️🎬 Casanare 6: Imágenes A, B y Videos disponibles';
+                    screenInfo = '🖼️🖼️🎬 Casanare 6';
+                    break;
+                case 'huila-1':
+                    screenInfo = '📍 Huila 1';
+                    break;
+                case 'huila-2':
+                    screenInfo = '🎬🎬🎬 Huila 2';
+                    break;
+                case 'huila-3':
+                    screenInfo = '🎬🎬🎬🎬 Huila 3';
+                    break;
+                case 'huila-4':
+                    screenInfo = '🎬🎬🎬🎬 Huila 4';
+                    break;
+                case 'huila-5':
+                    screenInfo = '🎬🎬🎬🎬 Huila 5';
+                    break;
+                case 'huila-6':
+                    screenInfo = '🎬🎬 Huila 6';
+                    break;
+                case 'huila-7':
+                    screenInfo = '🎬🎬🎬 Huila 7';
                     break;
                 default:
                     screenInfo = 'Sin pantallas flotantes';

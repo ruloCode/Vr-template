@@ -1186,6 +1186,168 @@ const SCENES_CONFIG = {
     },
     timeOfDay: "day",
   },
+
+  // Escenas de Huila - Todas con el mismo fondo e_huila_1.png
+  "huila-1": {
+    id: "huila-1",
+    name: "Huila 1 - Escenario Base",
+    description: "Escenario base de Huila sin contenido adicional",
+    assets: {
+      skybox: "images/e_huila_1.png",
+      audio: "audio/toma_01.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "huila-2": {
+    id: "huila-2",
+    name: "Huila 2 - Operaciones Petroleras",
+    description: "Vista panorámica de operaciones petroleras en Huila",
+    assets: {
+      skybox: "images/e_huila_1.png",
+      audio: "audio/toma_02.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "huila-3": {
+    id: "huila-3",
+    name: "Huila 3 - Instalaciones Industriales",
+    description: "Vista panorámica de instalaciones industriales en Huila",
+    assets: {
+      skybox: "images/e_huila_1.png",
+      audio: "audio/toma_03.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "huila-4": {
+    id: "huila-4",
+    name: "Huila 4 - Operaciones de Campo",
+    description: "Vista panorámica de operaciones de campo en Huila",
+    assets: {
+      skybox: "images/e_huila_1.png",
+      audio: "audio/toma_04.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "huila-5": {
+    id: "huila-5",
+    name: "Huila 5 - Tecnología Avanzada",
+    description: "Vista panorámica de tecnología avanzada en Huila",
+    assets: {
+      skybox: "images/e_huila_1.png",
+      audio: "audio/toma_05.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "huila-6": {
+    id: "huila-6",
+    name: "Huila 6 - Operaciones Especializadas",
+    description: "Vista panorámica de operaciones especializadas en Huila",
+    assets: {
+      skybox: "images/e_huila_1.png",
+      audio: "audio/toma_06.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
+
+  "huila-7": {
+    id: "huila-7",
+    name: "Huila 7 - Infraestructura Moderna",
+    description: "Vista panorámica de infraestructura moderna en Huila",
+    assets: {
+      skybox: "images/e_huila_1.png",
+      audio: "audio/toma_07.mp3",
+      models: [],
+    },
+    lighting: {
+      ambient: {
+        color: "#ffffff",
+        intensity: 0.9,
+      },
+      directional: {
+        color: "#ffffff",
+        intensity: 1.0,
+        position: "0 1 1",
+      },
+    },
+    timeOfDay: "day",
+  },
 };
 
 // Scene transition effects

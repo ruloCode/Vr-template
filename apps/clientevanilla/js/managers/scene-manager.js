@@ -123,6 +123,17 @@ export class VRSceneManager {
       casanare6ImageScreenB: document.querySelector("#casanare6-image-screen-b"),
       casanare6VideoScreen: document.querySelector("#casanare6-video-screen"),
 
+      // Huila screens
+      huila2Screen: document.querySelector("#huila2-screen"),
+      huila3Screen: document.querySelector("#huila3-screen"),
+      huila3ScreenB: document.querySelector("#huila3-screen-b"),
+      huila4Screen: document.querySelector("#huila4-screen"),
+      huila4ScreenB: document.querySelector("#huila4-screen-b"),
+      huila5Screen: document.querySelector("#huila5-screen"),
+      huila5ScreenB: document.querySelector("#huila5-screen-b"),
+      huila6Screen: document.querySelector("#huila6-screen"),
+      huila7Screen: document.querySelector("#huila7-screen"),
+
       assets: {
         audio: document.querySelector("#current-audio"),
         skybox: document.querySelector("#current-skybox"),
@@ -645,6 +656,14 @@ export class VRSceneManager {
     this.hideCasanare6ImageScreenB();
     this.hideCasanare6VideoScreen();
 
+    // Hide Huila screens
+    this.hideHuila2Screen();
+    this.hideHuila3Screen();
+    this.hideHuila4Screen();
+    this.hideHuila5Screen();
+    this.hideHuila6Screen();
+    this.hideHuila7Screen();
+
     // Show screens based on scene
     if (sceneConfig.id === "escena-1") {
       this.showEscena1Screen();
@@ -766,6 +785,20 @@ export class VRSceneManager {
       this.showCasanare6ImageScreen();
       this.showCasanare6ImageScreenB();
       this.showCasanare6VideoScreen();
+    } else if (sceneConfig.id === "huila-1") {
+      // Huila 1 solo muestra el escenario base, sin pantallas adicionales
+    } else if (sceneConfig.id === "huila-2") {
+      this.showHuila2Screen();
+    } else if (sceneConfig.id === "huila-3") {
+      this.showHuila3Screen();
+    } else if (sceneConfig.id === "huila-4") {
+      this.showHuila4Screen();
+    } else if (sceneConfig.id === "huila-5") {
+      this.showHuila5Screen();
+    } else if (sceneConfig.id === "huila-6") {
+      this.showHuila6Screen();
+    } else if (sceneConfig.id === "huila-7") {
+      this.showHuila7Screen();
     }
   }
 
@@ -2447,6 +2480,193 @@ export class VRSceneManager {
       component?.hide
         ? component.hide()
         : this.elements.casanare6VideoScreen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  // Huila screen control methods
+  showHuila2Screen() {
+    if (!this.elements.huila2Screen) return;
+    try {
+      const component =
+        this.elements.huila2Screen.components["huila2-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.huila2Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideHuila2Screen() {
+    if (!this.elements.huila2Screen) return;
+    try {
+      const component =
+        this.elements.huila2Screen.components["huila2-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.huila2Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showHuila3Screen() {
+    if (!this.elements.huila3Screen) return;
+    try {
+      const component =
+        this.elements.huila3Screen.components["huila3-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.huila3Screen.setAttribute("visible", "true");
+    } catch (error) {}
+    
+    if (!this.elements.huila3ScreenB) return;
+    try {
+      const componentB =
+        this.elements.huila3ScreenB.components["huila3-video-cycler-b"];
+      componentB?.show
+        ? componentB.show()
+        : this.elements.huila3ScreenB.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideHuila3Screen() {
+    if (!this.elements.huila3Screen) return;
+    try {
+      const component =
+        this.elements.huila3Screen.components["huila3-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.huila3Screen.setAttribute("visible", "false");
+    } catch (error) {}
+    
+    if (!this.elements.huila3ScreenB) return;
+    try {
+      const componentB =
+        this.elements.huila3ScreenB.components["huila3-video-cycler-b"];
+      componentB?.hide
+        ? componentB.hide()
+        : this.elements.huila3ScreenB.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showHuila4Screen() {
+    if (!this.elements.huila4Screen) return;
+    try {
+      const component =
+        this.elements.huila4Screen.components["huila4-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.huila4Screen.setAttribute("visible", "true");
+    } catch (error) {}
+    
+    if (!this.elements.huila4ScreenB) return;
+    try {
+      const componentB =
+        this.elements.huila4ScreenB.components["huila4-video-cycler-b"];
+      componentB?.show
+        ? componentB.show()
+        : this.elements.huila4ScreenB.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideHuila4Screen() {
+    if (!this.elements.huila4Screen) return;
+    try {
+      const component =
+        this.elements.huila4Screen.components["huila4-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.huila4Screen.setAttribute("visible", "false");
+    } catch (error) {}
+    
+    if (!this.elements.huila4ScreenB) return;
+    try {
+      const componentB =
+        this.elements.huila4ScreenB.components["huila4-video-cycler-b"];
+      componentB?.hide
+        ? componentB.hide()
+        : this.elements.huila4ScreenB.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showHuila5Screen() {
+    if (!this.elements.huila5Screen) return;
+    try {
+      const component =
+        this.elements.huila5Screen.components["huila5-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.huila5Screen.setAttribute("visible", "true");
+    } catch (error) {}
+    
+    if (!this.elements.huila5ScreenB) return;
+    try {
+      const componentB =
+        this.elements.huila5ScreenB.components["huila5-video-cycler-b"];
+      componentB?.show
+        ? componentB.show()
+        : this.elements.huila5ScreenB.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideHuila5Screen() {
+    if (!this.elements.huila5Screen) return;
+    try {
+      const component =
+        this.elements.huila5Screen.components["huila5-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.huila5Screen.setAttribute("visible", "false");
+    } catch (error) {}
+    
+    if (!this.elements.huila5ScreenB) return;
+    try {
+      const componentB =
+        this.elements.huila5ScreenB.components["huila5-video-cycler-b"];
+      componentB?.hide
+        ? componentB.hide()
+        : this.elements.huila5ScreenB.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showHuila6Screen() {
+    if (!this.elements.huila6Screen) return;
+    try {
+      const component =
+        this.elements.huila6Screen.components["huila6-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.huila6Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideHuila6Screen() {
+    if (!this.elements.huila6Screen) return;
+    try {
+      const component =
+        this.elements.huila6Screen.components["huila6-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.huila6Screen.setAttribute("visible", "false");
+    } catch (error) {}
+  }
+
+  showHuila7Screen() {
+    if (!this.elements.huila7Screen) return;
+    try {
+      const component =
+        this.elements.huila7Screen.components["huila7-video-cycler"];
+      component?.show
+        ? component.show()
+        : this.elements.huila7Screen.setAttribute("visible", "true");
+    } catch (error) {}
+  }
+
+  hideHuila7Screen() {
+    if (!this.elements.huila7Screen) return;
+    try {
+      const component =
+        this.elements.huila7Screen.components["huila7-video-cycler"];
+      component?.hide
+        ? component.hide()
+        : this.elements.huila7Screen.setAttribute("visible", "false");
     } catch (error) {}
   }
 

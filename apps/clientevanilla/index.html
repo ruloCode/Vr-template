@@ -989,6 +989,199 @@
           muted
           playsinline
         ></video>
+
+        <!-- Assets for Huila scenes -->
+        <!-- Huila 2 - Videos (3 videos, 1 pantalla) -->
+        <video
+          id="huila2-1-video"
+          src="images/huila/escena_2.1.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="huila2-2-video"
+          src="images/huila/escena_2.2.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="huila2-3-video"
+          src="images/huila/escena_2.3.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+
+        <!-- Huila 3 - Videos (4 videos: 3+1, 2 pantallas) -->
+        <video
+          id="huila3-1-video"
+          src="images/huila/escena_3.1.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="huila3-2-video"
+          src="images/huila/escena_3.2.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="huila3-3-video"
+          src="images/huila/escena_3.3.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="huila3-4-video"
+          src="images/huila/escena_3.4.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+
+        <!-- Huila 4 - Videos (4 videos: 3+1, 2 pantallas) -->
+        <video
+          id="huila4-1-video"
+          src="images/huila/escena_4.1.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="huila4-2-video"
+          src="images/huila/escena_4.2.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="huila4-3-video"
+          src="images/huila/escena_4.3.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="huila4-4-video"
+          src="images/huila/escena_4.4.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+
+        <!-- Huila 5 - Videos (4 videos: 3+1, 2 pantallas) -->
+        <video
+          id="huila5-1-video"
+          src="images/huila/escena_5.1.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="huila5-2-video"
+          src="images/huila/escena_5.2.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="huila5-3-video"
+          src="images/huila/escena_5.3.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="huila5-4-video"
+          src="images/huila/escena_5.4.MP4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+
+        <!-- Huila 6 - Videos (2 videos, 1 pantalla) -->
+        <video
+          id="huila6-1-video"
+          src="images/huila/escena_6.1.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="huila6-2-video"
+          src="images/huila/escena_6.2.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+
+        <!-- Huila 7 - Videos (3 videos, 1 pantalla) -->
+        <video
+          id="huila7-1-video"
+          src="images/huila/escena_7.1.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="huila7-2-video"
+          src="images/huila/escena_7.2.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
+        <video
+          id="huila7-3-video"
+          src="images/huila/escena_7.3.mp4"
+          preload="metadata"
+          loop="false"
+          crossorigin="anonymous"
+          muted
+          playsinline
+        ></video>
       </a-assets>
 
       <!-- Scene loading overlay -->
@@ -1963,6 +2156,118 @@
         material="shader: flat; side: double"
         visible="false"
         casanare6-video-cycler
+      ></a-plane>
+
+      <!-- Pantallas flotantes para escenas de Huila -->
+      <!-- Huila 2 - Videos (1 pantalla con 3 videos) -->
+      <a-plane
+        id="huila2-screen"
+        src="#huila2-1-video"
+        position="-120 20 20"
+        rotation="30 90 0"
+        width="180"
+        height="100"
+        material="shader: flat; side: double"
+        visible="false"
+        huila2-video-cycler
+      ></a-plane>
+
+      <!-- Huila 3 - Videos (2 pantallas: 3 videos + 1 video) -->
+      <a-plane
+        id="huila3-screen"
+        src="#huila3-1-video"
+        position="-120 20 20"
+        rotation="30 90 0"
+        width="180"
+        height="100"
+        material="shader: flat; side: double"
+        visible="false"
+        huila3-video-cycler
+      ></a-plane>
+      <a-plane
+        id="huila3-screen-b"
+        src="#huila3-4-video"
+        position="120 20 20"
+        rotation="-30 90 0"
+        width="160"
+        height="90"
+        material="shader: flat; side: double"
+        visible="false"
+        huila3-video-cycler-b
+      ></a-plane>
+
+      <!-- Huila 4 - Videos (2 pantallas: 3 videos + 1 video) -->
+      <a-plane
+        id="huila4-screen"
+        src="#huila4-1-video"
+        position="-120 20 20"
+        rotation="30 90 0"
+        width="180"
+        height="100"
+        material="shader: flat; side: double"
+        visible="false"
+        huila4-video-cycler
+      ></a-plane>
+      <a-plane
+        id="huila4-screen-b"
+        src="#huila4-4-video"
+        position="120 20 20"
+        rotation="-30 90 0"
+        width="160"
+        height="90"
+        material="shader: flat; side: double"
+        visible="false"
+        huila4-video-cycler-b
+      ></a-plane>
+
+      <!-- Huila 5 - Videos (2 pantallas: 3 videos + 1 video) -->
+      <a-plane
+        id="huila5-screen"
+        src="#huila5-1-video"
+        position="-120 20 20"
+        rotation="30 90 0"
+        width="180"
+        height="100"
+        material="shader: flat; side: double"
+        visible="false"
+        huila5-video-cycler
+      ></a-plane>
+      <a-plane
+        id="huila5-screen-b"
+        src="#huila5-4-video"
+        position="120 20 20"
+        rotation="-30 90 0"
+        width="160"
+        height="90"
+        material="shader: flat; side: double"
+        visible="false"
+        huila5-video-cycler-b
+      ></a-plane>
+
+      <!-- Huila 6 - Videos (1 pantalla con 2 videos) -->
+      <a-plane
+        id="huila6-screen"
+        src="#huila6-1-video"
+        position="-120 20 20"
+        rotation="30 90 0"
+        width="180"
+        height="100"
+        material="shader: flat; side: double"
+        visible="false"
+        huila6-video-cycler
+      ></a-plane>
+
+      <!-- Huila 7 - Videos (1 pantalla con 3 videos) -->
+      <a-plane
+        id="huila7-screen"
+        src="#huila7-1-video"
+        position="-120 20 20"
+        rotation="30 90 0"
+        width="180"
+        height="100"
+        material="shader: flat; side: double"
+        visible="false"
+        huila7-video-cycler
       ></a-plane>
 
       <!-- Lighting system -->

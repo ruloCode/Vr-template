@@ -99,6 +99,17 @@ import { registerCasanare3VideoCycler } from "./video-cyclers/casanare3-video-cy
 import { registerCasanare5VideoCycler } from "./video-cyclers/casanare5-video-cycler.js";
 import { registerCasanare6VideoCycler } from "./video-cyclers/casanare6-video-cycler.js";
 
+// Import Huila video cycler components
+import { registerHuila2VideoCycler } from "./video-cyclers/huila2-video-cycler.js";
+import { registerHuila3VideoCycler } from "./video-cyclers/huila3-video-cycler.js";
+import { registerHuila3VideoCyclerB } from "./video-cyclers/huila3-video-cycler-b.js";
+import { registerHuila4VideoCycler } from "./video-cyclers/huila4-video-cycler.js";
+import { registerHuila4VideoCyclerB } from "./video-cyclers/huila4-video-cycler-b.js";
+import { registerHuila5VideoCycler } from "./video-cyclers/huila5-video-cycler.js";
+import { registerHuila5VideoCyclerB } from "./video-cyclers/huila5-video-cycler-b.js";
+import { registerHuila6VideoCycler } from "./video-cyclers/huila6-video-cycler.js";
+import { registerHuila7VideoCycler } from "./video-cyclers/huila7-video-cycler.js";
+
 /**
  * Register all A-Frame components
  * This function should be called after A-Frame is loaded but before the scene is initialized
@@ -201,6 +212,17 @@ export function registerAllComponents() {
   registerCasanare3VideoCycler();
   registerCasanare5VideoCycler();
   registerCasanare6VideoCycler();
+
+  // Register Huila video cyclers
+  registerHuila2VideoCycler();
+  registerHuila3VideoCycler();
+  registerHuila3VideoCyclerB();
+  registerHuila4VideoCycler();
+  registerHuila4VideoCyclerB();
+  registerHuila5VideoCycler();
+  registerHuila5VideoCyclerB();
+  registerHuila6VideoCycler();
+  registerHuila7VideoCycler();
 
   console.log("✅ All A-Frame components registered successfully");
 }
